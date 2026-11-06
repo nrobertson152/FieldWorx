@@ -1,0 +1,77 @@
+{
+ "bad": [
+  {
+   "event": "{\"actor\":\"Alex\",\"body\":{\"k\":\"v\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"inspection.start\",\"v\":2}",
+   "name": "version 2"
+  },
+  {
+   "event": "{\"actor\":\"Alex\",\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"inspection.start\",\"v\":1}",
+   "name": "missing body"
+  },
+  {
+   "event": "{\"actor\":\"Alex\",\"body\":{\"k\":\"v\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"extra\":1,\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"inspection.start\",\"v\":1}",
+   "name": "extra field"
+  },
+  {
+   "event": "{\"actor\":\"Alex\",\"body\":{\"k\":\"v\"},\"deps\":[],\"device\":\"dev_XYZ\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"inspection.start\",\"v\":1}",
+   "name": "device malformed"
+  },
+  {
+   "event": "{\"actor\":\"Alex\",\"body\":{\"k\":\"v\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"prev\":\"\",\"seq\":0,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"inspection.start\",\"v\":1}",
+   "name": "seq zero"
+  },
+  {
+   "event": "{\"actor\":\"Alex\",\"body\":{\"k\":\"v\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"prev\":\"abababababababababababababababababababababababababababababababab\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"inspection.start\",\"v\":1}",
+   "name": "seq 1 with prev"
+  },
+  {
+   "event": "{\"actor\":\"Alex\",\"body\":{\"k\":\"v\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"prev\":\"\",\"seq\":2,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"inspection.start\",\"v\":1}",
+   "name": "seq 2 without prev"
+  },
+  {
+   "event": "{\"actor\":\"Alex\",\"body\":{\"k\":\"v\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00\",\"type\":\"inspection.start\",\"v\":1}",
+   "name": "time without zone"
+  },
+  {
+   "event": "{\"actor\":\"a\\nb\",\"body\":{\"k\":\"v\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"inspection.start\",\"v\":1}",
+   "name": "actor with newline"
+  },
+  {
+   "event": "{\"actor\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"body\":{\"k\":\"v\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"inspection.start\",\"v\":1}",
+   "name": "actor too long"
+  },
+  {
+   "event": "{\"actor\":\"Alex\",\"body\":{\"k\":\"v\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"Inspection\",\"v\":1}",
+   "name": "type malformed"
+  },
+  {
+   "event": "{\"actor\":\"Alex\",\"body\":{\"k\":\"v\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"ins_123\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"inspection.start\",\"v\":1}",
+   "name": "entity malformed"
+  },
+  {
+   "event": "{\"actor\":\"Alex\",\"body\":{\"k\":\"v\"},\"deps\":[\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"inspection.start\",\"v\":1}",
+   "name": "deps unsorted"
+  },
+  {
+   "event": "{\"actor\":\"Alex\",\"body\":{\"k\":\"v\"},\"deps\":[\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"inspection.start\",\"v\":1}",
+   "name": "deps duplicate"
+  },
+  {
+   "event": "{\"actor\":\"Alex\",\"body\":{\"k\":\"v\"},\"deps\":[\"x\"],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"inspection.start\",\"v\":1}",
+   "name": "deps not ids"
+  },
+  {
+   "event": "{\"actor\":\"Alex\",\"body\":[],\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"inspection.start\",\"v\":1}",
+   "name": "body not object"
+  }
+ ],
+ "good": [
+  {
+   "event": "{\"actor\":\"Alex\",\"body\":{\"k\":\"v\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"inspection.start\",\"v\":1}",
+   "id": "b24030e649df8efb8d7a033da31731b31cdc646f1bff9d9cfaa3792318b45162"
+  }
+ ],
+ "not_canonical": [
+  "{ \"actor\":\"Alex\",\"body\":{\"k\":\"v\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"inspection.start\",\"v\":1}"
+ ]
+}

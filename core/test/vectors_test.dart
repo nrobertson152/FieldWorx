@@ -1,0 +1,153 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// The Dart core must agree with the Python reference on every shared vector (spec/vectors, written by
+// spec/make_vectors.py): same canonical bytes, digests, verdicts and inspection states.
+
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:fieldworx_core/fieldworx_core.dart';
+import 'package:fieldworx_core/src/fxjson.dart' as fx;
+import 'package:test/test.dart';
+
+final String vectorsDir = () {
+  for (final p in ['../spec/vectors', 'spec/vectors']) {
+    if (Directory(p).existsSync()) return p;
+  }
+  throw StateError('spec/vectors not found; run the tests from core/');
+}();
+
+Object? load(String name) => jsonDecode(File('$vectorsDir/$name').readAsStringSync());
+
+List<Map<String, Object?>> loadList(String name) => (load(name)! as List).cast<Map<String, Object?>>();
+
+void main() {
+  group('fxjson', () {
+    for (final c in loadList('fxjson.json')) {
+      test(c['name']! as String, () {
+        final input = c['input']! as String;
+        final canonical = c['canonical'] as String?;
+        if (canonical == null) {
+          expect(() => fx.encode(fx.parse(input)), throwsA(isA<FxJsonError>()));
+          return;
+        }
+        final v = fx.parse(input);
+        expect(fx.encodeText(v), equals(canonical));
+        expect(fx.parseCanonical(utf8.encode(canonical)), equals(v));
+        if (input != canonical) {
+          expect(() => fx.parseCanonical(utf8.encode(input)), throwsA(isA<FxJsonError>()));
+        }
+      });
+    }
+  });
+
+  test('digests and sha256', () {
+    final d = load('digests.json')! as Map<String, Object?>;
+    for (final c in (d['domain_digests']! as List).cast<Map<String, Object?>>()) {
+      expect(fx.digestBytes(c['domain']! as String, utf8.encode(c['canonical']! as String)), equals(c['digest']));
+    }
+    for (final c in (d['sha256']! as List).cast<Map<String, Object?>>()) {
+      final hex = c['hex']! as String;
+      final bytes = [for (var i = 0; i < hex.length; i += 2) int.parse(hex.substring(i, i + 2), radix: 16)];
+      expect(sha256Hex(bytes), equals(c['sha256']));
+      // Streaming in odd-sized pieces gives the same digest.
+      final h = Sha256();
+      for (var i = 0; i < bytes.length; i += 7) {
+        h.add(bytes.sublist(i, i + 7 > bytes.length ? bytes.length : i + 7));
+      }
+      expect(h.hexDigest(), equals(c['sha256']));
+    }
+  });
+
+  test('envelopes', () {
+    final d = load('envelopes.json')! as Map<String, Object?>;
+    for (final g in (d['good']! as List).cast<Map<String, Object?>>()) {
+      expect(Event.fromBytes(utf8.encode(g['event']! as String)).id, equals(g['id']));
+    }
+    for (final b in (d['bad']! as List).cast<Map<String, Object?>>()) {
+      expect(() => Event.fromBytes(utf8.encode(b['event']! as String)), throwsA(isA<EventError>()),
+          reason: b['name'] as String);
+    }
+    for (final n in (d['not_canonical']! as List).cast<String>()) {
+      expect(() => Event.fromBytes(utf8.encode(n)), throwsA(isA<EventError>()));
+    }
+  });
+
+  group('field log', () {
+    for (final c in loadList('fieldlog.json')) {
+      test(c['name']! as String, () {
+        final log = FieldLog();
+        for (final step in (c['steps']! as List).cast<Map<String, Object?>>()) {
+          final batch = [for (final r in (step['events']! as List).cast<String>()) Event.fromBytes(utf8.encode(r))];
+          final result = step['result'];
+          if (result == 'ok') {
+            expect([for (final e in log.importEvents(batch)) e.id], equals(step['new']));
+          } else {
+            final before = Map.of(log.events);
+            final matcher = switch (result) {
+              'fork' => isA<ForkError>(),
+              'missing' => isA<MissingHistory>(),
+              _ => isA<EventError>(),
+            };
+            expect(() => log.importEvents(batch), throwsA(matcher));
+            expect(log.events.keys.toSet(), equals(before.keys.toSet()));
+          }
+        }
+        expect(log.heads(), equals(c['heads']));
+        final eh = {for (final e in (log.byEntity.keys.toList()..sort())) e: log.entityHeads(e)};
+        expect(eh, equals(c['entity_heads']));
+      });
+    }
+  });
+
+  group('inspections', () {
+    for (final c in loadList('inspections.json')) {
+      test(c['name']! as String, () {
+        final evs = [for (final r in (c['events']! as List).cast<String>()) Event.fromBytes(utf8.encode(r))];
+        final log = FieldLog()..importEvents(evs);
+        final state = reduceInspection(log, c['entity']! as String);
+        expect(fx.encodeText(state), equals(fx.encodeText(c['state'])));
+        final reversed = FieldLog()..importEvents(evs.reversed);
+        expect(fx.encodeText(reduceInspection(reversed, c['entity']! as String)), equals(fx.encodeText(state)));
+      });
+    }
+  });
+
+  test('templates', () {
+    final d = load('templates.json')! as Map<String, Object?>;
+    for (final t in d['good']! as List) {
+      checkTemplate(t);
+    }
+    for (final b in (d['bad']! as List).cast<Map<String, Object?>>()) {
+      expect(() => checkTemplate(b['template']), throwsA(isA<TemplateError>()), reason: b['name'] as String);
+    }
+  });
+
+  test('decimals', () {
+    for (final c in loadList('decimals.json')) {
+      expect(compareDecimal(c['a']! as String, c['b']! as String), equals(c['cmp']), reason: '${c['a']} ${c['b']}');
+    }
+  });
+
+  group('archives written by the bridge', () {
+    final expected = load('archives.json')! as Map<String, Object?>;
+    for (final name in ['sample.fieldworx', 'sample.fieldlog']) {
+      test(name, () async {
+        final want = expected[name]! as Map<String, Object?>;
+        final a = await FieldArchive.open(File('$vectorsDir/$name'), verifyObjects: true);
+        try {
+          expect(a.digest, equals(want['digest']));
+          expect(a.kind, equals(want['kind']));
+          expect(a.id, equals(want['id']));
+          expect([for (final e in a.events) e.id], equals(want['events']));
+          expect(a.objects.keys.toList()..sort(), equals(want['objects']));
+          expect(a.catalog == null ? '' : fx.digest('catalog/v1', a.catalog), equals(want['catalog_digest']));
+          for (final sha in a.objects.keys) {
+            expect(sha256Hex(await a.readObject(sha)), equals(sha));
+          }
+        } finally {
+          await a.close();
+        }
+      });
+    }
+  });
+}
