@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- FieldWorx placeholder mark: the scan glyph of app/lib/widgets/fx_icon.dart, 2 dp per unit, centred on 108 dp. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:pathData="M38.00 47.00 L38.00 38.00 L47.00 38.00 M61.00 38.00 L70.00 38.00 L70.00 47.00 M70.00 61.00 L70.00 70.00 L61.00 70.00 M47.00 70.00 L38.00 70.00 L38.00 61.00 M43.00 54.00 L65.00 54.00"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="4.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>
