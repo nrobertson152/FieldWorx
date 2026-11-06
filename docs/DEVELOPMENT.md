@@ -87,7 +87,8 @@ revisions, K1, PMP-10's stock), so rebuild it when the demo changes and run `flu
 on), then changed as follows:
 
 - **Android** (`app/src/main/AndroidManifest.xml`): label *FieldWorx*; `CAMERA` permission with the camera
-  feature optional; `INTERNET` removed from every library (ADR-012; the debug manifest keeps it for Flutter's tools);
+  feature optional; network, microphone and shared-storage permissions removed from every library (ADR-012; the
+  debug manifest keeps `INTERNET` for Flutter's tools);
   `allowBackup="false"` and `res/xml/data_extraction_rules.xml` so the store is never backed up or transferred
   (ADR-004).
 - **Android** (`app/build.gradle.kts`): application id `io.github.nrobertson152.fieldworx`; release signing
@@ -137,7 +138,7 @@ on at least one Android phone (and an iPhone if iOS is released):
 | Dart core | analysis and the vector and store tests |
 | Bridge ⇄ core | `tools/interop.sh`, and the shipped demo package verified by both |
 | App | `flutter analyze` and the widget tests |
-| Android | a release-mode APK (uploaded as an artifact, signed with the debug key) and a check that it requests no network permission |
+| Android | a release-mode APK (uploaded as an artifact, signed with the debug key) and a check that it asks for no permission but the camera |
 | iOS | a simulator build |
 
 RevisionWorx and OpenMeridian are installed from their default branches, so CI also notices when a sibling changes

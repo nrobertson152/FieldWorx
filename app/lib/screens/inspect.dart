@@ -224,28 +224,8 @@ class _InspectionScreenState extends State<InspectionScreen> {
     }
   }
 
-  Future<String?> _ask(String title, String hint, {bool required = true, String action = 'Save'}) async {
-    final ctl = TextEditingController();
-    final r = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(title),
-        content: TextField(controller: ctl, autofocus: true, maxLines: 4, minLines: 1, decoration: InputDecoration(hintText: hint)),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          FilledButton(
-            onPressed: () {
-              if (required && ctl.text.trim().isEmpty) return;
-              Navigator.pop(ctx, ctl.text.trim());
-            },
-            child: Text(action),
-          ),
-        ],
-      ),
-    );
-    ctl.dispose();
-    return r;
-  }
+  Future<String?> _ask(String title, String hint, {bool required = true, String action = 'Save'}) =>
+      askText(context, title: title, hint: hint, required: required, action: action);
 
   Future<void> _photo({String item = ''}) async {
     final m = AppScope.read(context);

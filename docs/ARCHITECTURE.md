@@ -311,10 +311,12 @@ themes, and computes text colours to reach 4.5:1 against their backgrounds where
 example Modern Dark's blue under white text in filled buttons).
 **Why.** Consistency with OpenSchematix and RevisionWorx, and legibility outdoors.
 
-### ADR-012: Release builds cannot use the network
+### ADR-012: Release builds ask for the camera and nothing else
 
-**Decision.** The Android manifest removes the INTERNET permission from every library; CI checks the release APK
-requests none.
+**Decision.** The Android manifest removes every permission the libraries declare that FieldWorx doesn't use:
+network (INTERNET, ACCESS_NETWORK_STATE), microphone (RECORD_AUDIO, from the camera plugin's video support) and
+shared storage (photos go into the app's own folder; files come through the system picker). CI fails if a release
+APK asks for anything but the camera.
 **Why.** "No telemetry" is then a property of the build, not a promise: a release FieldWorx cannot send anything
-anywhere. (Debug builds keep INTERNET for Flutter's development tools.) LAN sync will add the permission back,
-used only for the paired hub.
+anywhere, and a new library can't quietly widen what the app may do. (Debug builds keep INTERNET for Flutter's
+development tools.) LAN sync will add the network back, used only for the paired hub.

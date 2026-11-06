@@ -399,6 +399,96 @@ void showMessageOn(ScaffoldMessengerState messenger, String text, {bool error = 
     ));
 }
 
+/// Asks for a line (or a few lines) of text. Returns null if cancelled. With [required], an empty answer isn't
+/// accepted. The dialog owns its text controller, so nothing uses it after the dialog has gone (its closing animation
+/// still draws the field after the answer is returned).
+Future<String?> askText(
+  BuildContext context, {
+  required String title,
+  String hint = '',
+  String initial = '',
+  String? help,
+  String action = 'Save',
+  bool required = true,
+  int maxLines = 4,
+  TextCapitalization capitalization = TextCapitalization.sentences,
+}) =>
+    showDialog<String>(
+      context: context,
+      builder: (_) => _TextDialog(
+        title: title,
+        hint: hint,
+        initial: initial,
+        help: help,
+        action: action,
+        required: required,
+        maxLines: maxLines,
+        capitalization: capitalization,
+      ),
+    );
+
+class _TextDialog extends StatefulWidget {
+  const _TextDialog({
+    required this.title,
+    required this.hint,
+    required this.initial,
+    required this.help,
+    required this.action,
+    required this.required,
+    required this.maxLines,
+    required this.capitalization,
+  });
+  final String title, hint, initial, action;
+  final String? help;
+  final bool required;
+  final int maxLines;
+  final TextCapitalization capitalization;
+
+  @override
+  State<_TextDialog> createState() => _TextDialogState();
+}
+
+class _TextDialogState extends State<_TextDialog> {
+  late final TextEditingController _text = TextEditingController(text: widget.initial);
+
+  @override
+  void dispose() {
+    _text.dispose();
+    super.dispose();
+  }
+
+  void _done() {
+    final t = _text.text.trim();
+    if (widget.required && t.isEmpty) return;
+    Navigator.pop(context, t);
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+        title: Text(widget.title),
+        content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          TextField(
+            controller: _text,
+            autofocus: true,
+            minLines: 1,
+            maxLines: widget.maxLines,
+            textCapitalization: widget.capitalization,
+            textInputAction: widget.maxLines == 1 ? TextInputAction.done : TextInputAction.newline,
+            onSubmitted: widget.maxLines == 1 ? (_) => _done() : null,
+            decoration: InputDecoration(hintText: widget.hint),
+          ),
+          if (widget.help != null) ...[
+            const SizedBox(height: 8),
+            Text(widget.help!, style: TextStyle(color: context.fx.muted, fontSize: 13)),
+          ],
+        ]),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          FilledButton(onPressed: _done, child: Text(widget.action)),
+        ],
+      );
+}
+
 /// Explains an exception from the core in words for the person holding the phone.
 String explain(Object e) {
   if (e is ArchiveError) return 'This file can’t be used: ${e.message}. Nothing was changed.';

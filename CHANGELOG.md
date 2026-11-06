@@ -22,7 +22,7 @@ The first field release: QR scanning, engineering document access, part lookup a
     changed afterwards flagged.
   - Packages added from files or the built-in demo, verified completely first; field logs sent through the share
     sheet and imported from other phones.
-  - The family's six themes with text held to 4.5:1 contrast; no network permission in release builds; the store
+  - The family's six themes with text held to 4.5:1 contrast; release builds ask for the camera and nothing else; the store
     excluded from backups.
 - **Core** (`fieldworx_core`, pure Dart): canonical JSON, SHA-256, streaming ZIP/ZIP64, archives, field events,
   inspection templates and reduction, catalog and search, label resolution, the on-device store, and `fxtool`.

@@ -157,24 +157,12 @@ Tone _ageTone(String created) {
 
 Future<void> editName(BuildContext context) async {
   final m = AppScope.read(context);
-  final ctl = TextEditingController(text: m.userName);
-  final name = await showDialog<String>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: const Text('Your name'),
-      content: Column(mainAxisSize: MainAxisSize.min, children: [
-        TextField(controller: ctl, autofocus: true, textCapitalization: TextCapitalization.words),
-        const SizedBox(height: 8),
-        Text('It goes into every record you make. It isn’t an account and isn’t checked.',
-            style: TextStyle(color: ctx.fx.muted, fontSize: 13)),
-      ]),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-        FilledButton(onPressed: () => Navigator.pop(ctx, ctl.text), child: const Text('Save')),
-      ],
-    ),
-  );
-  ctl.dispose();
+  final name = await askText(context,
+      title: 'Your name',
+      initial: m.userName,
+      help: 'It goes into every record you make. It isn’t an account and isn’t checked.',
+      maxLines: 1,
+      capitalization: TextCapitalization.words);
   if (name != null) await m.setUserName(name);
 }
 

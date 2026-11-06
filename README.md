@@ -31,8 +31,8 @@ released engineering, and nothing in the field can change it.
   with who and which phone. Nothing is overwritten; two phones that answered the same thing offline show both
   answers until someone chooses.
 - **No server.** Packages and field logs are files: USB, e-mail, a shared drive, the share sheet. Any phone or
-  office can merge any other's records, in any order, any number of times. A release build has no network
-  permission at all.
+  office can merge any other's records, in any order, any number of times. A release build asks for the camera
+  and nothing else: no network, no storage, no microphone.
 
 The design is in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and the formats in [docs/PROTOCOL.md](docs/PROTOCOL.md).
 

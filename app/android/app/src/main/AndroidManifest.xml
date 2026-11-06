@@ -8,6 +8,13 @@
          permission out of every library means a release build cannot reach the network at all. (Debug builds get it
          back from src/debug for Flutter's development tools.) -->
     <uses-permission android:name="android.permission.INTERNET" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove" />
+    <!-- Declared by libraries for features FieldWorx doesn't use: video with sound (the camera plugin under the
+         scanner) and shared storage (photos are taken into the app's own folder; files are opened through the
+         system picker, which needs no permission). CI fails if a release build asks for anything else. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" tools:node="remove" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="remove" />
 
     <!-- No backups or device-to-device copies: the store's device id must stay unique to this phone, or two phones
          would write records under the same id (docs/ARCHITECTURE.md, ADR-004). Field records leave the phone only in

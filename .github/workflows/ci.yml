@@ -101,6 +101,12 @@ jobs:
         with:
           name: pubspec-lock
           path: app/pubspec.lock
+      - name: Resolved versions (printed when they differ from the committed lock)
+        run: |
+          if ! git ls-files --error-unmatch pubspec.lock >/dev/null 2>&1 || ! git diff --quiet -- pubspec.lock; then
+            echo "::notice::app/pubspec.lock differs from the repository; commit the version below"
+            cat pubspec.lock
+          fi
       - run: flutter analyze
       - name: Widget tests (the real store and the demo package; fake camera, viewer and share sheet)
         run: flutter test --reporter expanded
@@ -130,11 +136,13 @@ jobs:
           name: fieldworx-apk-${{ github.sha }}
           path: app/build/app/outputs/flutter-apk/app-release.apk
           retention-days: 14
-      - name: The release APK asks for no network access
+      - name: The release APK asks only for the camera (no network, no storage, no microphone)
         run: |
           aapt="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)aapt"
           "$aapt" dump permissions build/app/outputs/flutter-apk/app-release.apk | tee perms.txt
-          if grep -q "android.permission.INTERNET" perms.txt; then echo "::error::the release APK requests INTERNET"; exit 1; fi
+          unexpected="$(grep "^uses-permission" perms.txt | grep -v "android.permission.CAMERA'" \
+            | grep -v "DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'" || true)"
+          if [ -n "$unexpected" ]; then echo "::error::the release APK asks for more than the camera:"; echo "$unexpected"; exit 1; fi
 
   ios:
     name: App (iOS build, no signing)
