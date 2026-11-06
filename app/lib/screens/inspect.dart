@@ -187,6 +187,7 @@ class InspectTab extends StatelessWidget {
 /// Writes a field log and hands it to the share sheet.
 Future<void> sendFieldLog(BuildContext context, {bool allPhotos = false}) async {
   final m = AppScope.read(context);
+  final messenger = ScaffoldMessenger.of(context);
   try {
     final f = await m.exportFieldLog(allPhotos: allPhotos);
     await m.services.shareFile(f,
@@ -194,7 +195,7 @@ Future<void> sendFieldLog(BuildContext context, {bool allPhotos = false}) async 
         text: 'Field records from ${m.userName.isEmpty ? 'FieldWorx' : m.userName}. Import with: '
             'fieldworx-bridge import ${f.uri.pathSegments.last}');
   } on Exception catch (e) {
-    if (context.mounted) showMessage(context, explain(e), error: true);
+    showMessageOn(messenger, explain(e), error: true);
   }
 }
 

@@ -136,7 +136,8 @@ on at least one Android phone (and an iPhone if iOS is released):
 | Bridge (Python 3.10, 3.13) | the bridge's tests with RevisionWorx and OpenMeridian installed from their repositories; the vector check |
 | Dart core | analysis and the vector and store tests |
 | Bridge ⇄ core | `tools/interop.sh`, and the shipped demo package verified by both |
-| App | `flutter analyze`, the widget tests, a release-mode APK (uploaded as an artifact), a check that it requests no network permission |
+| App | `flutter analyze` and the widget tests |
+| Android | a release-mode APK (uploaded as an artifact, signed with the debug key) and a check that it requests no network permission |
 | iOS | a simulator build |
 
 RevisionWorx and OpenMeridian are installed from their default branches, so CI also notices when a sibling changes

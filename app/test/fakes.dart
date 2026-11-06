@@ -190,17 +190,20 @@ Future<void> showApp(WidgetTester tester, AppModel model) async {
   await tester.pump();
 }
 
-/// Lets real file work started by a tap finish: alternates a little real time with frames until [finder] finds
-/// something (or [until] holds). Fails with [what] if it never does.
-Future<void> waitFor(WidgetTester tester, Finder? finder, {bool Function()? until, String? what, int rounds = 400}) async {
+/// Lets real file work started by a tap finish, then shows the result: file operations run in real time, but what
+/// they resume runs on the test's fake clock, so each step of the work needs a turn of each. Repeats until [finder]
+/// finds something (and [until] holds); fails with [what] if that never happens.
+Future<void> waitFor(WidgetTester tester, Finder? finder, {bool Function()? until, String? what, int frames = 400}) async {
   bool done() => (finder == null || finder.evaluate().isNotEmpty) && (until == null || until());
-  for (var i = 0; i < rounds; i++) {
+  for (var i = 0; i < frames; i++) {
     if (done()) {
-      await tester.pump(const Duration(milliseconds: 400)); // finish the page transition
+      await tester.pump(const Duration(milliseconds: 400)); // let a page transition finish
       await tester.pump(const Duration(milliseconds: 400));
       return;
     }
-    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 3)));
+    for (var step = 0; step < 12; step++) {
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 1)));
+    }
     await tester.pump(const Duration(milliseconds: 20));
   }
   fail('timed out waiting for ${what ?? finder ?? 'a condition'}');
@@ -269,8 +272,20 @@ Future<void> back(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
-/// Scrolls the page until [f] is on screen.
+/// Scrolls the page until [f] is on screen (from the top, if it isn't built at all).
 Future<void> reveal(WidgetTester tester, Finder f) async {
-  await tester.scrollUntilVisible(f, 200, scrollable: find.byType(Scrollable).first);
+  final scrollable = find.byType(Scrollable).first;
+  if (f.evaluate().isEmpty) {
+    tester.state<ScrollableState>(scrollable).position.jumpTo(0);
+    await tester.pump();
+  }
+  await tester.scrollUntilVisible(f, 250, scrollable: scrollable);
+  await tester.pump();
+}
+
+/// Scrolls [f] into view and taps it.
+Future<void> tapOn(WidgetTester tester, Finder f) async {
+  await reveal(tester, f);
+  await tester.tap(f);
   await tester.pump();
 }

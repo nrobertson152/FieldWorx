@@ -65,7 +65,13 @@ class StatusChip extends StatelessWidget {
       ),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
         if (icon != null) ...[FxIcon(icon!, size: 14, color: fg, accent: fg), const SizedBox(width: 4)],
-        Text(text, style: TextStyle(color: fg, fontSize: 12.5, fontWeight: FontWeight.w600)),
+        Flexible(
+          child: Text(text,
+              maxLines: 1,
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: fg, fontSize: 12.5, fontWeight: FontWeight.w600)),
+        ),
       ]),
     );
   }
@@ -378,8 +384,13 @@ class PageList extends StatelessWidget {
   }
 }
 
-void showMessage(BuildContext context, String text, {bool error = false}) {
-  ScaffoldMessenger.of(context)
+void showMessage(BuildContext context, String text, {bool error = false}) =>
+    showMessageOn(ScaffoldMessenger.of(context), text, error: error);
+
+/// For flows whose page may be gone by the time they finish (adding the first package replaces the page that
+/// offered it): take the messenger before the first await.
+void showMessageOn(ScaffoldMessengerState messenger, String text, {bool error = false}) {
+  messenger
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(
       content: Text(text),

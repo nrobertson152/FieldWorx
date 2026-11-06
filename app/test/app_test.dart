@@ -186,21 +186,23 @@ void main() {
     expect(find.text('13 required items to go'), findsOneWidget);
 
     Future<void> check(String id, String choice) async {
-      await tester.tap(inItem(id, find.widgetWithText(OutlinedButton, choice)));
+      await tapOn(tester, inItem(id, find.widgetWithText(OutlinedButton, choice)));
       await waitFor(tester, answeredBy(id, 'Riley Field'), what: 'item $id answered');
     }
 
     Future<void> measure(String id, String value, String outcome) async {
+      await reveal(tester, inItem(id, find.byType(TextField)));
       await tester.enterText(inItem(id, find.byType(TextField)), value);
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await waitFor(tester, inItem(id, find.text(outcome)), what: 'item $id: $outcome');
     }
 
     // 1.1: the serial, and the nameplate photo it requires.
+    await reveal(tester, inItem('1.1', find.byType(TextField)));
     await tester.enterText(inItem('1.1', find.byType(TextField)), 'NH-26-0002');
     FocusManager.instance.primaryFocus?.unfocus();
     await waitFor(tester, inItem('1.1', find.text('Photo needed')));
-    await tester.tap(inItem('1.1', find.text('Photo')));
+    await tapOn(tester, inItem('1.1', find.text('Photo')));
     await waitFor(tester, inItem('1.1', find.text('Done')), what: 'photo attached');
     expect(s.photosTaken, 1);
 
@@ -310,18 +312,18 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.textContaining('TNK-100 has no released revision'), findsOneWidget);
       expect(find.textContaining('dwhitfield'), findsOneWidget);
-      await tester.tap(button('Remove from this phone'));
+      await tapOn(tester, button('Remove from this phone'));
       await tester.pumpAndSettle();
       await tapAndWait(tester, find.widgetWithText(FilledButton, 'Remove'), find.text('PACKAGES (0)'));
       expect(find.text('35 records (0 made here)'), findsOneWidget, reason: 'field records are never removed');
 
-      await tester.tap(find.text('Theme'));
+      await tapOn(tester, find.text('Theme'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('High Contrast'));
       await waitFor(tester, null, until: () => m.theme == 'high_contrast');
       await back(tester);
 
-      await tester.tap(find.text('Riley Field'));
+      await tapOn(tester, find.text('Riley Field'));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField), 'R. Field');
       await tapAndWait(tester, find.widgetWithText(FilledButton, 'Save'), find.text('R. Field'));

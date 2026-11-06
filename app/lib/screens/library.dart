@@ -13,34 +13,34 @@ import 'inspect.dart';
 
 Future<void> addPackageFlow(BuildContext context, {bool demo = false}) async {
   final m = AppScope.read(context);
+  final messenger = ScaffoldMessenger.of(context); // the page offering the first package is replaced by it
   try {
     final f = demo
         ? await m.services.demoPackage()
         : await m.services.pickFile(title: 'Add package', extensions: const ['fieldworx']);
-    if (f == null || !context.mounted) return;
+    if (f == null) return;
     final r = await m.installPackage(f);
-    if (!context.mounted) return;
-    showMessage(
-        context,
+    showMessageOn(
+        messenger,
         'Added “${r.package.title}”'
         '${r.replaced.isEmpty ? '' : ', replacing the older copy'}'
         '${r.newEvents == 0 ? '' : ', with ${r.newEvents} field record${r.newEvents == 1 ? '' : 's'}'}.');
   } on Exception catch (e) {
-    if (context.mounted) showMessage(context, explain(e), error: true);
+    showMessageOn(messenger, explain(e), error: true);
   }
 }
 
 Future<void> importFieldLogFlow(BuildContext context) async {
   final m = AppScope.read(context);
+  final messenger = ScaffoldMessenger.of(context);
   try {
     final f = await m.services.pickFile(title: 'Import field log', extensions: const ['fieldlog']);
-    if (f == null || !context.mounted) return;
+    if (f == null) return;
     final r = await m.importFieldLog(f);
-    if (!context.mounted) return;
-    showMessage(context,
+    showMessageOn(messenger,
         '${r.newEvents} new record${r.newEvents == 1 ? '' : 's'}, ${r.knownEvents} already here, ${r.newObjects} photo${r.newObjects == 1 ? '' : 's'}.');
   } on Exception catch (e) {
-    if (context.mounted) showMessage(context, explain(e), error: true);
+    showMessageOn(messenger, explain(e), error: true);
   }
 }
 
