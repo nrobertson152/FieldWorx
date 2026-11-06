@@ -215,8 +215,9 @@ Future<void> tapAndWait(WidgetTester tester, Finder finder, Finder next, {bool F
   await waitFor(tester, next, until: until);
 }
 
-/// Taps a page's primary or secondary action button by its label.
-Finder button(String label) => find.ancestor(of: find.text(label), matching: find.bySubtype<ButtonStyleButton>()).first;
+/// A page's primary or secondary action button, by its label. (No `.first` here or in other finders that may be
+/// evaluated before the widget is built: `.first` of nothing throws instead of finding nothing.)
+Finder button(String label) => find.ancestor(of: find.text(label), matching: find.bySubtype<ButtonStyleButton>());
 
 /// A 1×1 PNG whose colour depends on [n], so each photo has its own content and hash.
 Uint8List tinyPng(int n) {

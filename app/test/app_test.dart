@@ -13,7 +13,7 @@ import 'package:material_ui/material_ui.dart';
 import 'fakes.dart';
 
 /// The card of inspection item [id] (its header reads "<id>  <prompt>").
-Finder itemCard(String id) => find.ancestor(of: find.text('$id  '), matching: find.byType(Card)).first;
+Finder itemCard(String id) => find.ancestor(of: find.text('$id  '), matching: find.byType(Card));
 
 Finder inItem(String id, Finder f) => find.descendant(of: itemCard(id), matching: f);
 
@@ -223,6 +223,7 @@ void main() {
     expect(find.text('Complete as Pass?'), findsOneWidget);
     await tester.enterText(find.byType(TextField).last, 'Ready to ship.');
     await tapAndWait(tester, find.widgetWithText(FilledButton, 'Complete'), find.textContaining('Completed by Riley Field'));
+    await reveal(tester, find.text('Completed'));
     expect(find.text('Completed'), findsOneWidget);
 
     // Two answers to 3.1 are both kept: the reading is corrected, not overwritten.
@@ -326,7 +327,8 @@ void main() {
       await tapOn(tester, find.text('Riley Field'));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField), 'R. Field');
-      await tapAndWait(tester, find.widgetWithText(FilledButton, 'Save'), find.text('R. Field'));
+      await tapAndWait(tester, find.widgetWithText(FilledButton, 'Save'), find.text('R. Field'),
+          until: () => m.userName == 'R. Field');
       expect(m.userName, 'R. Field');
     });
   });
