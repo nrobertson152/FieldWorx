@@ -182,8 +182,7 @@ class PackBuilder:
             if row["part"] and not pid:
                 self.note(f"{row['tag'] or row['serial']}: part {row['part']} isn't in this package.")
             prj = proj_by_num.get(row["project"].casefold(), "") if row["project"] else ""
-            key = (row["tag"] or row["serial"]).casefold()
-            assets.append({"id": "ast_" + hashlib.sha256(f"{info.get('id', '')}\0{key}".encode()).hexdigest()[:32],
+            assets.append({"id": asset_id(info.get("id", ""), row["tag"] or row["serial"]),
                            "tag": row["tag"], "serial": row["serial"], "name": row["name"], "part": pid,
                            "project": prj, "location": row["location"], "built": row["built"],
                            "notes": row["notes"], "as_built": row["_as_built_ids"]})
@@ -388,6 +387,12 @@ class PackBuilder:
             seen.add(key)
             out.append(t)
         return out
+
+
+def asset_id(workspace_id: str, tag_or_serial: str) -> str:
+    """An asset's id: stable for its tag (or, without one, its serial number) within one RevisionWorx workspace, so
+    records made against it keep pointing at it when the register is edited or the package rebuilt."""
+    return "ast_" + hashlib.sha256(f"{workspace_id}\0{tag_or_serial.casefold()}".encode()).hexdigest()[:32]
 
 
 def series_key(source: dict, catalog: dict) -> str:

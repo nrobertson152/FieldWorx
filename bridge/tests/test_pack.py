@@ -124,3 +124,23 @@ def test_bridge_reports_and_status(demo, tmp_path, capsys):
     assert "completed" in capsys.readouterr().out
     assert cli.main(["report", "--hub", str(hub_dir), "-o", str(tmp_path / "r")]) == 0
     assert (tmp_path / "r" / "inspections.csv").read_text(encoding="utf-8-sig").count("\n") == 2
+
+
+def test_demo_history_belongs_to_the_package_assets(tmp_path):
+    """build_demo --history records the units' acceptance tests against the very asset ids the package gives them."""
+    if not have_revisionworx():
+        pytest.skip("RevisionWorx is not installed")
+    import build_demo
+    from fieldworx_bridge import inspections
+    pkg = tmp_path / "demo.fieldworx"
+    assert build_demo.main([str(tmp_path / "demo"), "--history", "--package", str(pkg)]) == 0
+    with archive.read(pkg) as arc:
+        assets = {a["tag"]: a["id"] for a in arc.catalog["assets"]}
+        log = E.FieldLog()
+        log.import_events(arc.events)
+    results = [inspections.reduce(log, e) for e in inspections.inspection_entities(log)]
+    assert sorted(r["subject"]["label"] for r in results) == ["HPU-0001", "HPU-0002"]
+    for r in results:
+        assert (r["status"], r["outcome"], r["problems"]) == ("completed", "pass", [])
+        assert r["subject"]["id"] == assets[r["subject"]["label"]]
+        assert len(r["attachments"]) == 1

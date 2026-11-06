@@ -3,7 +3,7 @@
 power unit OpenMeridian's sample company builds), an OpenMeridian company file if OpenMeridian is installed, and the
 FieldWorx package made from them.
 
-    python examples/demo/build_demo.py OUT_DIR [--package OUT.fieldworx]
+    python examples/demo/build_demo.py OUT_DIR [--history] [--package OUT.fieldworx]
 
 Needs RevisionWorx (``revisionworx`` on PATH, REVISIONWORX_CLI, or the package importable). Everything it writes is
 inside OUT_DIR, including RevisionWorx's own cache and state folders, so nothing touches your real workspaces.
@@ -12,12 +12,14 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import io
 import json
 import os
-import shutil
+import struct
 import subprocess
 import sys
+import zlib
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -26,6 +28,8 @@ sys.path.insert(0, str(HERE.parent.parent / "bridge"))
 
 import drawings  # noqa: E402
 from fieldworx_bridge.rwx_client import RevisionWorx, find_command  # noqa: E402
+
+DEMO_USER = "dwhitfield"
 
 TEMPLATE_CSV = """section,id,kind,prompt,unit,nominal,min,max,required,photo,choices,help
 Identification,1.1,text,Serial number on the nameplate,,,,,yes,required,,Photograph the nameplate.
@@ -141,19 +145,111 @@ def parts_csv(doc_ids: dict[str, tuple[str, str]]) -> str:
     return "﻿" + out.getvalue()
 
 
+def nameplate_png() -> bytes:
+    """A small stand-in for a photo of a unit's nameplate (stdlib only: a brushed plate, rivets and lines of 'text')."""
+    w, h = 240, 150
+    rows = []
+    for y in range(h):
+        row = bytearray([0])
+        for x in range(w):
+            v = 200 + (x * 7 + y * 3) % 23 - 11  # brushed metal
+            edge = min(x, y, w - 1 - x, h - 1 - y)
+            if edge < 4:
+                v = 120
+            for cx, cy in ((12, 12), (w - 13, 12), (12, h - 13), (w - 13, h - 13)):
+                if (x - cx) ** 2 + (y - cy) ** 2 <= 16:
+                    v = 90
+            for ty, length in ((30, 150), (52, 190), (74, 120), (96, 170), (118, 90)):
+                if ty <= y < ty + 9 and 28 <= x < 28 + length and (x // 6) % 4 != 3:
+                    v = 40
+            row += bytes((v, v, max(v - 6, 0)))
+        rows.append(bytes(row))
+
+    def chunk(kind: bytes, data: bytes) -> bytes:
+        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
+
+    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0))
+            + chunk(b"IDAT", zlib.compress(b"".join(rows), 9)) + chunk(b"IEND", b""))
+
+
+def record_history(ws: Path, workspace_id: str) -> None:
+    """The final acceptance tests of both units, as the workshop tablet recorded them, imported into the workspace's
+    hub (.fieldworx) the way the bridge would import a field log. Packages built from the workspace then carry them."""
+    from fieldworx_bridge import archive, events as ev, inspections
+    from fieldworx_bridge.hub import Hub
+    from fieldworx_bridge.packbuilder import asset_id
+    template = inspections.template_from_csv(TEMPLATE_CSV, "ITP-HPU-75", "HPU-75 final inspection and test plan", "1")
+    device = "dev_" + "5e" * 16
+    photo = nameplate_png()
+    photo_sha = hashlib.sha256(photo).hexdigest()
+    log: list = []
+
+    def rec(actor: str, type_: str, entity: str, body: dict, time: str) -> None:
+        prev = log[-1].id if log else ""
+        deps = [log[-1].id] if log and log[-1].data["entity"] == entity else []
+        log.append(ev.make(device, len(log) + 1, prev, actor, type_, entity, deps, body, time))
+
+    measured = {"2.3": "0.02", "3.1": "161", "3.4": "80", "4.2": "550"}
+    units = (("HPU-0001", "NH-26-0001", "A", "2026-03-18", "Jo Lee", "17/15/12"),
+             ("HPU-0002", "NH-26-0002", "B", "2026-07-09", "Sam Ortiz", ""))
+    for n, (tag, serial, frame, day, who, oil) in enumerate(units, start=1):
+        entity = "ins_" + f"{n:02d}" * 16
+        rec(who, "inspection.start", entity, {"template": template, "title": f"{tag} final acceptance test",
+            "subject": {"kind": "asset", "id": asset_id(workspace_id, tag), "label": tag}, "package": ""},
+            f"{day}T13:00:00.000Z")
+        for minute, item in enumerate(inspections.items(template), start=1):
+            if item["kind"] == "check":
+                value = {"result": "pass"}
+            elif item["kind"] == "measure":
+                value = {"measured": measured[item["id"]]}
+            elif item["kind"] == "choice":
+                value = {"choice": frame}
+            else:
+                value = {"text": {"1.1": serial, "3.3": oil}.get(item["id"], "")}
+                if not value["text"]:
+                    continue
+            rec(who, "inspection.answer", entity, {"item": item["id"], "value": value, "note": ""},
+                f"{day}T13:{2 * minute:02d}:00.000Z")
+        rec(who, "inspection.attach", entity, {"object": photo_sha, "size": len(photo), "media_type": "image/png",
+            "item": "1.1", "caption": "Nameplate"}, f"{day}T13:40:00.000Z")
+        rec(who, "inspection.complete", entity, {"result": "pass", "summary": "Accepted."}, f"{day}T13:45:00.000Z")
+    fieldlog = ws.parent / "workshop-tablet.fieldlog"
+    archive.write(fieldlog, "fieldlog", archive_id="flg_" + "5e" * 16, title="Workshop tablet",
+                  created="2026-07-09T14:00:00.000Z", created_by={"device": device, "user": "Workshop tablet"},
+                  events=log, objects=[archive.ObjectSource.from_bytes(photo, "image/png")])
+    with archive.read(fieldlog) as arc:
+        report = Hub.open(Hub.location_for(ws), create=True).import_archive(arc)
+    fieldlog.unlink()
+    if report.missing_objects:
+        raise SystemExit(f"history: objects missing from the hub: {report.missing_objects}")
+
+
 def main(argv=None) -> int:
+    saved = dict(os.environ)
+    try:
+        return _main(argv)
+    finally:  # build_demo also runs inside the bridge's tests: leave the environment as it was
+        os.environ.clear()
+        os.environ.update(saved)
+
+
+def _main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("out", type=Path)
     ap.add_argument("--package", type=Path, help="also build the demo package here")
+    ap.add_argument("--history", action="store_true",
+                    help="record the units' final acceptance tests in the workspace's hub (.fieldworx)")
     a = ap.parse_args(argv)
     out = a.out.resolve()
     if out.exists() and any(out.iterdir()):
         raise SystemExit(f"{out} is not empty")
     out.mkdir(parents=True, exist_ok=True)
     local = out / ".local"
+    # RevisionWorx records the login name as each revision's author; the demo's engineer is "dwhitfield".
     env = dict(os.environ, XDG_CACHE_HOME=str(local / "cache"), XDG_STATE_HOME=str(local / "state"),
-               XDG_CONFIG_HOME=str(local / "config"), LOCALAPPDATA=str(local / "appdata"))
-    os.environ.update({k: env[k] for k in ("XDG_CACHE_HOME", "XDG_STATE_HOME", "XDG_CONFIG_HOME", "LOCALAPPDATA")})
+               XDG_CONFIG_HOME=str(local / "config"), LOCALAPPDATA=str(local / "appdata"),
+               LOGNAME=DEMO_USER, USER=DEMO_USER, USERNAME=DEMO_USER)
+    os.environ.update(env)
     cmd = find_command()
     if cmd is None:
         raise SystemExit("RevisionWorx is not installed (or set REVISIONWORX_CLI)")
@@ -214,6 +310,9 @@ def main(argv=None) -> int:
         sample.build(str(meridian)).close()
     except ImportError:
         print("OpenMeridian not installed: the demo has no stock figures")
+    if a.history:
+        from fieldworx_bridge.sources import RevisionWorxSource
+        record_history(ws, RevisionWorxSource(ws).info["id"])
     summary = {"workspace": str(ws), "meridian": str(meridian) if meridian else "",
                "documents": {k: {"document": v[0], "revision": v[1]} for k, v in doc_ids.items()}}
     (out / "demo.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
