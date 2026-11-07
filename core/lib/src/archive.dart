@@ -176,8 +176,10 @@ class FieldArchive {
     return data;
   }
 
-  /// Opens [file] and checks everything except object contents (pass [verifyObjects] to hash those too).
-  static Future<FieldArchive> open(File file, {bool verifyObjects = false}) async {
+  /// Opens [file] and checks everything except object contents (pass [verifyObjects] to hash those too). Every
+  /// event's id is checked against its bytes; [checkSignatures] false leaves version 2 signatures to the caller, which
+  /// checks those of the events new to it (`Event.checkSignature`), not a whole history it already has.
+  static Future<FieldArchive> open(File file, {bool verifyObjects = false, bool checkSignatures = true}) async {
     final ZipReader z;
     try {
       z = await ZipReader.open(file);
@@ -187,7 +189,7 @@ class FieldArchive {
       throw ArchiveError('cannot read the file: ${e.message}');
     }
     try {
-      return await _read(z, verifyObjects);
+      return await _read(z, verifyObjects, checkSignatures);
     } catch (e) {
       await z.close();
       if (e is ZipError) throw ArchiveError('damaged FieldWorx file: ${e.message}');
@@ -201,7 +203,7 @@ class FieldArchive {
     return z.readBytes(e, limit: limit);
   }
 
-  static Future<FieldArchive> _read(ZipReader z, bool verifyObjects) async {
+  static Future<FieldArchive> _read(ZipReader z, bool verifyObjects, bool checkSignatures) async {
     final entries = z.entries;
     if (entries.length > maxMembers + 3) throw ArchiveError('too many members');
     final names = <String, ZipEntry>{};
@@ -252,7 +254,7 @@ class FieldArchive {
       if (ei == null) throw ArchiveError('event ${id.substring(0, 12)} missing');
       final raw = await _exact(z, ei, e['size']! as int, maxEventBytes);
       try {
-        evs.add(Event.fromBytes(raw, expectedId: id));
+        evs.add(Event.fromBytes(raw, expectedId: id, checkSignature: checkSignatures));
       } on EventError catch (err) {
         throw ArchiveError('event ${id.substring(0, 12)}: ${err.message}');
       }

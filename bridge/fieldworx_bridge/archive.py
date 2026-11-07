@@ -160,14 +160,17 @@ def _read_exact(z: zipfile.ZipFile, info: zipfile.ZipInfo, size: int, limit: int
     return data
 
 
-def read(path: Path | str | BinaryIO, verify_objects: bool = True) -> Archive:
-    """Open and check an archive. Objects stay in the ZIP (``open_object``); everything else is loaded."""
+def read(path: Path | str | BinaryIO, verify_objects: bool = True, check_signatures: bool = True) -> Archive:
+    """Open and check an archive. Objects stay in the ZIP (``open_object``); everything else is loaded.
+
+    Every event's id is checked against its bytes. ``check_signatures=False`` leaves version 2 signatures to the caller:
+    an importer checks those of the events new to it (``events.check_signature``), not a whole history it already has."""
     try:
         z = zipfile.ZipFile(path)
     except (zipfile.BadZipFile, OSError) as exc:
         raise ArchiveError(f"not a readable FieldWorx file: {exc}") from None
     try:
-        return _read(z, verify_objects)
+        return _read(z, verify_objects, check_signatures)
     except ArchiveError:
         z.close()
         raise
@@ -176,7 +179,7 @@ def read(path: Path | str | BinaryIO, verify_objects: bool = True) -> Archive:
         raise ArchiveError(f"damaged FieldWorx file: {exc}") from None
 
 
-def _read(z: zipfile.ZipFile, verify_objects: bool) -> Archive:
+def _read(z: zipfile.ZipFile, verify_objects: bool, check_signatures: bool = True) -> Archive:
     infos = z.infolist()
     if len(infos) > MAX_MEMBERS + 3:
         raise ArchiveError("too many members")
@@ -228,7 +231,7 @@ def _read(z: zipfile.ZipFile, verify_objects: bool) -> Archive:
             raise ArchiveError(f"event {e['id'][:12]} missing")
         raw = _read_exact(z, info, e["size"], ev_mod.MAX_EVENT_BYTES)
         try:
-            evs.append(ev_mod.from_bytes(raw, e["id"]))
+            evs.append(ev_mod.from_bytes(raw, e["id"], check_sig=check_signatures))
         except ev_mod.EventError as exc:
             raise ArchiveError(f"event {e['id'][:12]}: {exc}") from None
 
@@ -326,5 +329,5 @@ def _put(z: zipfile.ZipFile, name: str, data: bytes, method: int) -> None:
     z.writestr(info, data)
 
 
-def read_bytes(data: bytes, verify_objects: bool = True) -> Archive:
-    return read(io.BytesIO(data), verify_objects)
+def read_bytes(data: bytes, verify_objects: bool = True, check_signatures: bool = True) -> Archive:
+    return read(io.BytesIO(data), verify_objects, check_signatures)

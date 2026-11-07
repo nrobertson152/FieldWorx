@@ -84,7 +84,8 @@ class Hub:
 
     # ------------------------------------------------------------------------------------------------ reading
     def load(self) -> ev_mod.FieldLog:
-        """Every event in the hub, checked. A damaged or out-of-place file stops the load (fail closed)."""
+        """Every event in the hub, checked. A damaged or out-of-place file stops the load (fail closed). Signatures were
+        checked when each event came in (``import_archive``), so they aren't checked again on every load."""
         log = ev_mod.FieldLog()
         edir = self.root / "events"
         if not edir.is_dir():
@@ -97,7 +98,7 @@ class Hub:
             for f in files:
                 raw = f.read_bytes()
                 try:
-                    ev = ev_mod.from_bytes(raw)
+                    ev = ev_mod.from_bytes(raw, check_sig=False)
                 except ev_mod.EventError as exc:
                     raise HubError(f"{f} is damaged: {exc}") from None
                 if ev.device != ddir.name or f.name != f"{ev.seq:010d}.json":
@@ -159,10 +160,15 @@ class Hub:
 
     def import_archive(self, arc: archive.Archive) -> ImportReport:
         """Bring a field log (or the events of a package) into the hub. Every event is checked against everything
-        already here before anything is written; then files first, records second."""
+        already here, and every new one's signature, before anything is written; then files first, records second."""
         log = self.load()
         before = set(log.events)
         new = log.import_events(arc.events)              # all-or-nothing; raises before anything is written
+        for ev in new:
+            if not ev_mod.signature_holds(ev):
+                raise HubError(f"record {ev.id[:12]} of device {ev.device[:12]}: its signature doesn't hold. It was "
+                               "changed after it was signed, or wasn't signed with the key it carries; no field records "
+                               "were imported")
         new_objects = sum(1 for sha in sorted(arc.objects) if self._write_object(arc, sha))
         for ev in new:
             self._write_event(ev)

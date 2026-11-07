@@ -117,7 +117,7 @@ One record of something done in the field. The **envelope** is an FXJ object wit
 | `body` | object; its shape depends on `type` (section 5) |
 
 The event's **id** is `digest("event/v1", envelope)`; its stored form is the canonical bytes (≤ 256 KiB).
-Signed records (envelope version 2, decided for 1.0.0 and being built) are section 12.
+Signed records, envelope version 2, are section 12; writers write version 2.
 
 **A set of events** (a device's store, the hub, a field log) must be closed and consistent:
 
@@ -369,7 +369,8 @@ the import stops. Before writing, the whole batch is checked against everything 
 The app's private folder:
 
 ```
-device.json                       {"device": "dev_…", "created"}: made once; never backed up
+device.json                       {"device": "dev_…", "created", "key": {"seed", "public", "created"}}: never backed
+                                  up; replaced once only, to add the key to a store from before keys (section 12.1)
 settings.json                     {"user", "theme"}: the only file that is replaced (atomically)
 objects/<aa>/<sha256>             renditions and photos
 packages/<pkg id>/manifest.json   as received
@@ -442,12 +443,12 @@ Vectors: `findings.json`.
 - A finding RevisionWorx already holds (its history cites the record event) is reported as accepted, with the event
   number, and nothing is written.
 
-## 12. Device keys and signed records (Director's decision, 2026-11-07; being built)
+## 12. Device keys and signed records (Director's decision, 2026-11-07)
 
 Every phone signs the records it makes with its own Ed25519 key; an administrator of a RevisionWorx team workspace
 enrols the phone to a person's account; a signed finding from an enrolled phone is accepted as *verified* in that
-person's name (ARCHITECTURE.md ADR-015). Until the implementations below land, readers and writers are version 1 only;
-this section is the contract they are built to.
+person's name (ARCHITECTURE.md ADR-015). Sections 12.1 to 12.3 are built, in the Python reference and the Dart core;
+enrolment and accepting signed findings (12.4, 12.5) are being built in the bridge and the app.
 
 ### 12.1 The key
 
@@ -456,7 +457,8 @@ this section is the contract they are built to.
 - `device.json` (section 9) becomes `{"device", "created", "key": {"seed", "public", "created"}}`. A store without `key`
   gets one the next time the app starts, and keeps its device id; records it made before stay unsigned.
 - The store is never backed up: on Android `allowBackup="false"` and the data extraction rules (as now), on iOS
-  `NSURLIsExcludedFromBackupKey` on the store folder (new). One key per device id, for life.
+  `NSURLIsExcludedFromBackupKey` on the store folder (being built). One key per device id, for life: a damaged key is
+  refused, never replaced.
 - **Fingerprint**, what people compare: the first 8 bytes of `SHA-256("fieldworx/key-fingerprint/v1\0" + the public
   key's 32 bytes)` as 16 uppercase hex digits in four groups joined by `-`, for example `3F2A-91C0-77B1-04DE`.
 
@@ -472,7 +474,13 @@ this section is the contract they are built to.
 - The **id** is `digest("event/v2", envelope without sig)`; the stored form is the FXJ of the whole envelope, `sig`
   included (≤ 256 KiB). Ed25519 signatures are deterministic, so an event has exactly one stored form, and the hub's
   check that a known event comes back byte for byte (section 8) is unchanged.
-- A reader checks the signature of every version 2 event it reads, with the event's own `key`.
+- A reader checks the signature of every version 2 event **it takes in**, with the event's own `key`: each event new
+  to it when it imports an archive (a phone importing a field log or installing a package; the hub importing a field
+  log), and every event when it is asked to check an archive (`fieldworx-bridge verify`, `fxtool verify`). A copy's
+  own store (the phone's, the hub) holds only events checked when they came in and isn't checked again on every read,
+  and a known event that arrives with a different signature is ignored: the copy keeps its own. Whatever relies on a
+  signature (accepting a finding as verified) checks it again itself.
+- Whether `key` is a point of the curve is part of checking the signature; the envelope check is its form only.
 - A **set** (section 4) also requires: every version 2 event of one device carries the same `key`; after a device's
   first version 2 event, its later events are version 2 too. Version 1 events may come first: records made before keys.
 - Writers write version 2 only. Version 1 stays readable for ever.
@@ -482,7 +490,8 @@ this section is the contract they are built to.
 - A field log's `created_by` gains `key`, the writing device's public key, beside `device`. It is a short text, so
   readers that don't know it ignore it.
 - The archive check of section 3 (every event's id is the digest of its bytes) reads, for version 2: the id is
-  `digest("event/v2", envelope without sig)`, and the signature holds.
+  `digest("event/v2", envelope without sig)`, and (unless the reader leaves it to the importer, as above) the
+  signature holds.
 
 ### 12.4 Enrolment
 
@@ -513,6 +522,10 @@ unsigned finding, or one from a phone that isn't enrolled, is accepted as *repor
 it comes from the record event's id, so a retry after the phone was revoked still answers what was recorded.
 RevisionWorx's `unit verify` checks each signed acceptance again.
 
-Vectors (with the implementations): `signatures.json` (RFC 8032's test vectors and the family's: keys, signatures over
-event ids, fingerprints) and version 2 envelopes in `envelopes.json` and `fieldlog.json` (a valid one; a bad signature;
-another device's key; two keys for one device; an unsigned record after a signed one).
+Vectors: `signatures.json` (SHA-512 around its padding boundaries; RFC 8032 section 7.1 tests 1 to 3; the family's
+fingerprints and signatures over event ids, the first of which RevisionWorx's tests pin too; signatures that must not
+verify: message or signature changed, S not reduced, R or the key not a point, another key); version 2 envelopes in
+`envelopes.json` (a valid one with its unsigned digest; the signature or body altered, another device's key, a key that
+isn't a point, malformed key or sig, version true or 3, version 1 carrying a key); `fieldlog.json` (signing starting
+part way; an unsigned record after signed ones; two keys for one device); `inspections.json` (signed records reduce as
+unsigned ones); and `signed.fieldlog`, a field log whose `created_by` names its key.

@@ -22,6 +22,26 @@
   },
   {
    "canonical": "{\"a\":1}",
+   "digest": "ed14d51fe02008b7353a7ac4c5ed110e56490ba67e1f297d6dbdf9a6188ecae3",
+   "domain": "event/v2"
+  },
+  {
+   "canonical": "[]",
+   "digest": "ae6a2ada32ec001bee596ce59bd1ab89efc36ac36fb887422de526f828e445f0",
+   "domain": "event/v2"
+  },
+  {
+   "canonical": "\"fieldworx\"",
+   "digest": "1aed3ab1562b0e1d4170a8a95ce0c3486186313c1d38b4b13302953b1b4f45c8",
+   "domain": "event/v2"
+  },
+  {
+   "canonical": "{\"a\":[1,2,{\"b\":null}],\"z\":\"é\"}",
+   "digest": "c2d6b0c38302d829f7ff4e7f47956ef67f55eca0a320d1cb0ed84c4c42aac322",
+   "domain": "event/v2"
+  },
+  {
+   "canonical": "{\"a\":1}",
    "digest": "4fb28318459d82feab62616db4b245bcf0ab87ac8a380573ff85505efc05b7a5",
    "domain": "template/v1"
   },

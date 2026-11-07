@@ -83,8 +83,10 @@ Future<int> simulate(String package, String outDir) async {
             'change': '', 'on': '', 'text': 'Guard on P1 loose; tightened. (fxtool)', 'package': t.package.id,
           });
     final out = await s.exportFieldLog(Directory(outDir), tool: 'fxtool');
-    stdout.writeln(jsonEncode(
-        {'ok': true, 'inspection': ins, 'finding': finding, 'fieldlog': out.path, 'events': s.log.length}));
+    stdout.writeln(jsonEncode({
+      'ok': true, 'inspection': ins, 'finding': finding, 'fieldlog': out.path, 'events': s.log.length, //
+      'device': s.deviceId, 'key': s.signingKey.publicHex, 'fingerprint': s.fingerprint,
+    }));
     return 0;
   } finally {
     await root.delete(recursive: true);

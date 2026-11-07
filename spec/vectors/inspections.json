@@ -950,5 +950,101 @@
    "title": "HPU-0002 final inspection",
    "valid": true
   }
+ },
+ {
+  "entity": "ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+  "events": [
+   "{\"actor\":\"Alex Morgan\",\"body\":{\"package\":\"pkg_22222222222222222222222222222222\",\"subject\":{\"id\":\"ast_11111111111111111111111111111111\",\"kind\":\"asset\",\"label\":\"HPU-0002\"},\"template\":{\"description\":\"\",\"format\":\"fieldworx.template\",\"id\":\"ITP-TEST\",\"revision\":\"B\",\"sections\":[{\"items\":[{\"help\":\"\",\"id\":\"1\",\"kind\":\"check\",\"photo\":\"none\",\"prompt\":\"Guards fitted\",\"required\":true},{\"help\":\"\",\"id\":\"2\",\"kind\":\"measure\",\"max\":\"0.05\",\"min\":\"-0.05\",\"nominal\":\"0\",\"photo\":\"none\",\"prompt\":\"Offset\",\"required\":true,\"unit\":\"mm\"},{\"help\":\"\",\"id\":\"3\",\"kind\":\"measure\",\"max\":\"\",\"min\":\"100\",\"nominal\":\"\",\"photo\":\"none\",\"prompt\":\"Insulation\",\"required\":true,\"unit\":\"MΩ\"}],\"title\":\"Checks\"},{\"items\":[{\"help\":\"\",\"id\":\"4\",\"kind\":\"text\",\"photo\":\"optional\",\"prompt\":\"Remarks\",\"required\":false},{\"choices\":[\"A\",\"B\"],\"help\":\"\",\"id\":\"5\",\"kind\":\"choice\",\"photo\":\"none\",\"prompt\":\"Frame revision\",\"required\":true},{\"help\":\"\",\"id\":\"6\",\"kind\":\"check\",\"photo\":\"required\",\"prompt\":\"Nameplate\",\"required\":true}],\"title\":\"Records\"}],\"title\":\"Vector template\",\"version\":1},\"title\":\"HPU-0002 final inspection\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"inspection.start\",\"v\":1}",
+   "{\"actor\":\"Sam Ortiz\",\"body\":{\"item\":\"1\",\"note\":\"\",\"value\":{\"result\":\"pass\"}},\"deps\":[\"823378884ffc24034aa57961153d3423aa9c1035b08d9b9331fc4fff70cea998\"],\"device\":\"dev_b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"key\":\"8d775e09f33a476ec34e7639ce3c864783774d941864ddb29742760708851c14\",\"prev\":\"\",\"seq\":1,\"sig\":\"dbaba75e443a6bf7b0393a878f04c0f84b2ae74b3247da1e27a7fc73e6b5c5b10d6b82382dc11621234a93f147a53bfe8e0c5193647de6549a020605a8382a0b\",\"time\":\"2026-11-06T10:00:01.000Z\",\"type\":\"inspection.answer\",\"v\":2}",
+   "{\"actor\":\"Alex Morgan\",\"body\":{\"item\":\"2\",\"note\":\"\",\"value\":{\"measured\":\"0.01\"}},\"deps\":[\"02277db9d4988540a581f5e5610c48dd83c356a7153c851f9ed6dd88a5f69b9f\"],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f\",\"key\":\"5c82f593f1e0508b1729a43c1b8b4d190073d04529750db4fb40b1b2c92b2ef4\",\"prev\":\"823378884ffc24034aa57961153d3423aa9c1035b08d9b9331fc4fff70cea998\",\"seq\":2,\"sig\":\"5aa59a0dcfd27a51aa104aa72bfd7a78098ccec0a8ef491f5de7c17a27a8f9b31794d8cfe6855b9a154cec2ed875f994d8e10b5db0d52d0a3ab7f1cdbb58440a\",\"time\":\"2026-11-06T10:00:02.000Z\",\"type\":\"inspection.answer\",\"v\":2}"
+  ],
+  "name": "signed records",
+  "note": "version 2 records reduce exactly as version 1 ones; a device may start signing part way through its history",
+  "state": {
+   "attachments": [],
+   "completion": null,
+   "entity": "ins_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+   "heads": [
+    "0dd82396b552fe14a979e615517d43bd1261295bdb7ead8fe4e3e4a15acbf002"
+   ],
+   "items": [
+    {
+     "id": "1",
+     "outcome": "pass",
+     "values": [
+      {
+       "actor": "Sam Ortiz",
+       "device": "dev_b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+       "event": "02277db9d4988540a581f5e5610c48dd83c356a7153c851f9ed6dd88a5f69b9f",
+       "note": "",
+       "time": "2026-11-06T10:00:01.000Z",
+       "value": {
+        "result": "pass"
+       }
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "outcome": "pass",
+     "values": [
+      {
+       "actor": "Alex Morgan",
+       "device": "dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+       "event": "0dd82396b552fe14a979e615517d43bd1261295bdb7ead8fe4e3e4a15acbf002",
+       "note": "",
+       "time": "2026-11-06T10:00:02.000Z",
+       "value": {
+        "measured": "0.01"
+       }
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "outcome": "open",
+     "values": []
+    },
+    {
+     "id": "4",
+     "outcome": "open",
+     "values": []
+    },
+    {
+     "id": "5",
+     "outcome": "open",
+     "values": []
+    },
+    {
+     "id": "6",
+     "outcome": "open",
+     "values": []
+    }
+   ],
+   "notes": [],
+   "outcome": "incomplete",
+   "package": "pkg_22222222222222222222222222222222",
+   "problems": [],
+   "started": {
+    "actor": "Alex Morgan",
+    "device": "dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "event": "823378884ffc24034aa57961153d3423aa9c1035b08d9b9331fc4fff70cea998",
+    "time": "2026-11-06T10:00:00.000Z"
+   },
+   "status": "open",
+   "subject": {
+    "id": "ast_11111111111111111111111111111111",
+    "kind": "asset",
+    "label": "HPU-0002"
+   },
+   "template": {
+    "digest": "42f6ec8108585158778e1a45dd57ff6c19678123714f8f2d64a137c4dbee2d7f",
+    "id": "ITP-TEST",
+    "revision": "B",
+    "title": "Vector template"
+   },
+   "title": "HPU-0002 final inspection",
+   "valid": true
+  }
  }
 ]

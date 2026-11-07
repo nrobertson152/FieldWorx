@@ -19,6 +19,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "bridge"))
 
+from fieldworx_bridge import ed25519  # noqa: E402
 from fieldworx_bridge import events as E  # noqa: E402
 from fieldworx_bridge import findings, fxjson, inspections  # noqa: E402
 
@@ -29,6 +30,9 @@ DEV_C = "dev_" + "c3" * 16
 INS = "ins_" + "0f" * 16
 FND = "fnd_" + "0e" * 16
 UNIT = "unt_" + "0c" * 16
+# Devices' Ed25519 seeds for the signed vectors: fixed, so the vectors are the same every time.
+SEED_A = hashlib.sha256(b"fieldworx/vectors/seed/a").digest()
+SEED_B = hashlib.sha256(b"fieldworx/vectors/seed/b").digest()
 
 
 def t(n: int) -> str:
@@ -81,7 +85,7 @@ def digest_vectors() -> dict:
     raws = [b"", b"abc", b"The quick brown fox jumps over the lazy dog", bytes(range(256)) * 5, b"a" * 1000]
     return {"domain_digests": [{"domain": d, "canonical": fxjson.encode(v).decode("utf-8"),
                                 "digest": fxjson.digest(d, v)}
-                               for d in ("event/v1", "template/v1") for v in values],
+                               for d in ("event/v1", "event/v2", "template/v1") for v in values],
             "sha256": [{"hex": r.hex(), "sha256": hashlib.sha256(r).hexdigest()} for r in raws]}
 
 
@@ -105,12 +109,16 @@ TEMPLATE = {
 
 
 class Device:
-    def __init__(self, dev: str, actor: str):
-        self.dev, self.actor, self.seq, self.prev = dev, actor, 0, ""
+    """A device's stream. With ``seed`` its records are signed (version 2); ``sign(seed)`` starts signing part way, as a
+    phone does the first time it starts with keys."""
+
+    def __init__(self, dev: str, actor: str, seed: bytes | None = None):
+        self.dev, self.actor, self.seq, self.prev, self.seed = dev, actor, 0, "", seed
 
     def make(self, type_, body, deps, time, entity=INS) -> E.Event:
         self.seq += 1
-        ev = E.make(self.dev, self.seq, self.prev, self.actor, type_, entity, [d.id for d in deps], body, time)
+        ev = E.make(self.dev, self.seq, self.prev, self.actor, type_, entity, [d.id for d in deps], body, time,
+                    seed=self.seed)
         self.prev = ev.id
         return ev
 
@@ -209,6 +217,14 @@ def inspection_scenarios() -> list[dict]:
     m = a.make("inspection.answer", answer("2", {"measured": "-0.05"}), [s], t(1))
     m2 = a.make("inspection.answer", answer("3", {"measured": "100.000"}), [m], t(2))
     add("limits are inclusive", [s, m, m2], "-0.05 against min -0.05 and 100.000 against min 100 both pass")
+
+    a, b = Device(DEV_A, "Alex Morgan"), Device(DEV_B, "Sam Ortiz", SEED_B)
+    s = a.make("inspection.start", start_body(), [], t(0))
+    x = b.make("inspection.answer", answer("1", {"result": "pass"}), [s], t(1))
+    a.seed = SEED_A                                          # Alex's phone starts signing part way
+    y = a.make("inspection.answer", answer("2", {"measured": "0.01"}), [x], t(2))
+    add("signed records", [s, x, y], "version 2 records reduce exactly as version 1 ones; a device may start signing "
+        "part way through its history")
     return scenarios
 
 
@@ -370,15 +386,30 @@ def fieldlog_scenarios() -> list[dict]:
     case("fork is refused whole", [[a1, a2], [fork, b1]], "device A has two different record 2s")
     case("deps across entities are invalid", [[a1, c1], [cross]], "a record may only depend on its own entity")
     case("missing dependency", [[b1]], "b1 depends on a2 from another device")
+
+    # Section 12.2: one key per device, and no unsigned record after a signed one.
+    ent3 = "ins_" + "cc" * 16
+    sa = Device(DEV_A, "A")
+    u1 = sa.make("inspection.start", {"x": 1}, [], t(0), ent3)
+    sa.seed = SEED_A
+    s2 = sa.make("inspection.note", {"x": 2}, [u1], t(1), ent3)
+    s3 = sa.make("inspection.note", {"x": 3}, [s2], t(2), ent3)
+    unsigned3 = E.make(DEV_A, 3, s2.id, "A", "inspection.note", ent3, [s2.id], {"x": "unsigned"}, t(2))
+    other_key3 = E.make(DEV_A, 3, s2.id, "A", "inspection.note", ent3, [s2.id], {"x": 3}, t(2), seed=SEED_B)
+    case("signing starts part way", [[s3, u1, s2]], "unsigned records first, then signed ones with the device's key")
+    case("an unsigned record after signed ones is invalid", [[u1, s2], [unsigned3]],
+         "once a device signs, its later records are signed too")
+    case("two keys for one device is invalid", [[u1, s2, other_key3]], "a device signs with one key for life")
     return cases
 
 
 def envelope_vectors() -> dict:
     good = E.make(DEV_A, 1, "", "Alex", "inspection.start", INS, [], {"k": "v"}, t(0))
+    signed = E.make(DEV_A, 2, good.id, "Alex", "inspection.answer", INS, [good.id], {"k": "w"}, t(1), seed=SEED_A)
     base = good.data
     bad = []
 
-    def b(name, **changes):
+    def b(name, base=base, **changes):
         d = dict(base)
         for k, v in changes.items():
             if v is ...:
@@ -387,7 +418,18 @@ def envelope_vectors() -> dict:
                 d[k] = v
         bad.append({"name": name, "event": fxjson.encode(d).decode("utf-8")})
 
-    b("version 2", v=2)
+    b("version 2 without key or sig", v=2)
+    b("version true", v=True)
+    b("version 3", v=3)
+    b("version 1 with key and sig", key=signed.key, sig=signed.sig)
+    sig = signed.sig
+    b("signature altered", base=signed.data, sig=sig[:-1] + ("0" if sig[-1] != "0" else "1"))
+    b("body altered after signing", base=signed.data, body={"k": "x"})
+    b("another device's key", base=signed.data, key=ed25519.public_key(SEED_B).hex())
+    b("key not a point of the curve", base=signed.data, key="ff" * 32)
+    b("key uppercase", base=signed.data, key=signed.key.upper())
+    b("sig too short", base=signed.data, sig=sig[:126])
+    b("sig missing", base=signed.data, sig=...)
     b("missing body", body=...)
     b("extra field", extra=1)
     b("device malformed", device="dev_XYZ")
@@ -405,13 +447,62 @@ def envelope_vectors() -> dict:
     b("body not object", body=[])
     for x in bad:
         try:
-            E.check_envelope(fxjson.parse(x["event"]))
+            E.from_bytes(x["event"].encode("utf-8"))
         except E.EventError:
             continue
         raise AssertionError(x["name"])
     noncanon = good.raw.decode("utf-8").replace('{"actor"', '{ "actor"')
-    return {"good": [{"event": good.raw.decode("utf-8"), "id": good.id}],
+    assert signed.data["sig"] == ed25519.sign(SEED_A, E.signature_message(signed.id)).hex()
+    return {"good": [{"event": good.raw.decode("utf-8"), "id": good.id},
+                     {"event": signed.raw.decode("utf-8"), "id": signed.id,
+                      "unsigned_digest": fxjson.digest("event/v2", {k: v for k, v in signed.data.items() if k != "sig"})}],
             "bad": bad, "not_canonical": [noncanon]}
+
+
+def signature_vectors() -> dict:
+    """RFC 8032 section 7.1's tests 1 to 3, the family's fingerprints and event signatures, and signatures that must not
+    verify."""
+    rfc = [("9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60",
+            "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a", "",
+            "e5564300c360ac729086e2cc806e828a84877f1eb8e5d974d873e065224901555fb8821590a33bacc61e39701cf9b46bd25bf5f0595bbe24655141438e7a100b"),
+           ("4ccd089b28ff96da9db6c346ec114e0f5b8a319f35aba624da8cf6ed4fb8a6fb",
+            "3d4017c3e843895a92b70aa74d1b7ebc9c982ccf2ec4968cc0cd55f12af4660c", "72",
+            "92a009a9f0d4cab8720e820b5f642540a2b27b5416503f8fb3762223ebdb69da085ac1e43e15996e458f3613d0f11d8c387b2eaeb4302aeeb00d291612bb0c00"),
+           ("c5aa8df43f9f837bedb7442f31dcb7b166d38535076f094b85ce3a2e0b4458f7",
+            "fc51cd8e6218a1a38da47ed00230f0580816ed13ba3303ac5deb911548908025", "af82",
+            "6291d657deec24024827e69c3abe01a30ce548a284743a445e3680d7db5ac3ac18ff9b538d16f290ae67f760984dc6594a7c15e9716ed28dc027beceea1ec40a")]
+    out = {"rfc8032": [], "fingerprints": [], "events": [], "bad": [],
+           "sha512": [{"hex": m.hex(), "sha512": hashlib.sha512(m).hexdigest()}      # around each padding boundary
+                      for m in [b"", b"abc", bytes(range(111)), bytes(range(112)), bytes(range(127)), bytes(range(128)),
+                                bytes(range(240)), bytes(range(256)) * 4]]}
+    for seed, public, message, signature in rfc:
+        assert ed25519.public_key(bytes.fromhex(seed)).hex() == public
+        assert ed25519.sign(bytes.fromhex(seed), bytes.fromhex(message)).hex() == signature
+        assert ed25519.verify(bytes.fromhex(public), bytes.fromhex(message), bytes.fromhex(signature))
+        out["rfc8032"].append({"seed": seed, "public": public, "message": message, "signature": signature})
+    for seed in [bytes.fromhex(rfc[0][0]), SEED_A, SEED_B]:
+        public = ed25519.public_key(seed).hex()
+        out["fingerprints"].append({"public": public, "fingerprint": E.fingerprint(public)})
+    assert out["fingerprints"][0]["fingerprint"] == "F9A2-C52A-0A32-73C7"   # RevisionWorx tests/test_field_devices.py
+    for seed, event_id in [(bytes.fromhex(rfc[0][0]), "ab" * 32), (SEED_A, "00" * 32), (SEED_B, "ff" * 32)]:
+        out["events"].append({"seed": seed.hex(), "public": ed25519.public_key(seed).hex(), "event": event_id,
+                              "message": E.signature_message(event_id).hex(),
+                              "signature": ed25519.sign(seed, E.signature_message(event_id)).hex()})
+    assert out["events"][0]["signature"].startswith("c33ed023")                # the same from OpenSSL
+    _seed, public, message, signature = rfc[1]
+    sig = bytes.fromhex(signature)
+    big_s = int.from_bytes(sig[32:], "little") + 2 ** 252 + 27742317777372353535851937790883648493
+    for name, pub, msg, sg in [
+        ("message changed", public, "73", signature),
+        ("signature changed", public, message, (sig[:10] + bytes([sig[10] ^ 1]) + sig[11:]).hex()),
+        ("S not reduced", public, message, (sig[:32] + big_s.to_bytes(32, "little")).hex()),
+        ("R not a point", public, message, "ff" * 32 + signature[64:]),
+        ("key not a point", "ff" * 32, message, signature),
+        ("another key", rfc[0][1], message, signature),
+    ]:
+        assert not ed25519.verify(bytes.fromhex(pub), bytes.fromhex(msg), bytes.fromhex(sg)), name
+        out["bad"].append({"name": name, "public": pub, "message": msg, "signature": sg})
+    return out
 
 
 def template_vectors() -> dict:
@@ -625,7 +716,7 @@ def catalog_vectors() -> dict:
 
 
 #: The sample archives: a version 1 package with field records, a field log, and a version 2 package of units.
-ARCHIVES = ("sample.fieldworx", "sample.fieldlog", "units.fieldworx")
+ARCHIVES = ("sample.fieldworx", "sample.fieldlog", "units.fieldworx", "signed.fieldlog")
 
 
 def write_archives(force: bool) -> dict:
@@ -643,6 +734,13 @@ def write_archives(force: bool) -> dict:
         archive.write(flg, "fieldlog", archive_id="flg_" + "07" * 16, title="Sample field log", created=t(31),
                       created_by={"device": DEV_A, "user": "Alex Morgan"}, events=evs,
                       objects=[archive.ObjectSource.from_bytes(JPEG, "image/jpeg")], overwrite=True)
+    signed = OUT / "signed.fieldlog"
+    if force or not signed.exists():
+        scen = next(c for c in inspection_scenarios() if c["name"] == "signed records")
+        evs = [E.from_bytes(r.encode("utf-8")) for r in scen["events"]]
+        archive.write(signed, "fieldlog", archive_id="flg_" + "08" * 16, title="Signed field log", created=t(33),
+                      created_by={"device": DEV_B, "key": ed25519.public_key(SEED_B).hex(), "user": "Sam Ortiz"},
+                      events=evs, overwrite=True)
     units = OUT / "units.fieldworx"
     if force or not units.exists():
         archive.write(units, "package", archive_id="pkg_" + "0f" * 16, title="Sample units", created=t(32),
@@ -659,7 +757,7 @@ def write_all(check: bool, force_archives: bool = False) -> int:
         "fxjson.json": fxjson_vectors(), "digests.json": digest_vectors(), "envelopes.json": envelope_vectors(),
         "fieldlog.json": fieldlog_scenarios(), "inspections.json": inspection_scenarios(),
         "templates.json": template_vectors(), "decimals.json": decimal_vectors(), "catalogs.json": catalog_vectors(),
-        "findings.json": finding_vectors(),
+        "findings.json": finding_vectors(), "signatures.json": signature_vectors(),
         "archives.json": write_archives(force_archives) if not check else _archives_summary(),
     }
     stale = []
