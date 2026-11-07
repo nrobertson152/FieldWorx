@@ -21,13 +21,18 @@ RE_ASSET_ID = re.compile(r"(unt|ast)_[0-9a-f]{32}\Z")
 RE_ALIAS = re.compile(r"ast_[0-9a-f]{32}\Z")
 ASSET_V1 = {"id", "tag", "serial", "name", "part", "project", "location", "built", "notes", "as_built"}
 ASSET_V2 = {"id", "aliases", "label", "class", "name", "model", "part", "project", "customer", "site", "location", "status",
-            "identifiers", "parent", "standard", "documents", "components", "milestones", "history", "notes", "source"}
+            "identifiers", "parent", "standard", "documents", "components", "milestones", "history", "changes", "notes",
+            "source"}
 CLASSES = ("product", "component", "instrument", "tool")
 STATUSES = ("", "planned", "in-build", "built", "in-service", "out-of-service", "retired", "scrapped")
 SCHEMES = ("serial", "tag", "other")
 SOURCES = ("standard", "unit", "register")
 BASES = ("verified", "reported", "declared", "legacy")
 MILESTONES = ("built", "shipped", "installed", "commissioned", "decommissioned")
+CHANGE_KINDS = ("", "production", "retrofit-required", "retrofit-optional", "unit", "documentation")
+CHANGE_STATES = ("pending", "offered", "accepted", "scheduled", "deferred", "declined", "installed", "verified",
+                 "not-applicable", "reversed")
+CHANGE_DONE = ("verified", "not-applicable")
 RE_QTY = re.compile(r"(0|[1-9]\d{0,14})(\.\d{1,9})?\Z")
 TOP_KEYS = {"format", "version", "projects", "documents", "parts", "bom", "assets", "templates"}
 
@@ -284,6 +289,23 @@ def _check_assets_v2(assets: list, unique, projects: set, docs: set, parts: set,
             _s(h["actor"], "history actor", 200)
             _choice(h["basis"], BASES, "history basis")
             _bool(h["voided"], "history voided")
+        seen_changes: set[str] = set()
+        for ch in _list(a["changes"], f"{what} changes", 200):
+            _keys(ch, {"change", "number", "title", "kind", "required", "state", "since", "documents"}, "change")
+            cid = _s(ch["change"], "change id", 64)
+            if not cid or cid in seen_changes:
+                raise CatalogError(f"{what}: each change is given once, with its id")
+            seen_changes.add(cid)
+            _s(ch["number"], "change number", 64)
+            _s(ch["title"], "change title", 200)
+            _choice(ch["kind"], CHANGE_KINDS, "change kind")
+            _bool(ch["required"], "change required")
+            _choice(ch["state"], CHANGE_STATES, "change state")
+            _s(ch["since"], "change since", 32)
+            for row in _list(ch["documents"], "change documents", 100):
+                _keys(row, {"number", "from", "to"}, "change document")
+                for k in ("number", "from", "to"):
+                    _s(row[k], f"change document {k}", 64)
     for a in assets:
         for ref in [c["asset"] for c in a["components"] if c["asset"]] + ([a["parent"]["asset"]] if a["parent"] else []):
             if ref not in ids:
@@ -308,7 +330,7 @@ def asset_view(a: dict, version: int, revision_document: dict[str, str]) -> dict
             "location": a["location"], "status": "", "identifiers": idents, "parent": None, "standard": None,
             "documents": [{"document": revision_document[r], "revision": r, "source": "register", "basis": "legacy"}
                           for r in a["as_built"]],
-            "components": [], "milestones": {"built": a["built"]} if a["built"] else {}, "history": [],
+            "components": [], "milestones": {"built": a["built"]} if a["built"] else {}, "history": [], "changes": [],
             "notes": a["notes"], "source": ""}
 
 

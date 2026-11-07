@@ -497,6 +497,10 @@ class AssetScreen extends StatelessWidget {
             if (a.built.isNotEmpty) StatusChip('built ${a.built}'),
             if (outOfDate > 0)
               StatusChip('$outOfDate drawing${outOfDate == 1 ? '' : 's'} revised since', tone: Tone.warn),
+            if (a.outstandingChanges.isNotEmpty)
+              StatusChip(
+                  '${a.outstandingChanges.length} change${a.outstandingChanges.length == 1 ? '' : 's'} outstanding',
+                  tone: Tone.warn),
           ]),
           if (details.isNotEmpty) ...[
             const SizedBox(height: 10),
@@ -538,6 +542,37 @@ class AssetScreen extends StatelessWidget {
                       ? 'These are the revisions that apply to this unit: its build standard’s, and any recorded for this '
                           'unit alone. They may be older than what is released now.'
                       : 'These are the revisions this unit was built to, which may be older than what is released now.',
+                  style: TextStyle(color: context.fx.muted, fontSize: 13)),
+            ),
+          ],
+          if (a.changes.isNotEmpty) ...[
+            SectionHeader('Engineering changes (${a.changes.length})'),
+            RowsCard(children: [
+              for (final ch in a.changes)
+                EntityRow(
+                  icon: ch.outstanding ? 'warning' : 'revision',
+                  title: ch.number,
+                  subtitle: [
+                    ch.title,
+                    for (final (doc, from, to) in ch.documents) '$doc rev $from → $to',
+                  ].where((s) => s.isNotEmpty).join(' · '),
+                  chips: [
+                    StatusChip(ch.state.replaceAll('-', ' '),
+                        tone: ch.outstanding
+                            ? Tone.warn
+                            : ch.state == 'verified'
+                                ? Tone.ok
+                                : Tone.neutral),
+                    if (_changeKinds[ch.kind] != null) StatusChip(_changeKinds[ch.kind]!),
+                    if (ch.since.isNotEmpty) StatusChip('since ${ch.since}'),
+                  ],
+                ),
+            ]),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+              child: Text(
+                  'Where each change stands, as RevisionWorx recorded it. It is settled there: record what you did as an '
+                  'inspection, and engineering updates the unit.',
                   style: TextStyle(color: context.fx.muted, fontSize: 13)),
             ),
           ],
@@ -611,6 +646,14 @@ class AssetScreen extends StatelessWidget {
 }
 
 String _capitalised(String s) => s.isEmpty ? s : '${s[0].toUpperCase()}${s.substring(1)}';
+
+const Map<String, String> _changeKinds = {
+  'production': 'new units only',
+  'retrofit-required': 'retrofit required',
+  'retrofit-optional': 'retrofit optional',
+  'unit': 'this unit',
+  'documentation': 'documents only',
+};
 
 String _identifierName(AssetIdentifier i) {
   final name = switch (i.scheme) { 'tag' => 'asset tag', 'serial' => 'serial number', _ => 'code' };

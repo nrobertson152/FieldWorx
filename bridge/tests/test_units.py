@@ -2,6 +2,7 @@
 """Units from RevisionWorx's unit register (RevisionWorx docs/UNITS.md) packed as version 2 catalog assets
 (docs/PROTOCOL.md section 6.4), through RevisionWorx's own command line. Skipped where RevisionWorx has no unit register."""
 import os
+import re
 import subprocess
 
 import pytest
@@ -14,8 +15,8 @@ from fieldworx_bridge.rwx_client import RevisionWorx, find_command
 pytestmark = pytest.mark.revisionworx
 
 
-def have_unit_register() -> bool:
-    return have_revisionworx() and "units" in (RevisionWorx().version().get("features") or [])
+def have_unit_register(feature: str = "units") -> bool:
+    return have_revisionworx() and feature in (RevisionWorx().version().get("features") or [])
 
 
 @pytest.fixture(scope="module")
@@ -109,3 +110,60 @@ def test_version_1_assets_read_as_version_2():
     for case in vectors["refuse"]:
         with pytest.raises(cat_mod.CatalogError):
             cat_mod.check_catalog(case["catalog"])
+
+
+@pytest.fixture(scope="module")
+def changed(tmp_path_factory):
+    """A fresh demo whose asset register is in the unit register, then ECO-0001 revising HPU-75-GA to rev B, decided as a
+    required retrofit of every unit that has rev A, and installed on HPU-0001 (reported, not yet verified). All through
+    RevisionWorx's own command line."""
+    if not have_unit_register("unit-changes"):
+        pytest.skip("this RevisionWorx doesn't say which units a change reaches (link version doesn't list 'unit-changes')")
+    import build_demo
+    out = tmp_path_factory.mktemp("changes") / "demo"
+    assert build_demo.main([str(out)]) == 0
+    ws = out / "workspace"
+    local = out / ".local"
+    env = dict(os.environ, XDG_CACHE_HOME=str(local / "cache"), XDG_STATE_HOME=str(local / "state"),
+               XDG_CONFIG_HOME=str(local / "config"), LOCALAPPDATA=str(local / "appdata"))
+
+    def rwx(*args):
+        proc = subprocess.run(find_command() + ["-w", str(ws), *args], capture_output=True, text=True, env=env)
+        assert proc.returncode in (0, 1), proc.stderr
+        return proc.stdout
+
+    rwx("unit", "import", str(out / "source" / "AST-HPU-75 Units built.fwassets.csv"))
+    rwx("change", "new-request", "Stronger base", "--reason", "cracks at the base", "--doc", "HPU-75-GA")
+    for step in ("submit", "review", "approve"):
+        rwx("change", step, "ECR-0001")
+    rwx("change", "new-order", "ECR-0001")
+    rwx("change", "start", "ECO-0001")
+    item = re.search(r"item (document:(doc_[0-9a-f]{32}))", rwx("change", "show", "ECO-0001"))
+    path = re.search(r"file: (.+)", rwx("doc", "show", item.group(2))).group(1).strip()
+    rwx("doc", "checkout", item.group(2))
+    with open(path, "ab") as f:
+        f.write(b"\n% rev B: stronger base\n")
+    rwx("doc", "checkin", item.group(2), "-m", "stronger base")
+    rwx("change", "implement", "ECO-0001", item.group(1), "--rev", "B")
+    rwx("change", "implemented", "ECO-0001")
+    rwx("unit", "change", "decide", "ECO-0001", "--kind", "retrofit-required", "--reason", "cracks at the base")
+    rwx("unit", "change", "install", "HPU-0001", "ECO-0001")
+    return out
+
+
+def test_the_changes_that_reach_a_unit_travel_with_it(changed, tmp_path):
+    out = tmp_path / "changes.fieldworx"
+    assert cli.main(["pack", "-w", str(changed / "workspace"), "--project", "J-2001", "-o", str(out)]) == 0
+    with archive.read(out) as arc:
+        cat_mod.check_catalog(arc.catalog)
+        assets = {a["label"]: a for a in arc.catalog["assets"]}
+        done, waiting = assets["NH-26-0001"]["changes"], assets["NH-26-0002"]["changes"]
+        assert [(c["number"], c["kind"], c["required"], c["state"]) for c in done] == [
+            ("ECO-0001", "retrofit-required", True, "installed")]
+        assert done[0]["documents"] == [{"number": "HPU-75-GA", "from": "A", "to": "B"}]
+        assert done[0]["title"] == "Stronger base" and done[0]["change"].startswith("eco_")
+        assert [c["state"] for c in waiting] == ["pending"]
+        # The installation moved the unit's own drawing, flagged reported until engineering verifies it.
+        ga = next(d for d in arc.catalog["documents"] if d["number"] == "HPU-75-GA")
+        row = next(d for d in assets["NH-26-0001"]["documents"] if d["document"] == ga["id"])
+        assert row["revision"] == ga["revisions"][-1]["id"] and row["basis"] == "reported"
