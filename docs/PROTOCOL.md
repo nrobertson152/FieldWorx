@@ -117,6 +117,7 @@ One record of something done in the field. The **envelope** is an FXJ object wit
 | `body` | object; its shape depends on `type` (section 5) |
 
 The event's **id** is `digest("event/v1", envelope)`; its stored form is the canonical bytes (≤ 256 KiB).
+Signed records (envelope version 2, decided for 1.0.0 and being built) are section 12.
 
 **A set of events** (a device's store, the hub, a field log) must be closed and consistent:
 
@@ -440,3 +441,78 @@ Vectors: `findings.json`.
   (`--if-events`).
 - A finding RevisionWorx already holds (its history cites the record event) is reported as accepted, with the event
   number, and nothing is written.
+
+## 12. Device keys and signed records (Director's decision, 2026-11-07; being built)
+
+Every phone signs the records it makes with its own Ed25519 key; an administrator of a RevisionWorx team workspace
+enrols the phone to a person's account; a signed finding from an enrolled phone is accepted as *verified* in that
+person's name (ARCHITECTURE.md ADR-015). Until the implementations below land, readers and writers are version 1 only;
+this section is the contract they are built to.
+
+### 12.1 The key
+
+- Ed25519 as RFC 8032 defines it: a 32-byte seed from the platform's secure random generator, and its 32-byte public
+  key, both written as lowercase hex.
+- `device.json` (section 9) becomes `{"device", "created", "key": {"seed", "public", "created"}}`. A store without `key`
+  gets one the next time the app starts, and keeps its device id; records it made before stay unsigned.
+- The store is never backed up: on Android `allowBackup="false"` and the data extraction rules (as now), on iOS
+  `NSURLIsExcludedFromBackupKey` on the store folder (new). One key per device id, for life.
+- **Fingerprint**, what people compare: the first 8 bytes of `SHA-256("fieldworx/key-fingerprint/v1\0" + the public
+  key's 32 bytes)` as 16 uppercase hex digits in four groups joined by `-`, for example `3F2A-91C0-77B1-04DE`.
+
+### 12.2 Signed records: envelope version 2
+
+| Key | Value |
+|---|---|
+| `v` | `2` |
+| `device`, `seq`, `prev`, `time`, `actor`, `type`, `entity`, `deps`, `body` | as section 4 |
+| `key` | the device's public key, 64 lowercase hex |
+| `sig` | 128 lowercase hex: the Ed25519 signature, made with the device's seed, of the bytes `"fieldworx/event-signature/v1\0"` followed by the id as 64 ASCII hex digits |
+
+- The **id** is `digest("event/v2", envelope without sig)`; the stored form is the FXJ of the whole envelope, `sig`
+  included (≤ 256 KiB). Ed25519 signatures are deterministic, so an event has exactly one stored form, and the hub's
+  check that a known event comes back byte for byte (section 8) is unchanged.
+- A reader checks the signature of every version 2 event it reads, with the event's own `key`.
+- A **set** (section 4) also requires: every version 2 event of one device carries the same `key`; after a device's
+  first version 2 event, its later events are version 2 too. Version 1 events may come first: records made before keys.
+- Writers write version 2 only. Version 1 stays readable for ever.
+
+### 12.3 Field logs and archives
+
+- A field log's `created_by` gains `key`, the writing device's public key, beside `device`. It is a short text, so
+  readers that don't know it ignore it.
+- The archive check of section 3 (every event's id is the digest of its bytes) reads, for version 2: the id is
+  `digest("event/v2", envelope without sig)`, and the signature holds.
+
+### 12.4 Enrolment
+
+Only in a RevisionWorx team workspace, where accounts live (RevisionWorx ADR-024), and only by an administrator:
+
+1. The phone shows its device id and fingerprint (Library, *This phone*).
+2. The phone sends a field log; it carries the key.
+3. `fieldworx-bridge enrol FIELDLOG -w WORKSPACE --account riley --fingerprint 3F2A-91C0-77B1-04DE [--name "Riley's
+   phone"]` reads the device id and key from the field log, refuses unless the fingerprint typed from the phone's screen
+   matches, and asks RevisionWorx to record the device in the account (`revisionworx link device-enrol`, feature
+   `field-signatures`, its `docs/INTEGRATION.md`), in the logged-in administrator's name. RevisionWorx checks the
+   fingerprint again, and refuses a device or key enrolled before, revoked ones included.
+
+RevisionWorx keeps enrolled devices in the account record, which only an administrator may change. A device enrolled to
+two accounts counts as enrolled to neither. Revoking one (`revisionworx user device revoke NAME DEVICE --reason R`)
+refuses its signatures from then on; what was accepted before stays. A revoked phone is never enrolled again: a phone
+that changes hands is reset, and starts again as a new device.
+
+### 12.5 Accepting signed findings
+
+For a finding whose record event is version 2, `fieldworx-bridge accept` passes `--field-signature DEVICE:EVENT:SIG`,
+`--basis verified` and its usual `--evidence fieldworx-event:EVENT` to the `revisionworx link` command it runs.
+RevisionWorx checks that DEVICE is enrolled to exactly one account, isn't revoked, its account is active, and SIG holds
+over EVENT with the enrolled key; it then records the fact with basis `verified` and two more evidence items:
+`field-signature` (ref `DEVICE:EVENT`, label SIG) and `field-signer` (ref the account, label the phone's name).
+Otherwise it refuses (`kind` `signature`) and writes nothing; the finding can still be accepted as *reported*. An
+unsigned finding, or one from a phone that isn't enrolled, is accepted as *reported*, as before. The txid is unchanged:
+it comes from the record event's id, so a retry after the phone was revoked still answers what was recorded.
+RevisionWorx's `unit verify` checks each signed acceptance again.
+
+Vectors (with the implementations): `signatures.json` (RFC 8032's test vectors and the family's: keys, signatures over
+event ids, fingerprints) and version 2 envelopes in `envelopes.json` and `fieldlog.json` (a valid one; a bad signature;
+another device's key; two keys for one device; an unsigned record after a signed one).
