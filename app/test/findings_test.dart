@@ -29,7 +29,7 @@ void main() {
 
     s.scan('FWX:A:HPU-0002');
     await waitFor(tester, find.text('HPU-75 for Bayside Marine'));
-    await reveal(tester, find.text('Findings (0)'));
+    await reveal(tester, find.text('FINDINGS (0)'));
     await tapOn(tester, button('Report a finding'));
     await waitFor(tester, find.text('Report on HPU-0002'));
     expect(button('Record finding'), findsNothing, reason: 'nothing to record until it says what happened');
@@ -44,7 +44,7 @@ void main() {
     await type(tester, field('Serial').last, '222');
     await tapOn(tester, button('Take a photo'));
     await waitFor(tester, find.text('1 photo to add'));
-    await tapAndWait(tester, button('Record finding'), find.text('Findings (1)'));
+    await tapAndWait(tester, button('Record finding'), find.text('FINDINGS (1)'));
 
     final f = m.store.findings().single;
     expect((f['what'], f['position'], f['disposition'], f['status']), ('replaced', 'P1', 'scrapped', 'recorded'));
@@ -76,7 +76,7 @@ void main() {
 
     s.scan('FWX:A:unt_${'0c' * 16}');
     await waitFor(tester, find.text('NH-26-0001'));
-    await reveal(tester, find.text('Findings (0)'));
+    await reveal(tester, find.text('FINDINGS (0)'));
     await tapOn(tester, button('Report a finding'));
     await waitFor(tester, find.text('Report on NH-26-0001'));
 
@@ -91,7 +91,7 @@ void main() {
     await tester.pumpAndSettle();
     await tapOn(tester, find.widgetWithText(OutlinedButton, 'ECO-0042'));
     await type(tester, field('Date done (year-month-day)'), '2026-11-02');
-    await tapAndWait(tester, button('Record finding'), find.text('Findings (1)'));
+    await tapAndWait(tester, button('Record finding'), find.text('FINDINGS (1)'));
     final f = m.store.findings().single;
     expect((f['what'], f['change'], f['on'], f['asset']), ('change', 'ECO-0042', '2026-11-02', 'unt_${'0c' * 16}'));
     expect(find.text('Carried out ECO-0042'), findsOneWidget);
