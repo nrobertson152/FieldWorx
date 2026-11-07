@@ -11,6 +11,9 @@ The directive's first scope: **QR scanning, engineering document access, part lo
 - Scan FieldWorx labels, maker's barcodes, serial plates, supplier codes and reference designators; type a code
   or use a rugged phone's scanner; several matches shown, never guessed.
 - Units (assets) with their as-built revisions, what has been revised since, and their inspection history.
+- Units from RevisionWorx's unit register (catalog version 2): permanent `FWX:A:unt_…` labels, every identifier
+  (former ones too), build standard and this unit's own revisions, fitted components and where it is fitted, the
+  unit's history. FieldWorx 0.1's asset registers and their records carry over.
 - Documents with every revision's state; released PDFs pinch-zoomable and searchable; superseded and unreleased
   revisions flagged in red and amber.
 - Parts: makers' and suppliers' codes, BOM *made from* and *used in* with reference designators, stock on hand
@@ -46,7 +49,9 @@ The directive's first scope: **QR scanning, engineering document access, part lo
    and parts; status, time and parts used recorded as events.
 2. **Inventory transactions:** counts, receipts, transfers and consumption recorded offline and imported into
    OpenMeridian as movements for approval (needs W3; lots and serials need W4).
-3. **As-built capture:** component serials scanned into a unit's record during assembly.
+3. **As-built capture:** component serials scanned into a unit during assembly or service, sent to RevisionWorx as
+   reported entries in its unit register for engineering to accept (RevisionWorx ADR-025, phase 2); the phone
+   never changes the register itself.
 4. **Instrument traceability** and **witness sign-off** on inspections.
 5. **Planned maintenance** from controlled interval documents.
 

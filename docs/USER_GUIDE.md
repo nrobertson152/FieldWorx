@@ -23,8 +23,10 @@ tampered package is refused and nothing changes. **Try the demo** adds the built
 
 Point the camera at a label. FieldWorx understands:
 
-- its own labels: `FWX:A:<tag>` (a unit), `FWX:P:<part>`, `FWX:D:<document>`, `FWX:J:<project>`;
-- a unit's serial plate, a part number, a maker's part number, a supplier's code, a document or project number;
+- its own labels: `FWX:A:unt_…` (a unit in RevisionWorx's unit register, by its permanent id), `FWX:A:<tag>`
+  (a unit by its tag), `FWX:P:<part>`, `FWX:D:<document>`, `FWX:J:<project>`;
+- a unit's serial plate, asset tag or an old code it used to carry, a part number, a maker's part number, a
+  supplier's code, a document or project number;
 - a reference designator from the BOM, typed as on the schematic: `K1`, `V2`.
 
 One match opens straight away. Several are all listed with why each matched: choose. No match says so and offers a
@@ -37,6 +39,20 @@ A unit's page shows what it is, where it is, its serial and build date, and **As
 built to. If a drawing has been revised since, the row says *current is rev B* and the top says how many drawings
 have changed. Tap a revision to open it. **Inspections** lists everything recorded on the unit; **Start an
 inspection** begins a new one.
+
+A unit from RevisionWorx's **unit register** (its page says *Unit*) shows more:
+
+- every code it carries, with who issued it (a customer's asset tag, a maker's serial), and the codes it used to
+  carry, so an old label still finds it;
+- its customer, site and location, its **build standard**, and its dates (built, shipped, installed, commissioned);
+- **As built** lists the revisions that apply to this unit: its build standard's, and any recorded for this unit
+  alone (*this unit only*). A document that doesn't apply to it says so. A revision known only from a report or old
+  records says *reported* or *from old records*;
+- **Fitted**: what is fitted in it, by position (a pump, a motor, by serial or lot), and **Fitted in**: the unit it
+  is part of. Tap one to open it;
+- **Record**: its history from the unit register, newest first. A correction shows as *voided*, never erased.
+
+The phone shows the unit as it was when the package was made. Changes to a unit are made in RevisionWorx.
 
 ### Documents and drawings
 
@@ -117,7 +133,9 @@ fieldworx-bridge pack -w "D:/Engineering/Workspace" --project J-2001 -o "J-2001.
 
 The package holds every document of the chosen projects (all revisions' details; the released revision's file),
 the parts, BOMs, units and inspection templates published in them, and the field records already collected (so
-every phone sees the history). Useful options:
+every phone sees the history). When RevisionWorx has a unit register (`revisionworx unit`), the units of the chosen
+projects come from it, with every unit fitted in them and the revisions each one names, even from other projects.
+Useful options:
 
 | Option | Does |
 |---|---|
@@ -140,13 +158,18 @@ file in RevisionWorx doesn't match the hash RevisionWorx recorded for it, the bu
   unit, nominal, min, max, required, photo, choices, help`. `kind` is `check`, `measure`, `text` or `choice`;
   `required` is yes or no; `photo` is none, optional or required; `choices` are separated by `;`. The document
   number becomes the template's id and the revision label its revision. Release it like any document.
-- **Unit registers** named `*.fwassets.csv`: columns `tag, serial, name, part, project, location, built, as_built,
-  notes`; `as_built` lists the revisions the unit was built to, `DOCUMENT@REV;DOCUMENT@REV`.
+- **Units** in RevisionWorx's unit register (`revisionworx unit new`, or `revisionworx unit import` of a CSV, such
+  as an existing `*.fwassets.csv`). Records made on phones against a unit before it was in the register stay with
+  it: the package carries its earlier FieldWorx id.
+- **Unit registers** named `*.fwassets.csv`, for units that aren't in the unit register: columns `tag, serial,
+  name, part, project, location, built, as_built, notes`; `as_built` lists the revisions the unit was built to,
+  `DOCUMENT@REV;DOCUMENT@REV`. A row for a unit the unit register holds is left out of the package.
 
 ### Labels
 
-Print QR codes holding `FWX:A:<tag>` on units, `FWX:P:<part number>` on parts and bins, `FWX:D:<document number>`
-on drawings. Plain part numbers and serial plates work too. Labels never hold web addresses, so they keep working
+Print QR codes holding `FWX:A:unt_…` (the unit's permanent id, from `revisionworx unit show`) on units in the unit
+register, or `FWX:A:<tag>` on others, `FWX:P:<part number>` on parts and bins, `FWX:D:<document number>` on
+drawings. A unit's permanent label never has to change: a new tag, a new owner or a rebuild don't affect it. Plain part numbers and serial plates work too. Labels never hold web addresses, so they keep working
 offline and for good. Any phone with FieldWorx shows the label for a unit, part or document from its page.
 
 ### Collecting field logs

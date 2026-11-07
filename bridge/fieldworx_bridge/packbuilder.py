@@ -93,10 +93,33 @@ class PackBuilder:
                 full = rwx.document(d["id"])
                 histories[d["id"]] = [_rev(r) for r in full.get("history", [])]
                 meta[d["id"]] = {**d, "project_id": p["id"]}
+        # Units from RevisionWorx's unit register: those of the chosen projects and everything fitted in them. A document
+        # a unit uses comes along even from another project, so the unit's page is complete (docs/PROTOCOL.md 6.4).
+        units = self._choose_units(rwx.units(), chosen)
+        extra_projects: dict[str, dict] = {}
+        by_project = {p["id"]: p for p in all_projects}
+        for u in units:
+            if u["project"] and u["project"]["id"] not in {c["id"] for c in chosen}:
+                extra_projects.setdefault(u["project"]["id"], by_project.get(u["project"]["id"], u["project"]))
+            for row in u["documents"]:
+                did = row["document"]["id"]
+                if did in meta or "missing" in row["flags"]:
+                    continue
+                full = rwx.document(did)
+                histories[did] = [_rev(r) for r in full.get("history", [])]
+                meta[did] = {**full, "project_id": full["project"]["id"]}
+                if full["project"]["id"] not in {c["id"] for c in chosen}:
+                    extra_projects.setdefault(full["project"]["id"], by_project.get(full["project"]["id"], full["project"]))
+                self.note(f"{full.get('number') or did} is from project {full['project'].get('number') or ''}, which "
+                          "wasn't chosen; it is included because a unit in this package uses it.")
         by_number = {meta[i]["number"].casefold(): i for i in meta if meta[i].get("number")}
 
         # Which revisions are needed with content.
         wanted: dict[str, set[str]] = {i: set() for i in meta}
+        for u in units:
+            for row in u["documents"]:
+                if row["revision"] and "missing" not in row["flags"] and row["document"]["id"] in wanted:
+                    wanted[row["document"]["id"]].add(row["revision"]["id"])
         for i, d in meta.items():
             sel = self._selected(d)
             if sel:
@@ -175,21 +198,41 @@ class PackBuilder:
         part_by_num = {p["number"].casefold(): p["id"] for p in parts}
         projects = [{"id": p["id"], "number": p.get("number", ""), "name": p.get("name", ""),
                      "customer": p.get("customer", "")} for p in chosen]
+        projects += [{"id": pid, "number": p.get("number", "") or "", "name": p.get("name", "") or "",
+                      "customer": p.get("customer", "") or ""} for pid, p in sorted(extra_projects.items())]
         proj_by_num = {p["number"].casefold(): p["id"] for p in projects if p["number"]}
-        assets = []
+        project_ids = {p["id"] for p in projects}
+        rev_doc = {r["id"]: i for i in meta for r in histories[i]}
+        assets = [self._unit_asset(u, units, part_by_num, project_ids, rev_doc) for u in units]
+        held = {a["id"] for a in assets} | {x for a in assets for x in a["aliases"]}
+        held_codes = {(i["scheme"], i["value"].casefold()) for a in assets for i in a["identifiers"] if i["active"]}
         for row, src, _state in asset_rows:
+            aid = asset_id(info.get("id", ""), row["tag"] or row["serial"])
+            label = row["tag"] or row["serial"]
+            if aid in held or ("tag", row["tag"].casefold()) in held_codes or ("serial", row["serial"].casefold()) in held_codes:
+                self.note(f"{label} ({src}) is in RevisionWorx's unit register, which is the record for it; the register row "
+                          "was not used.")
+                continue
             pid = part_by_num.get(row["part"].casefold(), "") if row["part"] else ""
             if row["part"] and not pid:
-                self.note(f"{row['tag'] or row['serial']}: part {row['part']} isn't in this package.")
+                self.note(f"{label}: part {row['part']} isn't in this package.")
             prj = proj_by_num.get(row["project"].casefold(), "") if row["project"] else ""
-            assets.append({"id": asset_id(info.get("id", ""), row["tag"] or row["serial"]),
-                           "tag": row["tag"], "serial": row["serial"], "name": row["name"], "part": pid,
-                           "project": prj, "location": row["location"], "built": row["built"],
-                           "notes": row["notes"], "as_built": row["_as_built_ids"]})
+            assets.append({
+                "id": aid, "aliases": [], "label": label[:200], "class": "product", "name": row["name"][:200],
+                "model": row["part"][:100], "part": pid, "project": prj, "customer": "", "site": "",
+                "location": row["location"][:200], "status": "",
+                "identifiers": [{"scheme": s, "issuer": "", "value": row[s][:100], "active": True}
+                                for s in ("tag", "serial") if row[s]],
+                "parent": None, "standard": None,
+                "documents": [{"document": rev_doc[r], "revision": r, "source": "register", "basis": "legacy"}
+                              for r in row["_as_built_ids"]],
+                "components": [], "milestones": {"built": row["built"][:32]} if row["built"] else {}, "history": [],
+                "notes": row["notes"][:4000], "source": src[:200]})
+            held.add(aid)
         seen_assets: set[str] = set()
         for a in list(assets):
             if a["id"] in seen_assets:
-                self.note(f"Asset {a['tag'] or a['serial']} appears in two registers; the first was used.")
+                self.note(f"Asset {a['label']} appears in two registers; the first was used.")
                 assets.remove(a)
             seen_assets.add(a["id"])
 
@@ -198,7 +241,7 @@ class PackBuilder:
                    "templates": self._dedupe_templates(templates)}
         cat_mod.check_catalog(fxjson.parse(fxjson.encode(catalog)))
         source = {"system": "revisionworx", "workspace": info.get("id", ""), "name": info.get("name", ""),
-                  "version": rwx.version}
+                  "version": rwx.version, "projects": ",".join(sorted(p["id"] for p in chosen))}
         if self.o.meridian:
             source["stock"] = f"OpenMeridian {self.o.meridian.name}"
         return catalog, source, list(self.objects.values())
@@ -217,6 +260,73 @@ class PackBuilder:
             if hits[0] not in out:
                 out.append(hits[0])
         return out
+
+    def _choose_units(self, register: list[dict] | None, chosen: list[dict]) -> list[dict]:
+        """The register's units of the chosen projects, and every unit fitted in one of them, however deep."""
+        if register is None:
+            return []
+        by_id = {u["id"]: u for u in register}
+        every = not self.o.projects
+        chosen_ids = {p["id"] for p in chosen}
+        picked = [u for u in register if every or (u["project"] and u["project"]["id"] in chosen_ids)]
+        out, seen = [], set()
+        queue = list(picked)
+        while queue:
+            u = queue.pop(0)
+            if u["id"] in seen:
+                continue
+            seen.add(u["id"])
+            out.append(u)
+            queue += [by_id[c["unit"]] for c in u["components"] if c["unit"] in by_id]
+        left = len([u for u in register if u["id"] not in seen])
+        if left:
+            self.note(f"{left} unit(s) of RevisionWorx's unit register belong to other projects (or none) and were left "
+                      "out; pack without --project to include every unit.")
+        return sorted(out, key=lambda u: (u["label"].casefold(), u["id"]))
+
+    def _unit_asset(self, u: dict, units: list[dict], part_by_num: dict, project_ids: set, rev_doc: dict) -> dict:
+        """One unit of RevisionWorx's register as a version 2 catalog asset (docs/PROTOCOL.md section 6.4)."""
+        included = {x["id"] for x in units}
+        docs = []
+        for row in u["documents"]:
+            did = row["document"]["id"]
+            rev = (row["revision"] or {}).get("id", "") if row["applies"] else ""
+            if "missing" in row["flags"] or did not in rev_doc.values() or (rev and rev_doc.get(rev) != did):
+                self.note(f"{u['label']}: {row['document'].get('number') or did} can't be found in RevisionWorx (a "
+                          "damaged reference); it is left off the unit's page. Run 'revisionworx unit verify'.")
+                continue
+            docs.append({"document": did, "revision": rev, "source": row["source"], "basis": row["basis"]})
+        comps = []
+        for c in u["components"]:
+            comps.append({"position": c["position"][:64], "part": part_by_num.get((c["number"] or "").casefold(), ""),
+                          "number": (c["number"] or c.get("label") or "")[:200],
+                          "asset": c["unit"] if c["unit"] in included else "", "serial": c["serial"][:200],
+                          "lot": c["lot"][:200], "since": c["since"][:200], "basis": c["basis"]})
+        history = [{"n": h["n"], "type": h["type"][:64], "summary": h["summary"][:500], "effective": h["effective"][:32],
+                    "time": h["time"][:32],
+                    "actor": (h["actor"].get("name") or h["actor"].get("account") or h["actor"].get("user") or "")[:200],
+                    "basis": h["basis"], "voided": bool(h["voided"])} for h in u.get("history", [])]
+        if len(history) > 1000:
+            self.note(f"{u['label']}: only the latest 1000 of its {len(history)} history events are included.")
+            history = history[-1000:]
+        parent = u["parent"]
+        if parent and parent["unit"] not in included:
+            parent = None
+        project = (u["project"] or {}).get("id", "")
+        std = u["standard"]
+        return {"id": u["id"], "aliases": sorted(set(u.get("aliases", []))), "label": u["label"][:200],
+                "class": u["class"], "name": u["name"][:200], "model": u["model"]["number"][:100],
+                "part": part_by_num.get(u["model"]["number"].casefold(), "") if u["model"]["number"] else "",
+                "project": project if project in project_ids else "", "customer": u["customer"][:200],
+                "site": u["site"][:200], "location": u["location"][:200], "status": u["status"],
+                "identifiers": [{"scheme": i["scheme"], "issuer": i["issuer"][:200], "value": i["value"][:100],
+                                 "active": bool(i["active"])} for i in u["identifiers"]
+                                if i["scheme"] in cat_mod.SCHEMES][:100],
+                "parent": {"asset": parent["unit"], "position": parent["position"][:64]} if parent else None,
+                "standard": {"number": std["number"][:64], "title": std["title"][:200]} if std else None,
+                "documents": docs, "components": comps,
+                "milestones": {k: v["date"][:32] for k, v in u["milestones"].items() if k in cat_mod.MILESTONES},
+                "history": history, "notes": u["notes"][:4000], "source": "revisionworx"}
 
     def _selected(self, d: dict) -> dict | None:
         """The revision the phone should show: the released one, or the latest with ``unreleased``."""
@@ -396,8 +506,11 @@ def asset_id(workspace_id: str, tag_or_serial: str) -> str:
 
 
 def series_key(source: dict, catalog: dict) -> str:
-    """Packages with the same series replace each other on a phone: same workspace, same projects."""
-    proj = ",".join(sorted(p["id"] for p in catalog["projects"]))
+    """Packages with the same series replace each other on a phone: same workspace, same chosen projects (documents a
+    unit borrows from another project don't make it another series)."""
+    chosen = source.get("projects")
+    ids = chosen.split(",") if isinstance(chosen, str) and chosen else [p["id"] for p in catalog["projects"]]
+    proj = ",".join(sorted(ids))
     return hashlib.sha256(f"{source.get('system')}\0{source.get('workspace')}\0{proj}".encode()).hexdigest()[:32]
 
 

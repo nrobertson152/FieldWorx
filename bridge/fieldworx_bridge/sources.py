@@ -55,7 +55,8 @@ class RevisionWorxSource:
         if not self.rwx.available():
             raise SourceError("RevisionWorx (integration API 1) was not found. Install it, or set REVISIONWORX_CLI to "
                               "its 'revisionworx' program.")
-        self.version = self.rwx.version().get("version", "")
+        self.answer = self.rwx.version()
+        self.version = self.answer.get("version", "")
         self._info: dict | None = None
 
     def _call(self, fn, *args, **kwargs):
@@ -80,6 +81,14 @@ class RevisionWorxSource:
 
     def document(self, doc_id: str) -> dict:
         return self._call(self.rwx.document, doc_id)
+
+    def units(self) -> list[dict] | None:
+        """Every unit in RevisionWorx's unit register, each with its documents, components and history
+        (``link units --detail``), or None when this RevisionWorx has no unit register (its ``link version`` doesn't list
+        the ``units`` feature)."""
+        if "units" not in (self.answer.get("features") or []):
+            return None
+        return self._call(self.rwx._run, "units", "--detail")["units"]
 
     def fetch(self, doc_id: str, label: str, expect_sha256: str, to_dir: Path) -> Path:
         """Copy one revision's verified content into ``to_dir``; the bytes are checked against ``expect_sha256``."""

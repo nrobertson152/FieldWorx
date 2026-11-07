@@ -15,6 +15,16 @@ What FieldWorx 0.1 doesn't do, or hasn't been shown to do. Planned work is in [R
   drawings are turned into PDFs only when DraftWorx is installed on the computer that makes the package.
 - **Times are shown in UTC**, as recorded.
 
+## Units
+
+- **The phone shows a unit as it was when the package was made.** A part fitted or a document changed since then
+  appears in the next package. What a unit was *on a given date* is answered in RevisionWorx
+  (`revisionworx unit show --on DATE`), not on the phone.
+- **Records about a unit don't reach its unit register yet.** Inspections are kept in the hub and shown on the
+  unit's page; turning a field finding (a serial read off a pump, a part replaced) into an entry in RevisionWorx's
+  unit register, marked as reported, is planned.
+- **A unit's label is printed from its id** (`revisionworx unit show`); the bridge doesn't print label sheets yet.
+
 ## What the phone records
 
 - **Inspections only.** Nonconformances, redlines, work orders and inventory transactions are planned (0.2, 0.3).

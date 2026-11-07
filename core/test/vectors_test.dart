@@ -128,9 +128,61 @@ void main() {
     }
   });
 
+  group('catalogs', () {
+    final v = load('catalogs.json')! as Map<String, Object?>;
+    for (final c in (v['accept']! as List).cast<Map<String, Object?>>()) {
+      test('accepts: ${c['name']}', () {
+        final cat = fx.asMap(c['catalog'], 'catalog');
+        checkCatalog(cat);
+        expect(fx.encodeText(assetsView(cat)), equals(fx.encodeText(c['assets'])));
+      });
+    }
+    for (final c in (v['refuse']! as List).cast<Map<String, Object?>>()) {
+      test('refuses: ${c['name']}', () {
+        expect(() => checkCatalog(c['catalog']), throwsA(isA<CatalogError>()));
+      });
+    }
+    test('a unit resolves by its permanent label, an earlier id and every identifier', () {
+      final cat = fx.asMap(((v['accept']! as List)[1] as Map<String, Object?>)['catalog'], 'catalog');
+      final c = Catalog()
+        ..add(
+            PackageInfo(id: 'pkg_x', title: 't', series: '', created: '', digest: '', source: {}, notices: [], createdBy: {}),
+            cat);
+      final hpu = 'unt_${'0c' * 16}';
+      expect(resolve(c, 'FWX:A:$hpu').matches.single.id, equals(hpu));
+      expect(resolve(c, 'FWX:A:ast_${'0e' * 16}').matches.single.id, equals(hpu), reason: 'its FieldWorx 0.1 id');
+      expect(resolve(c, 'FWX:A:unt_${'77' * 16}').matches, isEmpty, reason: 'an unknown unit: nothing guessed');
+      expect(resolve(c, 'hpu-0001').matches.single.why, equals('asset tag (Acme)'));
+      expect(resolve(c, 'OLD-17').matches.single.why, equals('former code (Previous owner)'));
+      expect(resolve(c, 'GP-4471').matches.single.why, equals('serial number (Hydrix)'));
+      final a = c.asset(hpu)!;
+      expect(a.labelCode, equals(hpu));
+      expect(a.isUnit, isTrue);
+      expect(a.standardNumber, equals('HPU-75-A'));
+      expect(c.fittedIn(a).single.label, equals('GP-4471'));
+      expect(a.documents.map((d) => d.source).toList(), equals(['unit', 'standard', 'unit']));
+      expect(a.documents[2].applies, isFalse);
+      expect(a.asBuilt.length, equals(2));
+      expect(a.history.last.voided, isTrue);
+      final row = c.assets['ast_${'05' * 16}']!;
+      expect((row.isUnit, row.labelCode, row.tag), equals((false, 'HPU-0002', 'HPU-0002')));
+    });
+    test('a version 1 asset reads as the register row it was', () {
+      final cat = fx.asMap(((v['accept']! as List)[0] as Map<String, Object?>)['catalog'], 'catalog');
+      final c = Catalog()
+        ..add(
+            PackageInfo(id: 'pkg_y', title: 't', series: '', created: '', digest: '', source: {}, notices: [], createdBy: {}),
+            cat);
+      final a = c.assets.values.single;
+      expect((a.label, a.tag, a.serial, a.built), equals(('HPU-0001', 'HPU-0001', 'NH-26-0001', '2026-03-18')));
+      expect(a.documents.single.source, equals('register'));
+      expect(resolve(c, 'FWX:A:HPU-0001').matches.single.why, equals('asset tag'));
+    });
+  });
+
   group('archives written by the bridge', () {
     final expected = load('archives.json')! as Map<String, Object?>;
-    for (final name in ['sample.fieldworx', 'sample.fieldlog']) {
+    for (final name in ['sample.fieldworx', 'sample.fieldlog', 'units.fieldworx']) {
       test(name, () async {
         final want = expected[name]! as Map<String, Object?>;
         final a = await FieldArchive.open(File('$vectorsDir/$name'), verifyObjects: true);

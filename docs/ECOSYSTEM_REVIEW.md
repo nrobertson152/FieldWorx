@@ -69,6 +69,9 @@ which revisions a delivered unit was built to. **FieldWorx's answer for now:** a
 documents in RevisionWorx (`*.fwassets.csv`, PROTOCOL.md section 6.4). **Recommendation (RevisionWorx):** an as-built
 configuration per serial number (document revisions and part revisions installed), reachable through `link`, so
 service history, retrofits and "which units does this ECO affect?" have one authority.
+**Status:** built in RevisionWorx as its unit register (ADR-025, docs/UNITS.md: `revisionworx unit`,
+`link units`/`link unit`), and packed by FieldWorx as catalog version 2. Asset registers remain for units the unit
+register doesn't hold.
 
 ### W6. Field findings can't become engineering changes yet (RevisionWorx)
 

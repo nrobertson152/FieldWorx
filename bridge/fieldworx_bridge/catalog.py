@@ -14,8 +14,20 @@ from typing import Any
 from . import inspections
 
 FORMAT = "fieldworx.catalog"
-VERSION = 1
+VERSION = 2                     # what this writes; READS is what it reads (docs/PROTOCOL.md section 6)
+READS = (1, 2)
 RE_SHA = re.compile(r"[0-9a-f]{64}\Z")
+RE_ASSET_ID = re.compile(r"(unt|ast)_[0-9a-f]{32}\Z")
+RE_ALIAS = re.compile(r"ast_[0-9a-f]{32}\Z")
+ASSET_V1 = {"id", "tag", "serial", "name", "part", "project", "location", "built", "notes", "as_built"}
+ASSET_V2 = {"id", "aliases", "label", "class", "name", "model", "part", "project", "customer", "site", "location", "status",
+            "identifiers", "parent", "standard", "documents", "components", "milestones", "history", "notes", "source"}
+CLASSES = ("product", "component", "instrument", "tool")
+STATUSES = ("", "planned", "in-build", "built", "in-service", "out-of-service", "retired", "scrapped")
+SCHEMES = ("serial", "tag", "other")
+SOURCES = ("standard", "unit", "register")
+BASES = ("verified", "reported", "declared", "legacy")
+MILESTONES = ("built", "shipped", "installed", "commissioned", "decommissioned")
 RE_QTY = re.compile(r"(0|[1-9]\d{0,14})(\.\d{1,9})?\Z")
 TOP_KEYS = {"format", "version", "projects", "documents", "parts", "bom", "assets", "templates"}
 
@@ -47,7 +59,7 @@ def check_catalog(c: Any) -> dict:
     _keys(c, TOP_KEYS, "catalog")
     if c["format"] != FORMAT:
         raise CatalogError("not a FieldWorx catalog")
-    if c["version"] != VERSION:
+    if c["version"] not in READS:
         raise CatalogError(f"catalog version {c['version']!r} is newer than this program understands; update it")
     ids: set[str] = set()
 
@@ -139,19 +151,22 @@ def check_catalog(c: Any) -> dict:
         for r in _list(b["refdes"], "reference designators", 10_000):
             _s(r, "reference designator", 64)
 
-    for a in _list(c["assets"], "assets"):
-        _keys(a, {"id", "tag", "serial", "name", "part", "project", "location", "built", "notes", "as_built"}, "asset")
-        for k in ("id", "tag", "serial", "name", "part", "project", "location", "built"):
-            _s(a[k], f"asset {k}", 200)
-        _s(a["notes"], "asset notes", 4000)
-        unique(a["id"], "asset")
-        if a["part"] and a["part"] not in parts:
-            raise CatalogError(f"asset {a['tag'] or a['id']} names a part that isn't in the package")
-        if a["project"] and a["project"] not in projects:
-            raise CatalogError(f"asset {a['tag'] or a['id']} names a project that isn't in the package")
-        for r in _list(a["as_built"], "as-built revisions", 1000):
-            if r not in revs:
-                raise CatalogError(f"asset {a['tag'] or a['id']} names an as-built revision that isn't in the package")
+    if c["version"] == 1:
+        for a in _list(c["assets"], "assets"):
+            _keys(a, ASSET_V1, "asset")
+            for k in ("id", "tag", "serial", "name", "part", "project", "location", "built"):
+                _s(a[k], f"asset {k}", 200)
+            _s(a["notes"], "asset notes", 4000)
+            unique(a["id"], "asset")
+            if a["part"] and a["part"] not in parts:
+                raise CatalogError(f"asset {a['tag'] or a['id']} names a part that isn't in the package")
+            if a["project"] and a["project"] not in projects:
+                raise CatalogError(f"asset {a['tag'] or a['id']} names a project that isn't in the package")
+            for r in _list(a["as_built"], "as-built revisions", 1000):
+                if r not in revs:
+                    raise CatalogError(f"asset {a['tag'] or a['id']} names an as-built revision that isn't in the package")
+    else:
+        _check_assets_v2(_list(c["assets"], "assets"), unique, projects, docs, parts, revs)
 
     tids = set()
     for t in _list(c["templates"], "templates", 10_000):
@@ -169,6 +184,138 @@ def check_catalog(c: Any) -> dict:
         if t["document"] and t["document"] not in docs:
             raise CatalogError("a template names a document that isn't in the package")
     return c
+
+
+def _choice(v: Any, choices: tuple, what: str) -> str:
+    if v not in choices:
+        raise CatalogError(f"{what} must be one of {', '.join(c or '(empty)' for c in choices)}")
+    return v
+
+
+def _bool(v: Any, what: str) -> bool:
+    if not isinstance(v, bool):
+        raise CatalogError(f"{what} must be true or false")
+    return v
+
+
+def _check_assets_v2(assets: list, unique, projects: set, docs: set, parts: set, revs: dict) -> None:
+    ids: set[str] = set()
+    parents: dict[str, str] = {}
+    for a in assets:
+        _keys(a, ASSET_V2, "asset")
+        what = f"asset {a.get('label') or a.get('id')}"
+        if not isinstance(a["id"], str) or not RE_ASSET_ID.match(a["id"]):
+            raise CatalogError(f"{what}: id must be unt_ or ast_ and 32 hex digits")
+        unique(a["id"], "asset")
+        ids.add(a["id"])
+        aliases = _list(a["aliases"], f"{what} aliases", 100)
+        if any(not isinstance(x, str) or not RE_ALIAS.match(x) for x in aliases) or aliases != sorted(set(aliases)):
+            raise CatalogError(f"{what}: aliases must be ast_ ids, sorted and unique")
+        for x in aliases:
+            unique(x, "asset")
+        for k in ("label", "name", "customer", "site", "location", "source"):
+            _s(a[k], f"{what} {k}", 200)
+        _s(a["model"], f"{what} model", 100)
+        _s(a["notes"], f"{what} notes", 4000)
+        _choice(a["class"], CLASSES, f"{what} class")
+        _choice(a["status"], STATUSES, f"{what} status")
+        _s(a["part"], f"{what} part", 64)
+        _s(a["project"], f"{what} project", 64)
+        if a["part"] and a["part"] not in parts:
+            raise CatalogError(f"{what} names a part that isn't in the package")
+        if a["project"] and a["project"] not in projects:
+            raise CatalogError(f"{what} names a project that isn't in the package")
+        for i in _list(a["identifiers"], f"{what} identifiers", 100):
+            _keys(i, {"scheme", "issuer", "value", "active"}, "identifier")
+            _choice(i["scheme"], SCHEMES, "identifier scheme")
+            _s(i["issuer"], "identifier issuer", 200)
+            if not _s(i["value"], "identifier value", 100):
+                raise CatalogError(f"{what}: an identifier has no value")
+            _bool(i["active"], "identifier active")
+        if a["parent"] is not None:
+            _keys(a["parent"], {"asset", "position"}, "parent")
+            _s(a["parent"]["asset"], "parent asset", 64)
+            _s(a["parent"]["position"], "parent position", 64)
+            parents[a["id"]] = a["parent"]["asset"]
+        if a["standard"] is not None:
+            _keys(a["standard"], {"number", "title"}, "standard")
+            _s(a["standard"]["number"], "standard number", 64)
+            _s(a["standard"]["title"], "standard title", 200)
+        seen_docs: set[str] = set()
+        for d in _list(a["documents"], f"{what} documents", 2000):
+            _keys(d, {"document", "revision", "source", "basis"}, "asset document")
+            doc, rev = _s(d["document"], "asset document", 64), _s(d["revision"], "asset revision", 64)
+            if doc in seen_docs:
+                raise CatalogError(f"{what} names a document twice")
+            seen_docs.add(doc)
+            if doc not in docs:
+                raise CatalogError(f"{what} names a document that isn't in the package")
+            if rev and revs.get(rev) != doc:
+                raise CatalogError(f"{what} names a revision that isn't in the package (or isn't of its document)")
+            _choice(d["source"], SOURCES, "document source")
+            _choice(d["basis"], BASES, "document basis")
+        positions: set[str] = set()
+        for comp in _list(a["components"], f"{what} components", 1000):
+            _keys(comp, {"position", "part", "number", "asset", "serial", "lot", "since", "basis"}, "component")
+            pos = _s(comp["position"], "component position", 64)
+            if not pos or pos in positions:
+                raise CatalogError(f"{what}: component positions must be given and unique")
+            positions.add(pos)
+            for k in ("part", "number", "asset", "serial", "lot", "since"):
+                _s(comp[k], f"component {k}", 200)
+            if comp["part"] and comp["part"] not in parts:
+                raise CatalogError(f"{what}: a component names a part that isn't in the package")
+            _choice(comp["basis"], BASES, "component basis")
+        ms = a["milestones"]
+        if not isinstance(ms, dict) or set(ms) - set(MILESTONES):
+            raise CatalogError(f"{what}: milestones are built, shipped, installed, commissioned, decommissioned")
+        for v in ms.values():
+            _s(v, "milestone date", 32)
+        last = 0
+        for h in _list(a["history"], f"{what} history", 1000):
+            _keys(h, {"n", "type", "summary", "effective", "time", "actor", "basis", "voided"}, "history entry")
+            if not isinstance(h["n"], int) or isinstance(h["n"], bool) or h["n"] <= last:
+                raise CatalogError(f"{what}: history numbers must increase")
+            last = h["n"]
+            _s(h["type"], "history type", 64)
+            _s(h["summary"], "history summary", 500)
+            for k in ("effective", "time"):
+                _s(h[k], f"history {k}", 32)
+            _s(h["actor"], "history actor", 200)
+            _choice(h["basis"], BASES, "history basis")
+            _bool(h["voided"], "history voided")
+    for a in assets:
+        for ref in [c["asset"] for c in a["components"] if c["asset"]] + ([a["parent"]["asset"]] if a["parent"] else []):
+            if ref not in ids:
+                raise CatalogError(f"asset {a['label'] or a['id']} names an asset that isn't in the package")
+    for start in parents:                               # nothing is fitted inside itself
+        seen, cur = {start}, parents.get(start)
+        while cur is not None:
+            if cur in seen:
+                raise CatalogError("assets are fitted inside each other in a loop")
+            seen.add(cur)
+            cur = parents.get(cur)
+
+
+
+def asset_view(a: dict, version: int, revision_document: dict[str, str]) -> dict:
+    """An asset as version 2 describes it, whatever the version of its catalog (docs/PROTOCOL.md section 6.4)."""
+    if version != 1:
+        return a
+    idents = [{"scheme": s, "issuer": "", "value": a[s], "active": True} for s in ("tag", "serial") if a[s]]
+    return {"id": a["id"], "aliases": [], "label": a["tag"] or a["serial"], "class": "product", "name": a["name"],
+            "model": "", "part": a["part"], "project": a["project"], "customer": "", "site": "",
+            "location": a["location"], "status": "", "identifiers": idents, "parent": None, "standard": None,
+            "documents": [{"document": revision_document[r], "revision": r, "source": "register", "basis": "legacy"}
+                          for r in a["as_built"]],
+            "components": [], "milestones": {"built": a["built"]} if a["built"] else {}, "history": [],
+            "notes": a["notes"], "source": ""}
+
+
+def assets_view(c: dict) -> list[dict]:
+    """Every asset of a checked catalog in the version 2 shape."""
+    owner = {r["id"]: d["id"] for d in c["documents"] for r in d["revisions"]}
+    return [asset_view(a, c["version"], owner) for a in c["assets"]]
 
 
 def empty() -> dict:

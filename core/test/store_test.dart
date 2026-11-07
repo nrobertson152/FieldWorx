@@ -243,6 +243,16 @@ void main() {
     expect(await s.hasObject(frm.current!.rendition!.object), isTrue);
   });
 
+  test('a package of units installs; a unit opens by its permanent label and by its earlier id', () async {
+    final s = await FieldStore.open(Directory('${tmp.path}/phone'));
+    await s.installPackage(File('$vectors/units.fieldworx'));
+    final hpu = 'unt_${'0c' * 16}';
+    expect(s.catalog.assets.keys.toList()..sort(), equals(['ast_${'05' * 16}', hpu, 'unt_${'0d' * 16}']));
+    expect(resolve(s.catalog, labelFor(ResultKind.asset, hpu)).matches.single.id, equals(hpu));
+    expect(s.catalog.asset('ast_${'0e' * 16}')?.id, equals(hpu));
+    expect(s.catalog.asset(hpu)!.asBuilt, equals(['rev_${'03' * 16}', 'rev_${'09' * 16}']));
+  });
+
   group('resolver', () {
     late Catalog c;
     setUp(() {

@@ -95,11 +95,13 @@ class AppModel extends ChangeNotifier {
   List<Map<String, Object?>> inspections() => store.inspections();
   Map<String, Object?> inspection(String id) => store.inspection(id);
 
-  /// Inspections recorded against an asset, part or document, newest first.
-  List<Map<String, Object?>> inspectionsFor(String subjectId) {
+  /// Inspections recorded against an asset, part or document, newest first; [also] adds records made against its
+  /// earlier ids (a unit's FieldWorx 0.1 `ast_` id, from before it joined RevisionWorx's unit register).
+  List<Map<String, Object?>> inspectionsFor(String subjectId, {Iterable<String> also = const []}) {
+    final ids = {subjectId, ...also};
     final out = [
       for (final s in store.inspections())
-        if (s['valid'] == true && (s['subject'] as Map)['id'] == subjectId) s,
+        if (s['valid'] == true && ids.contains((s['subject'] as Map)['id'])) s,
     ]..sort((a, b) => ((b['started'] as Map)['time'] as String).compareTo((a['started'] as Map)['time'] as String));
     return out;
   }

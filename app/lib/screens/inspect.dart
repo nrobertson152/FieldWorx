@@ -351,7 +351,7 @@ class _InspectionScreenState extends State<InspectionScreen> {
             if ((subject['label'] as String).isNotEmpty) StatusChip(subject['label'] as String, icon: 'asset'),
           ],
         ),
-        if ((subject['kind'] as String) == 'asset' && m.catalog.assets.containsKey(subject['id'])) ...[
+        if ((subject['kind'] as String) == 'asset' && m.catalog.asset(subject['id']! as String) != null) ...[
           const SizedBox(height: 8),
           SecondaryAction('Open ${subject['label']}',
               icon: 'asset', onPressed: () => openEntity(context, ResultKind.asset, subject['id']! as String)),
