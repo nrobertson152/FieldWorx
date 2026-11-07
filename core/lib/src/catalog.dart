@@ -9,8 +9,24 @@ import 'fxjson.dart' as fx;
 import 'inspection.dart' show checkTemplate, TemplateError;
 
 const String catalogFormat = 'fieldworx.catalog';
+
+/// The catalog versions this reads; it writes none (the bridge writes version 2).
+const List<int> catalogVersions = [1, 2];
 final RegExp _reSha = RegExp(r'^[0-9a-f]{64}$');
 final RegExp _reQty = RegExp(r'^(0|[1-9]\d{0,14})(\.\d{1,9})?$');
+final RegExp _reAssetId = RegExp(r'^(unt|ast)_[0-9a-f]{32}$');
+final RegExp _reAlias = RegExp(r'^ast_[0-9a-f]{32}$');
+const Set<String> _assetV1 = {'id', 'tag', 'serial', 'name', 'part', 'project', 'location', 'built', 'notes', 'as_built'};
+const Set<String> _assetV2 = {
+  'id', 'aliases', 'label', 'class', 'name', 'model', 'part', 'project', 'customer', 'site', 'location', 'status', //
+  'identifiers', 'parent', 'standard', 'documents', 'components', 'milestones', 'history', 'notes', 'source',
+};
+const List<String> assetClasses = ['product', 'component', 'instrument', 'tool'];
+const List<String> assetStatuses = ['', 'planned', 'in-build', 'built', 'in-service', 'out-of-service', 'retired', 'scrapped'];
+const List<String> _schemes = ['serial', 'tag', 'other'];
+const List<String> _sources = ['standard', 'unit', 'register'];
+const List<String> assetBases = ['verified', 'reported', 'declared', 'legacy'];
+const List<String> milestoneNames = ['built', 'shipped', 'installed', 'commissioned', 'decommissioned'];
 
 class CatalogError implements Exception {
   CatalogError(this.message);
@@ -36,11 +52,24 @@ List<Object?> _list(Object? v, String what, [int limit = 1000000]) {
   return v;
 }
 
-/// Throws [CatalogError] unless [c] is a valid version 1 catalog.
+String _choice(Object? v, List<String> choices, String what) {
+  if (v is! String || !choices.contains(v)) throw CatalogError('$what must be one of ${choices.join(', ')}');
+  return v;
+}
+
+bool _bool(Object? v, String what) {
+  if (v is! bool) throw CatalogError('$what must be true or false');
+  return v;
+}
+
+/// Throws [CatalogError] unless [c] is a valid version 1 or 2 catalog (docs/PROTOCOL.md section 6).
 void checkCatalog(Object? c) {
   final m = _keys(c, {'format', 'version', 'projects', 'documents', 'parts', 'bom', 'assets', 'templates'}, 'catalog');
   if (m['format'] != catalogFormat) throw CatalogError('not a FieldWorx catalog');
-  if (m['version'] != 1) throw CatalogError('catalog version ${m['version']} is newer than this program understands');
+  final version = m['version'];
+  if (version is! int || !catalogVersions.contains(version)) {
+    throw CatalogError('catalog version $version is newer than this program understands');
+  }
   final ids = <String>{};
   void unique(String i, String what) {
     if (!ids.add(i)) throw CatalogError('$what id $i appears twice');
@@ -56,6 +85,7 @@ void checkCatalog(Object? c) {
     projects.add(pm['id']! as String);
   }
   final revs = <String>{};
+  final revDoc = <String, String>{};
   final docs = <String>{};
   for (final d in _list(m['documents'], 'documents')) {
     final dm = _keys(d, {'id', 'number', 'title', 'type', 'project', 'path', 'released', 'latest', 'revisions'}, 'document');
@@ -81,6 +111,7 @@ void checkCatalog(Object? c) {
       }
       unique(rm['id']! as String, 'revision');
       revs.add(rm['id']! as String);
+      revDoc[rm['id']! as String] = dm['id']! as String;
       own.add(rm['id']! as String);
       final rend = rm['rendition'];
       if (rend != null) {
@@ -151,20 +182,23 @@ void checkCatalog(Object? c) {
       _s(r, 'reference designator', 64);
     }
   }
-  for (final a in _list(m['assets'], 'assets')) {
-    final am = _keys(a, {'id', 'tag', 'serial', 'name', 'part', 'project', 'location', 'built', 'notes', 'as_built'},
-        'asset');
-    for (final k in ['id', 'tag', 'serial', 'name', 'part', 'project', 'location', 'built']) {
-      _s(am[k], 'asset $k', 200);
+  if (version == 1) {
+    for (final a in _list(m['assets'], 'assets')) {
+      final am = _keys(a, _assetV1, 'asset');
+      for (final k in ['id', 'tag', 'serial', 'name', 'part', 'project', 'location', 'built']) {
+        _s(am[k], 'asset $k', 200);
+      }
+      _s(am['notes'], 'asset notes', 4000);
+      unique(am['id']! as String, 'asset');
+      final part = am['part']! as String, proj = am['project']! as String;
+      if (part.isNotEmpty && !parts.contains(part)) throw CatalogError("an asset names a part that isn't there");
+      if (proj.isNotEmpty && !projects.contains(proj)) throw CatalogError("an asset names a project that isn't there");
+      for (final r in _list(am['as_built'], 'as-built revisions', 1000)) {
+        if (!revs.contains(r)) throw CatalogError("an asset names an as-built revision that isn't there");
+      }
     }
-    _s(am['notes'], 'asset notes', 4000);
-    unique(am['id']! as String, 'asset');
-    final part = am['part']! as String, proj = am['project']! as String;
-    if (part.isNotEmpty && !parts.contains(part)) throw CatalogError("an asset names a part that isn't there");
-    if (proj.isNotEmpty && !projects.contains(proj)) throw CatalogError("an asset names a project that isn't there");
-    for (final r in _list(am['as_built'], 'as-built revisions', 1000)) {
-      if (!revs.contains(r)) throw CatalogError("an asset names an as-built revision that isn't there");
-    }
+  } else {
+    _checkAssetsV2(_list(m['assets'], 'assets'), unique, projects, docs, parts, revDoc);
   }
   final tids = <String>{};
   for (final t in _list(m['templates'], 'templates', 10000)) {
@@ -184,6 +218,165 @@ void checkCatalog(Object? c) {
     final doc = tm['document']! as String;
     if (doc.isNotEmpty && !docs.contains(doc)) throw CatalogError("a template names a document that isn't there");
   }
+}
+
+void _checkAssetsV2(List<Object?> assets, void Function(String, String) unique, Set<String> projects, Set<String> docs,
+    Set<String> parts, Map<String, String> revDoc) {
+  final ids = <String>{};
+  final parents = <String, String>{};
+  for (final a in assets) {
+    final am = _keys(a, _assetV2, 'asset');
+    final id = am['id'];
+    if (id is! String || !_reAssetId.hasMatch(id)) throw CatalogError('an asset id must be unt_ or ast_ and 32 hex digits');
+    unique(id, 'asset');
+    ids.add(id);
+    String? previous;
+    for (final x in _list(am['aliases'], 'asset aliases', 100)) {
+      if (x is! String || !_reAlias.hasMatch(x)) throw CatalogError('asset aliases must be ast_ ids');
+      if (previous != null && x.compareTo(previous) <= 0) throw CatalogError('asset aliases must be sorted and unique');
+      previous = x;
+      unique(x, 'asset');
+    }
+    for (final k in ['label', 'name', 'customer', 'site', 'location', 'source']) {
+      _s(am[k], 'asset $k', 200);
+    }
+    _s(am['model'], 'asset model', 100);
+    _s(am['notes'], 'asset notes', 4000);
+    _choice(am['class'], assetClasses, 'asset class');
+    _choice(am['status'], assetStatuses, 'asset status');
+    final part = _s(am['part'], 'asset part', 64), proj = _s(am['project'], 'asset project', 64);
+    if (part.isNotEmpty && !parts.contains(part)) throw CatalogError("an asset names a part that isn't there");
+    if (proj.isNotEmpty && !projects.contains(proj)) throw CatalogError("an asset names a project that isn't there");
+    for (final i in _list(am['identifiers'], 'asset identifiers', 100)) {
+      final im = _keys(i, {'scheme', 'issuer', 'value', 'active'}, 'identifier');
+      _choice(im['scheme'], _schemes, 'identifier scheme');
+      _s(im['issuer'], 'identifier issuer', 200);
+      if (_s(im['value'], 'identifier value', 100).isEmpty) throw CatalogError('an identifier has no value');
+      _bool(im['active'], 'identifier active');
+    }
+    final parent = am['parent'];
+    if (parent != null) {
+      final pm = _keys(parent, {'asset', 'position'}, 'parent');
+      parents[id] = _s(pm['asset'], 'parent asset', 64);
+      _s(pm['position'], 'parent position', 64);
+    }
+    final standard = am['standard'];
+    if (standard != null) {
+      final sm = _keys(standard, {'number', 'title'}, 'standard');
+      _s(sm['number'], 'standard number', 64);
+      _s(sm['title'], 'standard title', 200);
+    }
+    final seenDocs = <String>{};
+    for (final d in _list(am['documents'], 'asset documents', 2000)) {
+      final dm = _keys(d, {'document', 'revision', 'source', 'basis'}, 'asset document');
+      final doc = _s(dm['document'], 'asset document', 64), rev = _s(dm['revision'], 'asset revision', 64);
+      if (!seenDocs.add(doc)) throw CatalogError('an asset names a document twice');
+      if (!docs.contains(doc)) throw CatalogError("an asset names a document that isn't there");
+      if (rev.isNotEmpty && revDoc[rev] != doc) throw CatalogError("an asset names a revision that isn't there");
+      _choice(dm['source'], _sources, 'document source');
+      _choice(dm['basis'], assetBases, 'document basis');
+    }
+    final positions = <String>{};
+    for (final c in _list(am['components'], 'asset components', 1000)) {
+      final cm = _keys(c, {'position', 'part', 'number', 'asset', 'serial', 'lot', 'since', 'basis'}, 'component');
+      final pos = _s(cm['position'], 'component position', 64);
+      if (pos.isEmpty || !positions.add(pos)) throw CatalogError('component positions must be given and unique');
+      for (final k in ['part', 'number', 'asset', 'serial', 'lot', 'since']) {
+        _s(cm[k], 'component $k', 200);
+      }
+      final cp = cm['part']! as String;
+      if (cp.isNotEmpty && !parts.contains(cp)) throw CatalogError("a component names a part that isn't there");
+      _choice(cm['basis'], assetBases, 'component basis');
+    }
+    final ms = am['milestones'];
+    if (ms is! Map || !ms.keys.every(milestoneNames.contains)) {
+      throw CatalogError('milestones are built, shipped, installed, commissioned and decommissioned');
+    }
+    for (final v in ms.values) {
+      _s(v, 'milestone date', 32);
+    }
+    var last = 0;
+    for (final h in _list(am['history'], 'asset history', 1000)) {
+      final hm = _keys(h, {'n', 'type', 'summary', 'effective', 'time', 'actor', 'basis', 'voided'}, 'history entry');
+      final n = hm['n'];
+      if (n is! int || n <= last) throw CatalogError('history numbers must increase');
+      last = n;
+      _s(hm['type'], 'history type', 64);
+      _s(hm['summary'], 'history summary', 500);
+      _s(hm['effective'], 'history effective', 32);
+      _s(hm['time'], 'history time', 32);
+      _s(hm['actor'], 'history actor', 200);
+      _choice(hm['basis'], assetBases, 'history basis');
+      _bool(hm['voided'], 'history voided');
+    }
+  }
+  for (final a in assets) {
+    final am = fx.asMap(a, 'asset');
+    final fitted = [
+      for (final c in fx.asList(am['components'], 'components')) fx.asMap(c, 'component')['asset']! as String,
+    ];
+    final refs = [
+      ...fitted.where((r) => r.isNotEmpty),
+      if (am['parent'] != null) fx.asMap(am['parent'], 'parent')['asset']! as String,
+    ];
+    for (final r in refs) {
+      if (!ids.contains(r)) throw CatalogError("an asset names an asset that isn't there");
+    }
+  }
+  for (final start in parents.keys) {
+    final seen = <String>{start};
+    var cur = parents[start];
+    while (cur != null) {
+      if (!seen.add(cur)) throw CatalogError('assets are fitted inside each other in a loop');
+      cur = parents[cur];
+    }
+  }
+}
+
+/// An asset as catalog version 2 describes it, whatever the version of its catalog (docs/PROTOCOL.md section 6.4):
+/// a version 1 asset (a row of an asset register) becomes the version 2 asset the protocol derives from it.
+Map<String, Object?> assetView(Map<String, Object?> a, int version, Map<String, String> revisionDocument) {
+  if (version != 1) return a;
+  final tag = a['tag']! as String, serial = a['serial']! as String, built = a['built']! as String;
+  return <String, Object?>{
+    'id': a['id'],
+    'aliases': <Object?>[],
+    'label': tag.isNotEmpty ? tag : serial,
+    'class': 'product',
+    'name': a['name'],
+    'model': '',
+    'part': a['part'],
+    'project': a['project'],
+    'customer': '',
+    'site': '',
+    'location': a['location'],
+    'status': '',
+    'identifiers': <Object?>[
+      for (final s in ['tag', 'serial'])
+        if ((a[s]! as String).isNotEmpty) <String, Object?>{'scheme': s, 'issuer': '', 'value': a[s], 'active': true},
+    ],
+    'parent': null,
+    'standard': null,
+    'documents': <Object?>[
+      for (final r in (a['as_built']! as List).cast<String>())
+        <String, Object?>{'document': revisionDocument[r], 'revision': r, 'source': 'register', 'basis': 'legacy'},
+    ],
+    'components': <Object?>[],
+    'milestones': built.isEmpty ? <String, Object?>{} : <String, Object?>{'built': built},
+    'history': <Object?>[],
+    'notes': a['notes'],
+    'source': '',
+  };
+}
+
+/// Every asset of a checked catalog, in the version 2 shape.
+List<Map<String, Object?>> assetsView(Map<String, Object?> c) {
+  final owner = <String, String>{
+    for (final d in (c['documents']! as List).cast<Map<String, Object?>>())
+      for (final r in (d['revisions']! as List).cast<Map<String, Object?>>()) r['id']! as String: d['id']! as String,
+  };
+  final version = c['version']! as int;
+  return [for (final a in (c['assets']! as List).cast<Map<String, Object?>>()) assetView(a, version, owner)];
 }
 
 // ------------------------------------------------------------------------------------------------- model
@@ -290,13 +483,136 @@ class BomLine {
   final List<String> refdes;
 }
 
+class AssetIdentifier {
+  AssetIdentifier(this.scheme, this.issuer, this.value, this.active);
+  final String scheme, issuer, value;
+  final bool active;
+}
+
+/// One document of a unit's record: the revision that applies to this unit (empty when the document doesn't apply), where
+/// that came from (`standard`, `unit` or `register`) and how well it is known.
+class AssetDocument {
+  AssetDocument(this.documentId, this.revisionId, this.source, this.basis);
+  final String documentId, revisionId, source, basis;
+  bool get applies => revisionId.isNotEmpty;
+}
+
+class AssetComponent {
+  AssetComponent(this.position, this.partId, this.number, this.assetId, this.serial, this.lot, this.since, this.basis);
+  final String position, partId, number, assetId, serial, lot, since, basis;
+}
+
+class AssetEvent {
+  AssetEvent(this.n, this.type, this.summary, this.effective, this.time, this.actor, this.basis, this.voided);
+  final int n;
+  final String type, summary, effective, time, actor, basis;
+  final bool voided;
+}
+
+/// A unit built: from RevisionWorx's unit register (`source` is `revisionworx`), or a row of an asset register.
 class Asset {
-  Asset(this.id, this.tag, this.serial, this.name, this.partId, this.projectId, this.location, this.built, this.notes,
-      this.asBuilt, this.package);
-  final String id, tag, serial, name, partId, projectId, location, built, notes;
-  final List<String> asBuilt;
+  Asset({
+    required this.id,
+    required this.aliases,
+    required this.label,
+    required this.cls,
+    required this.name,
+    required this.model,
+    required this.partId,
+    required this.projectId,
+    required this.customer,
+    required this.site,
+    required this.location,
+    required this.status,
+    required this.identifiers,
+    required this.parentId,
+    required this.parentPosition,
+    required this.standardNumber,
+    required this.standardTitle,
+    required this.documents,
+    required this.components,
+    required this.milestones,
+    required this.history,
+    required this.notes,
+    required this.source,
+    required this.package,
+  });
+
+  /// From a checked catalog's asset in the version 2 shape ([assetView]).
+  factory Asset.fromView(Map<String, Object?> v, PackageInfo package) {
+    final parent = v['parent'] as Map<String, Object?>?;
+    final standard = v['standard'] as Map<String, Object?>?;
+    return Asset(
+      id: v['id']! as String,
+      aliases: (v['aliases']! as List).cast<String>(),
+      label: v['label']! as String,
+      cls: v['class']! as String,
+      name: v['name']! as String,
+      model: v['model']! as String,
+      partId: v['part']! as String,
+      projectId: v['project']! as String,
+      customer: v['customer']! as String,
+      site: v['site']! as String,
+      location: v['location']! as String,
+      status: v['status']! as String,
+      identifiers: [
+        for (final i in (v['identifiers']! as List).cast<Map<String, Object?>>())
+          AssetIdentifier(i['scheme']! as String, i['issuer']! as String, i['value']! as String, i['active']! as bool),
+      ],
+      parentId: parent == null ? '' : parent['asset']! as String,
+      parentPosition: parent == null ? '' : parent['position']! as String,
+      standardNumber: standard == null ? '' : standard['number']! as String,
+      standardTitle: standard == null ? '' : standard['title']! as String,
+      documents: [
+        for (final d in (v['documents']! as List).cast<Map<String, Object?>>())
+          AssetDocument(d['document']! as String, d['revision']! as String, d['source']! as String, d['basis']! as String),
+      ],
+      components: [
+        for (final c in (v['components']! as List).cast<Map<String, Object?>>())
+          AssetComponent(c['position']! as String, c['part']! as String, c['number']! as String, c['asset']! as String,
+              c['serial']! as String, c['lot']! as String, c['since']! as String, c['basis']! as String),
+      ],
+      milestones: (v['milestones']! as Map).cast<String, String>(),
+      history: [
+        for (final h in (v['history']! as List).cast<Map<String, Object?>>())
+          AssetEvent(h['n']! as int, h['type']! as String, h['summary']! as String, h['effective']! as String,
+              h['time']! as String, h['actor']! as String, h['basis']! as String, h['voided']! as bool),
+      ],
+      notes: v['notes']! as String,
+      source: v['source']! as String,
+      package: package,
+    );
+  }
+
+  final String id, label, cls, name, model, partId, projectId, customer, site, location, status, notes, source;
+  final String parentId, parentPosition, standardNumber, standardTitle;
+  final List<String> aliases;
+  final List<AssetIdentifier> identifiers;
+  final List<AssetDocument> documents;
+  final List<AssetComponent> components;
+  final Map<String, String> milestones;
+  final List<AssetEvent> history;
   final PackageInfo package;
-  String get label => tag.isNotEmpty ? tag : serial;
+
+  String _current(String scheme) {
+    for (final i in identifiers) {
+      if (i.scheme == scheme && i.active) return i.value;
+    }
+    return '';
+  }
+
+  String get tag => _current('tag');
+  String get serial => _current('serial');
+  String get built => milestones['built'] ?? '';
+
+  /// Whether this comes from RevisionWorx's unit register (rather than a row of an asset register).
+  bool get isUnit => source == 'revisionworx';
+
+  /// The revisions this unit's record names, as built or since modified.
+  List<String> get asBuilt => [for (final d in documents) if (d.applies) d.revisionId];
+
+  /// The code its permanent label carries: its id when it is a unit in the register, else its label.
+  String get labelCode => id.startsWith('unt_') ? id : label;
 }
 
 class TemplateEntry {
@@ -328,6 +644,9 @@ class Catalog {
   final Map<String, Revision> revisions = {};
   final Map<String, Part> parts = {};
   final Map<String, Asset> assets = {};
+
+  /// Earlier ids of assets (a unit's FieldWorx 0.1 `ast_` id): alias -> asset id.
+  final Map<String, String> assetAliases = {};
   final List<BomLine> bom = [];
   final List<TemplateEntry> templates = [];
   final List<PackageInfo> packages = [];
@@ -419,19 +738,13 @@ class Catalog {
     final parents = {for (final l in lines) l.parentId};
     bom.removeWhere((l) => parents.contains(l.parentId));
     bom.addAll(lines);
-    for (final a in (c['assets']! as List).cast<Map<String, Object?>>()) {
-      assets[a['id']! as String] = Asset(
-          a['id']! as String,
-          a['tag']! as String,
-          a['serial']! as String,
-          a['name']! as String,
-          a['part']! as String,
-          a['project']! as String,
-          a['location']! as String,
-          a['built']! as String,
-          a['notes']! as String,
-          (a['as_built']! as List).cast<String>(),
-          pkg);
+    for (final v in assetsView(c)) {
+      final a = Asset.fromView(v, pkg);
+      assets[a.id] = a;
+      for (final x in a.aliases) {
+        assetAliases[x] = a.id;
+        assets.remove(x); // an older package's register row for the same unit
+      }
     }
     for (final t in (c['templates']! as List).cast<Map<String, Object?>>()) {
       final e = TemplateEntry(fx.asMap(t['template'], 'template'), t['document']! as String, t['revision']! as String,
@@ -468,6 +781,13 @@ class Catalog {
   }
 
   List<Asset> assetsForPart(String partId) => [for (final a in assets.values) if (a.partId == partId) a];
+
+  /// An asset by its id or by an earlier id (records made against a unit before it joined the unit register).
+  Asset? asset(String id) => assets[id] ?? assets[assetAliases[id] ?? ''];
+
+  /// Units fitted in [a], by position.
+  List<Asset> fittedIn(Asset a) => [for (final x in assets.values) if (x.parentId == a.id) x]
+    ..sort((x, y) => _naturalCompare(x.parentPosition, y.parentPosition));
   List<Document> documentsForProject(String id) =>
       [for (final d in documents.values) if (d.projectId == id) d]..sort((a, b) => _naturalCompare(a.label, b.label));
   List<Asset> assetsForProject(String id) => [for (final a in assets.values) if (a.projectId == id) a];
@@ -506,8 +826,15 @@ class Catalog {
     }
 
     for (final a in assets.values) {
-      final s = [codeScore(a.tag, 1000, 700, 300), codeScore(a.serial, 1000, 700, 300), textScore(a.name, 40),
-        textScore(a.location, 20)].reduce((x, y) => x > y ? x : y);
+      final s = [
+        codeScore(a.label, 1000, 700, 300),
+        for (final i in a.identifiers) codeScore(i.value, i.active ? 1000 : 600, i.active ? 700 : 400, i.active ? 300 : 150),
+        codeScore(a.model, 500, 300, 120),
+        textScore(a.name, 40),
+        textScore(a.location, 20),
+        textScore(a.customer, 20),
+        textScore(a.site, 20),
+      ].reduce((x, y) => x > y ? x : y);
       if (s > 0) {
         out.add(SearchResult(ResultKind.asset, a.id, a.label, [a.name, a.location].where((x) => x.isNotEmpty).join(' · '),
             s, 'asset'));

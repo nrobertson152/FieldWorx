@@ -107,6 +107,41 @@ void main() {
       expect(find.text('FIELDWORX LABEL: PART'), findsOneWidget);
       await tapAndWait(tester, button('Search for “NOPE-1”'), find.text('No matches'));
     });
+
+    testWidgets('a unit from the unit register: its permanent label, standard, differences, fitted units and record',
+        (tester) async {
+      phone(tester, height: 1600);
+      final (m, s) = await openPhone(tester, demo: false);
+      await tester.runAsync(() => m.installPackage(File('../spec/vectors/units.fieldworx')));
+      await showApp(tester, m);
+      final hpu = 'unt_${'0c' * 16}';
+
+      s.scan('FWX:A:ast_${'0e' * 16}');
+      await waitFor(tester, find.text('UNIT'));
+      expect(find.text('Former code'), findsOneWidget, reason: 'its FieldWorx 0.1 label still opens it');
+      await back(tester);
+
+      s.scan('FWX:A:$hpu');
+      await waitFor(tester, find.text('UNIT'));
+      for (final chip in ['HPU-0001', 'in service', 'built 2026-03-18', '1 drawing revised since']) {
+        expect(find.text(chip), findsOneWidget, reason: chip);
+      }
+      expect(find.text('Build standard'), findsOneWidget);
+      await reveal(tester, row(['FRM-200 rev A', 'current is rev B', 'this unit only']));
+      await reveal(tester, row(['HPU-75-GA rev A', 'declared']));
+      await reveal(tester, row(['MAN-HPU-75', 'doesn’t apply to this unit']));
+      await reveal(tester, row(['M1 · MTR-7K5', 'S/N M-998877']));
+      await reveal(tester, row(['wrong unit', 'voided']));
+
+      await tapOn(tester, find.text('P1 · GP-4471'));
+      await waitFor(tester, find.text('FITTED IN'));
+      expect(row(['NH-26-0001', 'Hydraulic power unit · position P1']), findsOneWidget);
+      await back(tester);
+
+      await tester.tap(iconButton('Show label'));
+      await tester.pumpAndSettle();
+      expect(find.text('QR FWX:A:$hpu'), findsOneWidget, reason: 'a unit’s label carries its permanent id');
+    });
   });
 
   testWidgets('a document: revisions, units built to it, the drawing viewer and a superseded revision',

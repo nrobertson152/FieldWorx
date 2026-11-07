@@ -452,15 +452,36 @@ class AssetScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final m = AppScope.of(context);
     final c = m.catalog;
-    final a = c.assets[id];
+    final a = c.asset(id);
     if (a == null) return _notFound(context, 'This asset');
     final part = c.parts[a.partId];
     final project = c.projects[a.projectId];
-    final asBuilt = [for (final r in a.asBuilt) c.revisions[r]].whereType<Revision>().toList();
-    final history = m.inspectionsFor(a.id);
-    final outOfDate = asBuilt.where((r) => r.document.released != null && r.document.released!.id != r.id).length;
+    final parent = a.parentId.isEmpty ? null : c.asset(a.parentId);
+    final asBuilt = [
+      for (final d in a.documents)
+        if (d.applies && c.revisions[d.revisionId] != null) (d, c.revisions[d.revisionId]!),
+    ];
+    final notApplied = [
+      for (final d in a.documents)
+        if (!d.applies && c.documents[d.documentId] != null) c.documents[d.documentId]!,
+    ];
+    final history = m.inspectionsFor(a.id, also: a.aliases);
+    final outOfDate =
+        asBuilt.where((x) => x.$2.document.released != null && x.$2.document.released!.id != x.$2.id).length;
+    final details = <Widget>[
+      if (a.isUnit)
+        for (final i in a.identifiers) KeyValueRow(_identifierName(i), i.issuer.isEmpty ? i.value : '${i.value} (${i.issuer})'),
+      if (a.customer.isNotEmpty) KeyValueRow('Customer', a.customer),
+      if (a.site.isNotEmpty) KeyValueRow('Site', a.site),
+      if (a.location.isNotEmpty) KeyValueRow('Location', a.location),
+      if (a.standardNumber.isNotEmpty)
+        KeyValueRow('Build standard', [a.standardNumber, a.standardTitle].where((s) => s.isNotEmpty).join(' · ')),
+      for (final k in milestoneNames)
+        if (k != 'built' && (a.milestones[k] ?? '').isNotEmpty) KeyValueRow(_capitalised(k), a.milestones[k]!),
+      if (a.notes.isNotEmpty) KeyValueRow('Notes', a.notes),
+    ];
     return Scaffold(
-      appBar: AppBar(title: Text(a.label), actions: [_LabelAction(ResultKind.asset, a.label, a.label)]),
+      appBar: AppBar(title: Text(a.label), actions: [_LabelAction(ResultKind.asset, a.labelCode, a.label)]),
       body: PageList(
         bottom: c.templates.isNotEmpty && m.canRecord
             ? PrimaryAction('Start an inspection',
@@ -469,23 +490,22 @@ class AssetScreen extends StatelessWidget {
                     subject: {'kind': 'asset', 'id': a.id, 'label': a.label}, titlePrefix: a.label))
             : null,
         children: [
-          StatusBlock(icon: 'asset', kind: 'Asset', title: a.label, subtitle: a.name, chips: [
+          StatusBlock(icon: 'asset', kind: a.isUnit ? 'Unit' : 'Asset', title: a.label, subtitle: a.name, chips: [
             if (a.serial.isNotEmpty && a.serial != a.label) StatusChip('S/N ${a.serial}'),
+            if (a.isUnit && a.tag.isNotEmpty && a.tag != a.label) StatusChip(a.tag),
+            if (a.status.isNotEmpty) StatusChip(a.status.replaceAll('-', ' '), tone: _statusTone(a.status)),
             if (a.built.isNotEmpty) StatusChip('built ${a.built}'),
             if (outOfDate > 0)
               StatusChip('$outOfDate drawing${outOfDate == 1 ? '' : 's'} revised since', tone: Tone.warn),
           ]),
-          if (a.location.isNotEmpty || a.notes.isNotEmpty) ...[
+          if (details.isNotEmpty) ...[
             const SizedBox(height: 10),
-            RowsCard(children: [
-              if (a.location.isNotEmpty) KeyValueRow('Location', a.location),
-              if (a.notes.isNotEmpty) KeyValueRow('Notes', a.notes),
-            ]),
+            RowsCard(children: details),
           ],
-          if (asBuilt.isNotEmpty) ...[
+          if (asBuilt.isNotEmpty || notApplied.isNotEmpty) ...[
             const SectionHeader('As built'),
             RowsCard(children: [
-              for (final r in asBuilt)
+              for (final (d, r) in asBuilt)
                 EntityRow(
                   icon: r.rendition != null ? 'pdf' : 'document',
                   title: '${r.document.label} rev ${r.label}',
@@ -494,17 +514,47 @@ class AssetScreen extends StatelessWidget {
                     StatusChip(r.stateName.isEmpty ? r.state : r.stateName, tone: stateTone(r.state)),
                     if (r.document.released != null && r.document.released!.id != r.id)
                       StatusChip('current is rev ${r.document.released!.label}', tone: Tone.warn),
+                    if (a.isUnit && d.source == 'unit' && a.standardNumber.isNotEmpty)
+                      const StatusChip('this unit only', tone: Tone.info),
+                    if (a.isUnit) ..._basisChips(d.basis),
                   ],
                   onTap: r.rendition != null
                       ? () => openRevision(context, r)
                       : () => openEntity(context, ResultKind.document, r.document.id),
                 ),
+              for (final doc in notApplied)
+                EntityRow(
+                  icon: 'document',
+                  title: doc.label,
+                  subtitle: doc.title,
+                  chips: const [StatusChip('doesn’t apply to this unit')],
+                  onTap: () => openEntity(context, ResultKind.document, doc.id),
+                ),
             ]),
             Padding(
               padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
-              child: Text('These are the revisions this unit was built to, which may be older than what is released now.',
+              child: Text(
+                  a.isUnit
+                      ? 'These are the revisions that apply to this unit: its build standard’s, and any recorded for this '
+                          'unit alone. They may be older than what is released now.'
+                      : 'These are the revisions this unit was built to, which may be older than what is released now.',
                   style: TextStyle(color: context.fx.muted, fontSize: 13)),
             ),
+          ],
+          if (a.parentId.isNotEmpty) ...[
+            const SectionHeader('Fitted in'),
+            RowsCard(children: [
+              EntityRow(
+                icon: 'asset',
+                title: parent?.label ?? 'A unit that isn’t on this phone',
+                subtitle: [if (parent != null) parent.name, 'position ${a.parentPosition}'].join(' · '),
+                onTap: parent == null ? null : () => openEntity(context, ResultKind.asset, parent.id),
+              ),
+            ]),
+          ],
+          if (a.components.isNotEmpty) ...[
+            SectionHeader('Fitted (${a.components.length})'),
+            RowsCard(children: [for (final f in a.components) _componentRow(context, c, f)]),
           ],
           if (part != null) ...[
             const SectionHeader('Model'),
@@ -524,6 +574,26 @@ class AssetScreen extends StatelessWidget {
             )
           else
             RowsCard(children: [for (final s in history) InspectionRow(state: s)]),
+          if (a.history.isNotEmpty) ...[
+            SectionHeader('Record (${a.history.length})'),
+            RowsCard(children: [
+              for (final h in a.history.reversed)
+                EntityRow(
+                  icon: 'clock',
+                  title: h.summary.isEmpty ? h.type : h.summary,
+                  subtitle: [h.effective, h.actor].where((s) => s.isNotEmpty).join(' · '),
+                  chips: [
+                    if (h.voided) const StatusChip('voided', tone: Tone.warn),
+                    ..._basisChips(h.basis),
+                  ],
+                ),
+            ]),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+              child: Text('From RevisionWorx’s unit register. Changes to it are made there, not on the phone.',
+                  style: TextStyle(color: context.fx.muted, fontSize: 13)),
+            ),
+          ],
           if (project != null) ...[
             const SectionHeader('Project'),
             RowsCard(children: [
@@ -538,6 +608,48 @@ class AssetScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+String _capitalised(String s) => s.isEmpty ? s : '${s[0].toUpperCase()}${s.substring(1)}';
+
+String _identifierName(AssetIdentifier i) {
+  final name = switch (i.scheme) { 'tag' => 'asset tag', 'serial' => 'serial number', _ => 'code' };
+  return _capitalised(i.active ? name : 'former $name');
+}
+
+Tone _statusTone(String status) => switch (status) {
+      'in-service' || 'built' => Tone.ok,
+      'out-of-service' => Tone.warn,
+      _ => Tone.neutral,
+    };
+
+/// How well a fact is known, when it is less than verified.
+List<Widget> _basisChips(String basis) => [
+      if (basis == 'reported') const StatusChip('reported'),
+      if (basis == 'declared') const StatusChip('declared'),
+      if (basis == 'legacy') const StatusChip('from old records'),
+    ];
+
+Widget _componentRow(BuildContext context, Catalog c, AssetComponent f) {
+  final unit = f.assetId.isEmpty ? null : c.asset(f.assetId);
+  final part = c.parts[f.partId];
+  final what = unit?.label ?? (f.number.isNotEmpty ? f.number : (part?.number ?? 'a part'));
+  return EntityRow(
+    icon: unit != null ? 'asset' : 'part',
+    title: '${f.position} · $what',
+    subtitle: [
+      if (unit != null) unit.name else if (part != null) part.description,
+      if (unit == null && f.serial.isNotEmpty) 'S/N ${f.serial}',
+      if (f.lot.isNotEmpty) 'lot ${f.lot}',
+      if (f.since.isNotEmpty) 'since ${f.since}',
+    ].where((s) => s.isNotEmpty).join(' · '),
+    chips: _basisChips(f.basis),
+    onTap: unit != null
+        ? () => openEntity(context, ResultKind.asset, unit.id)
+        : part != null
+            ? () => openEntity(context, ResultKind.part, part.id)
+            : null,
+  );
 }
 
 // ------------------------------------------------------------------------------------------------- projects

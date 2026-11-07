@@ -61,11 +61,18 @@ def test_parts_bom_assets_templates(demo, tmp_path):
         k1 = [ln for ln in c["bom"] if "K1" in ln["refdes"]]
         assert len(k1) == 1 and k1[0]["child"] == parts["CT-09-24DC"]["id"]
         assert k1[0]["parent"] == parts["PNL-24"]["id"]
-        assets = {a["tag"]: a for a in c["assets"]}
+        assert c["version"] == 2
+        assets = {a["label"]: a for a in c["assets"]}
         frm = _doc(c, "FRM-200")
         rev_a, rev_b = frm["revisions"][0]["id"], frm["revisions"][1]["id"]
-        assert rev_a in assets["HPU-0001"]["as_built"] and rev_b in assets["HPU-0002"]["as_built"]
-        assert assets["HPU-0001"]["part"] == parts["HPU-75"]["id"]
+        built_to = {k: {d["revision"] for d in a["documents"]} for k, a in assets.items()}
+        assert rev_a in built_to["HPU-0001"] and rev_b in built_to["HPU-0002"]
+        assert {d["source"] for d in assets["HPU-0001"]["documents"]} == {"register"}
+        assert assets["HPU-0001"]["part"] == parts["HPU-75"]["id"] and assets["HPU-0001"]["model"] == "HPU-75"
+        assert assets["HPU-0001"]["identifiers"] == [
+            {"scheme": "tag", "issuer": "", "value": "HPU-0001", "active": True},
+            {"scheme": "serial", "issuer": "", "value": "NH-26-0001", "active": True}]
+        assert assets["HPU-0001"]["source"].startswith("AST-HPU-75 rev")
         t = c["templates"][0]
         assert (t["template"]["id"], t["template"]["revision"], t["state"]) == ("ITP-HPU-75", "1", "released")
         assert sum(len(s["items"]) for s in t["template"]["sections"]) == 16
@@ -135,7 +142,7 @@ def test_demo_history_belongs_to_the_package_assets(tmp_path):
     pkg = tmp_path / "demo.fieldworx"
     assert build_demo.main([str(tmp_path / "demo"), "--history", "--package", str(pkg)]) == 0
     with archive.read(pkg) as arc:
-        assets = {a["tag"]: a["id"] for a in arc.catalog["assets"]}
+        assets = {a["label"]: a["id"] for a in arc.catalog["assets"]}
         log = E.FieldLog()
         log.import_events(arc.events)
     results = [inspections.reduce(log, e) for e in inspections.inspection_entities(log)]

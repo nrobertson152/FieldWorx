@@ -153,6 +153,14 @@ only the content of the released revision (and, with `--unreleased`, the latest 
 every revision a unit was built to. A document whose released revision is newer than what a unit was built to says
 so on the unit's page (*current is rev B*); a superseded drawing opens with a red banner.
 
+Units come from RevisionWorx's unit register when it has one (RevisionWorx ADR-025, `revisionworx link units`), as
+catalog version 2 assets (PROTOCOL.md section 6.4): a permanent `unt_` id, every identifier with its issuer (former
+ones kept), the revisions that apply with where each came from (build standard, the unit itself) and how well it is
+known, fitted components, milestones and the unit's history. RevisionWorx stays the record: the package is a
+snapshot of it, and nothing on the phone changes it. A unit that FieldWorx 0.1 knew from an asset register row keeps
+that row's `ast_` id as an alias, so field records already made against it stay attached. Asset registers still work
+for units the unit register doesn't hold; a row for one it does hold is skipped. Version 1 catalogs still open.
+
 ### 5.2 Drawings (ADR-009)
 
 The phone shows PDFs (PDFium, through pdfrx): pinch to zoom, find text, page by page. Native formats are turned
@@ -162,7 +170,8 @@ what it is (*an OpenSchematix project*) and a note asking engineering to publish
 
 ### 5.3 Labels and scanning (ADR-008)
 
-FieldWorx labels say what they point at and never contain a web address: `FWX:A:HPU-0001` (asset),
+FieldWorx labels say what they point at and never contain a web address: `FWX:A:unt_…` (a unit's permanent id;
+its earlier `ast_` id works too, and an id never falls back to a tag that looks the same), `FWX:A:HPU-0001` (asset),
 `FWX:P:FRM-200` (part), `FWX:D:SCH-12` (document), `FWX:J:J-2001` (project). Any other code (a maker's barcode,
 a serial plate, a supplier's SKU, a reference designator typed as *K1*) is matched exactly against the catalog.
 Several matches are all shown; none says none. Nothing is guessed. The scanner is zxing-cpp (Apache-2.0) through

@@ -375,6 +375,111 @@ def sample_catalog() -> dict:
     return c
 
 
+def sample_catalog_v2() -> dict:
+    """A version 2 catalog: a unit from RevisionWorx's register (its own revision of one document, a standard's
+    revision of another, a document that doesn't apply, a fitted component unit, history) and an asset register row."""
+    import copy
+    from fieldworx_bridge import catalog as cat_mod
+    c = copy.deepcopy(sample_catalog())
+    c["version"] = 2
+    gad = {"id": "doc_" + "08" * 16, "number": "HPU-75-GA", "title": "General arrangement", "type": "pdf",
+           "project": "prj_" + "01" * 16, "path": "HPU-75-GA.pdf", "released": "rev_" + "09" * 16,
+           "latest": "rev_" + "09" * 16,
+           "revisions": [{"id": "rev_" + "09" * 16, "label": "A", "state": "released", "state_name": "Released",
+                          "sha256": "bb" * 32, "size": 12, "created": "2026-02-10T09:00:00+00:00", "author": "am",
+                          "description": "First issue", "ext": ".pdf", "rendition": None}]}
+    man = {**gad, "id": "doc_" + "0a" * 16, "number": "MAN-HPU-75", "title": "Manual", "path": "MAN.pdf",
+           "released": "rev_" + "0b" * 16, "latest": "rev_" + "0b" * 16,
+           "revisions": [{**gad["revisions"][0], "id": "rev_" + "0b" * 16, "sha256": "cc" * 32}]}
+    c["documents"] += [gad, man]
+    hpu, pump, row = "unt_" + "0c" * 16, "unt_" + "0d" * 16, "ast_" + "05" * 16
+    c["assets"] = [
+        {"id": hpu, "aliases": ["ast_" + "0e" * 16], "label": "NH-26-0001", "class": "product",
+         "name": "Hydraulic power unit", "model": "HPU-75", "part": "pn:hpu-75", "project": "prj_" + "01" * 16,
+         "customer": "Acme Manufacturing", "site": "Milltown", "location": "Pump house", "status": "in-service",
+         "identifiers": [{"scheme": "serial", "issuer": "", "value": "NH-26-0001", "active": True},
+                         {"scheme": "tag", "issuer": "Acme", "value": "HPU-0001", "active": True},
+                         {"scheme": "other", "issuer": "Previous owner", "value": "OLD-17", "active": False}],
+         "parent": None, "standard": {"number": "HPU-75-A", "title": "HPU-75 standard A"},
+         "documents": [{"document": "doc_" + "02" * 16, "revision": "rev_" + "03" * 16, "source": "unit",
+                        "basis": "verified"},
+                       {"document": "doc_" + "08" * 16, "revision": "rev_" + "09" * 16, "source": "standard",
+                        "basis": "declared"},
+                       {"document": "doc_" + "0a" * 16, "revision": "", "source": "unit", "basis": "declared"}],
+         "components": [{"position": "P1", "part": "", "number": "PMP-10", "asset": pump, "serial": "", "lot": "",
+                         "since": "2026-03-18", "basis": "reported"},
+                        {"position": "M1", "part": "", "number": "MTR-7K5", "asset": "", "serial": "M-998877",
+                         "lot": "", "since": "", "basis": "declared"}],
+         "milestones": {"built": "2026-03-18", "commissioned": ""},
+         "history": [{"n": 1, "type": "unit.registered", "summary": "registered (serial NH-26-0001)", "effective": "",
+                      "time": "2026-11-06T10:00:00+00:00", "actor": "Dana Whitfield", "basis": "legacy",
+                      "voided": False},
+                     {"n": 2, "type": "note", "summary": "wrong unit", "effective": "", "time": "2026-11-06T10:01:00+00:00",
+                      "actor": "Dana Whitfield", "basis": "declared", "voided": True}],
+         "notes": "Line 2", "source": "revisionworx"},
+        {"id": pump, "aliases": [], "label": "GP-4471", "class": "component", "name": "", "model": "PMP-10",
+         "part": "", "project": "", "customer": "", "site": "", "location": "", "status": "built",
+         "identifiers": [{"scheme": "serial", "issuer": "Hydrix", "value": "GP-4471", "active": True}],
+         "parent": {"asset": hpu, "position": "P1"}, "standard": None, "documents": [], "components": [],
+         "milestones": {}, "history": [], "notes": "", "source": "revisionworx"},
+        {"id": row, "aliases": [], "label": "HPU-0002", "class": "product", "name": "Unit 2", "model": "HPU-75",
+         "part": "pn:hpu-75", "project": "prj_" + "01" * 16, "customer": "", "site": "", "location": "Bayside",
+         "status": "", "identifiers": [{"scheme": "tag", "issuer": "", "value": "HPU-0002", "active": True}],
+         "parent": None, "standard": None,
+         "documents": [{"document": "doc_" + "02" * 16, "revision": "rev_" + "04" * 16, "source": "register",
+                        "basis": "legacy"}],
+         "components": [], "milestones": {"built": "2026-06-20"}, "history": [], "notes": "",
+         "source": "AST-HPU-75 rev A"}]
+    cat_mod.check_catalog(c)
+    return c
+
+
+def catalog_vectors() -> dict:
+    """Catalogs both implementations accept (with the version 2 view of their assets) and refuse."""
+    import copy
+    from fieldworx_bridge import catalog as cat_mod
+    v1, v2 = sample_catalog(), sample_catalog_v2()
+    accept = [{"name": n, "catalog": c, "assets": cat_mod.assets_view(c)} for n, c in
+              (("version 1 asset read as version 2", v1), ("version 2 units and a register row", v2))]
+
+    def bad(name: str, fn) -> dict:
+        c = copy.deepcopy(v2)
+        fn(c)
+        try:
+            cat_mod.check_catalog(c)
+        except cat_mod.CatalogError:
+            return {"name": name, "catalog": c}
+        raise AssertionError(f"catalog vector {name!r} was accepted")
+
+    a = lambda c, i: c["assets"][i]  # noqa: E731
+    refuse = [
+        bad("a newer version", lambda c: c.update(version=3)),
+        bad("an id that isn't a unit or asset id", lambda c: a(c, 0).update(id="dev_" + "0c" * 16)),
+        bad("an alias that isn't an asset register id", lambda c: a(c, 0).update(aliases=["unt_" + "0f" * 16])),
+        bad("aliases out of order", lambda c: a(c, 0).update(aliases=["ast_" + "ff" * 16, "ast_" + "0e" * 16])),
+        bad("an alias that is another asset's id", lambda c: a(c, 0).update(aliases=["ast_" + "05" * 16])),
+        bad("a revision of another document", lambda c: a(c, 0)["documents"][1].update(revision="rev_" + "03" * 16)),
+        bad("a document that isn't there", lambda c: a(c, 0)["documents"][2].update(document="doc_" + "77" * 16)),
+        bad("a document twice", lambda c: a(c, 0)["documents"].append(dict(a(c, 0)["documents"][1]))),
+        bad("a component asset that isn't there", lambda c: a(c, 0)["components"][0].update(asset="unt_" + "77" * 16)),
+        bad("a component position twice", lambda c: a(c, 0)["components"][1].update(position="P1")),
+        bad("a part that isn't text", lambda c: a(c, 2).update(part=None)),
+        bad("fitted inside itself", lambda c: a(c, 0).update(parent={"asset": "unt_" + "0d" * 16, "position": "X"})),
+        bad("an unknown status", lambda c: a(c, 0).update(status="lost")),
+        bad("a FieldWorx id as an identifier", lambda c: a(c, 0)["identifiers"][0].update(scheme="fieldworx")),
+        bad("an identifier without a value", lambda c: a(c, 0)["identifiers"][0].update(value="")),
+        bad("history numbers that don't increase", lambda c: a(c, 0)["history"][1].update(n=1)),
+        bad("an unknown milestone", lambda c: a(c, 0)["milestones"].update(delivered="2026-04-01")),
+        bad("a version 1 asset in a version 2 catalog", lambda c: c.update(assets=sample_catalog()["assets"])),
+        bad("a missing key", lambda c: a(c, 1).pop("site")),
+    ]
+    return {"accept": accept, "refuse": refuse}
+
+
+#: The sample archives: a version 1 package with field records, a field log, and a version 2 package of units.
+ARCHIVES = ("sample.fieldworx", "sample.fieldlog", "units.fieldworx")
+
+
 def write_archives(force: bool) -> dict:
     from fieldworx_bridge import archive
     pkg, flg = OUT / "sample.fieldworx", OUT / "sample.fieldlog"
@@ -390,13 +495,14 @@ def write_archives(force: bool) -> dict:
         archive.write(flg, "fieldlog", archive_id="flg_" + "07" * 16, title="Sample field log", created=t(31),
                       created_by={"device": DEV_A, "user": "Alex Morgan"}, events=evs,
                       objects=[archive.ObjectSource.from_bytes(JPEG, "image/jpeg")], overwrite=True)
-    out = {}
-    for f in (pkg, flg):
-        with archive.read(f) as a:
-            out[f.name] = {"digest": a.digest, "kind": a.kind, "id": a.id,
-                           "events": [e.id for e in a.events], "objects": sorted(a.objects),
-                           "catalog_digest": fxjson.digest("catalog/v1", a.catalog) if a.catalog else ""}
-    return out
+    units = OUT / "units.fieldworx"
+    if force or not units.exists():
+        archive.write(units, "package", archive_id="pkg_" + "0f" * 16, title="Sample units", created=t(32),
+                      created_by={"user": "vectors", "tool": "make_vectors"}, source={"system": "revisionworx"},
+                      series="u" * 32, catalog=sample_catalog_v2(), events=[],
+                      objects=[archive.ObjectSource.from_bytes(PDF, "application/pdf")],
+                      notices=["Sample only."], overwrite=True)
+    return _archives_summary()
 
 
 def write_all(check: bool, force_archives: bool = False) -> int:
@@ -404,7 +510,7 @@ def write_all(check: bool, force_archives: bool = False) -> int:
     files = {
         "fxjson.json": fxjson_vectors(), "digests.json": digest_vectors(), "envelopes.json": envelope_vectors(),
         "fieldlog.json": fieldlog_scenarios(), "inspections.json": inspection_scenarios(),
-        "templates.json": template_vectors(), "decimals.json": decimal_vectors(),
+        "templates.json": template_vectors(), "decimals.json": decimal_vectors(), "catalogs.json": catalog_vectors(),
         "archives.json": write_archives(force_archives) if not check else _archives_summary(),
     }
     stale = []
@@ -425,7 +531,7 @@ def write_all(check: bool, force_archives: bool = False) -> int:
 def _archives_summary() -> dict:
     from fieldworx_bridge import archive
     out = {}
-    for name in ("sample.fieldworx", "sample.fieldlog"):
+    for name in ARCHIVES:
         with archive.read(OUT / name) as a:
             out[name] = {"digest": a.digest, "kind": a.kind, "id": a.id, "events": [e.id for e in a.events],
                          "objects": sorted(a.objects),

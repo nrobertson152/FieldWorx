@@ -11,7 +11,8 @@ Section numbers are cited from the code; keep them stable.
 ## 1. Conventions
 
 - Ids are `<three lowercase letters>_<32 lowercase hex>`, random, as RevisionWorx makes them: `dev_` devices,
-  `ins_` inspections, `pkg_` packages, `flg_` field logs, `ast_` assets (derived, section 6.4).
+  `ins_` inspections, `pkg_` packages, `flg_` field logs, `unt_` units (RevisionWorx's unit register, permanent),
+  `ast_` assets of an asset register (derived, section 6.4).
 - Hashes are SHA-256, lowercase hex.
 - Times are UTC with a `Z`; writers use milliseconds, readers accept 0–6 fractional digits:
   `2026-11-06T21:42:00.123Z`.
@@ -96,7 +97,7 @@ it has not sent before (or all of them, on request). Sending one twice is harmle
 characters. A device keeps one package per series: a newer one (later `created`) replaces the older; an older one
 is refused. A package may carry field events (the hub's, section 8); they are imported like a field log's.
 
-Vectors: `archives.json`, `sample.fieldworx`, `sample.fieldlog`.
+Vectors: `archives.json`, `sample.fieldworx` (a version 1 catalog with field records), `sample.fieldlog`, `units.fieldworx` (a version 2 catalog of units).
 
 ## 4. Field events
 
@@ -211,9 +212,13 @@ Computed from the entity's events **sorted by id** (never by arrival order or ti
 
 ## 6. The catalog
 
-`catalog.json`: FXJ object with exactly `format` (`"fieldworx.catalog"`), `version` (`1`), `projects`,
-`documents`, `parts`, `bom`, `assets`, `templates`. Every cross-reference must point inside the catalog; ids are
-unique. A newer `version` is refused with a request to update.
+`catalog.json`: FXJ object with exactly `format` (`"fieldworx.catalog"`), `version` (`2`; `1` is still read),
+`projects`, `documents`, `parts`, `bom`, `assets`, `templates`. Every cross-reference must point inside the catalog;
+ids are unique. A newer `version` is refused with a request to update.
+
+Versions 1 and 2 differ only in the shape of an asset (section 6.4). Writers write version 2. A version 1 reader (FieldWorx
+0.1) refuses a version 2 package whole, asking for an update, which is the intended failure. A version 2 reader reads a version 1
+asset as the version 2 asset section 6.4 derives from it, so an old package keeps working.
 
 ### 6.1 Projects and documents
 
@@ -242,14 +247,51 @@ All revisions' metadata is included; content only for those the package needs (A
 `stock` on a part is `null` or `{on_hand (decimal), unit, bin, as_of, source}`: on hand from an OpenMeridian
 company file (the sum of its append-only `stock_moves`), read when the package was made and shown as *not live*.
 
-### 6.4 Assets (units built) and asset registers
+### 6.4 Assets: units built, from RevisionWorx's unit register or from an asset register
 
-- **asset**: `id, tag, serial, name, part, project, location, built, notes, as_built [revision ids]`.
-- An **asset register** is a released RevisionWorx document named `*.fwassets.csv` (or `--assets FILE`,
-  uncontrolled): columns `tag, serial, name, part, project, location, built, as_built, notes`; `tag` or `serial`
-  required per row; `as_built` lists `DOCUMENT@REVISION` separated by `;`.
-- An asset's `id` is `"ast_" + SHA-256(workspace id + "\0" + (tag or serial), case-folded)[:32]`, so records made
-  against a unit keep pointing at it when the register is edited or the package rebuilt.
+An asset is one physical unit: a machine, a tracked component, an instrument, a tool. Its record comes from one of two
+places, and the phone shows exactly what that record says.
+
+- **RevisionWorx's unit register** (RevisionWorx `docs/UNITS.md`), read through `revisionworx link units --detail` when
+  `link version` lists the `units` feature. The unit's id is its permanent `unt_` id; its documents are the revisions its
+  history records, never a newer released one.
+- **An asset register**: a released RevisionWorx document named `*.fwassets.csv` (or `--assets FILE`, uncontrolled), columns
+  `tag, serial, name, part, project, location, built, as_built, notes`; `tag` or `serial` required per row; `as_built` lists
+  `DOCUMENT@REVISION` separated by `;`. Its `id` is `"ast_" + SHA-256(workspace id + "\0" + (tag or serial), case-folded)[:32]`.
+  A register row that RevisionWorx's register already holds (the unit has that `ast_` id as an identifier) is left out, with a
+  notice: the register is the authority.
+
+**asset** (version 2), exactly:
+
+| Key | Value |
+|---|---|
+| `id` | `unt_…` or `ast_…` |
+| `aliases` | `[ast_…]`: earlier ids field records may name; sorted, unique, ≤ 100 |
+| `label` | what to call it, ≤ 200: RevisionWorx's label (its first current serial, else tag, else other code); a register row's tag, else serial |
+| `class` | `product`, `component`, `instrument` or `tool` |
+| `name`, `customer`, `site`, `location` | text ≤ 200 |
+| `model` | text ≤ 100: the part number of the design it is an instance of |
+| `part` | a catalog part id, or `""` |
+| `project` | a catalog project id, or `""` |
+| `status` | `""` (not recorded) or `planned`, `in-build`, `built`, `in-service`, `out-of-service`, `retired`, `scrapped` |
+| `identifiers` | ≤ 100 `{scheme, issuer, value, active}`; `scheme` `serial`, `tag` or `other`; text ≤ 200 (`value` 1–100); `active` boolean |
+| `parent` | `null` or `{asset, position}`: the catalog asset it is fitted in |
+| `standard` | `null` or `{number, title}`: the build standard it conforms to |
+| `documents` | ≤ 2000 `{document, revision, source, basis}`: a catalog document; one of its revisions, or `""` when the document doesn't apply to this unit; `source` `standard`, `unit` or `register`; `basis` `verified`, `reported`, `declared` or `legacy`. A document appears once |
+| `components` | ≤ 1000 `{position, part, number, asset, serial, lot, since, basis}`: `part` a catalog part id or `""`; `asset` the catalog asset fitted there or `""`; `position` 1–64; the rest text ≤ 200; positions unique |
+| `milestones` | object: at most `built`, `shipped`, `installed`, `commissioned`, `decommissioned`, each a date text ≤ 32 (`""` = date unknown) |
+| `history` | ≤ 1000 `{n, type, summary, effective, time, actor, basis, voided}` oldest first: `n` 1, 2, 3 … increasing; `type` ≤ 64; `summary` ≤ 500; `effective`, `time` ≤ 32; `actor` ≤ 200; `voided` boolean |
+| `notes` | ≤ 4000 |
+| `source` | ≤ 200: `revisionworx`, or the register it came from (`AST-HPU-75 rev A`, `units.fwassets.csv (uncontrolled)`) |
+
+Ids and aliases are unique across the catalog's assets, and no asset is fitted in itself through `parent`.
+
+**A version 1 asset** (`id, tag, serial, name, part, project, location, built, notes, as_built`) is read as: `aliases` `[]`,
+`label` its tag, else serial; `class` `product`; `model`, `customer`, `site` and `status` `""`; `identifiers` its tag then its
+serial, each when not empty, issuer `""`, active; `parent` and `standard` `null`; `documents` one `{document: the revision's
+document, revision, source: "register", basis: "legacy"}` per `as_built` revision, in that order; `components` and `history`
+`[]`; `milestones` `{"built": built}` when built isn't empty, else `{}`; `source` `""`. The vectors (`catalogs.json`) hold both
+readings.
 
 ### 6.5 Templates
 
@@ -263,17 +305,22 @@ A FieldWorx label is a QR code (or any barcode) holding `FWX:<kind>:<code>`:
 
 | Kind | Means | Matched against |
 |---|---|---|
-| `A` | asset | tag, then serial |
+| `A` | asset | its id or an alias when the code is one (`FWX:A:unt_…`, the permanent label of a unit); otherwise a current tag, then a current serial, then a current other code, then a former one |
 | `P` | part | part number |
 | `D` | document | document number |
 | `J` | project | project number |
 
-Labels never contain a URL. A typed label only matches things of its kind.
+`R` (one revision of a document, `FWX:R:<number>@<revision>`), `L` (a storage location) and `W` (a work order) are reserved
+for later versions; a reader that doesn't know a kind says so and matches nothing.
+
+A unit's permanent label holds its id, so it never changes when its serial, tag, owner or drawings do, and a reprint is
+identical. Ids are random, so labels from different companies never collide. Labels never contain a URL, a customer or a site.
+A typed label only matches things of its kind.
 
 Any other scanned or typed text is matched **exactly** (case-insensitive, surrounding whitespace ignored) against,
-in this order of priority: internal ids, asset tags, serials, part numbers, document numbers, project numbers,
-manufacturer part numbers, supplier codes, reference designators (a BOM line's refdes resolves to its child part).
-All matches are returned, most specific first; none is guessed.
+in this order of priority: internal ids and asset aliases, asset tags, serials and other codes (current before former), part
+numbers, document numbers, project numbers, manufacturer part numbers, supplier codes, reference designators (a BOM line's
+refdes resolves to its child part). All matches are returned, most specific first; none is guessed.
 
 ## 8. The hub
 

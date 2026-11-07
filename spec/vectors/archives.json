@@ -36,5 +36,15 @@
   "objects": [
    "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657"
   ]
+ },
+ "units.fieldworx": {
+  "catalog_digest": "a4b909af4e343bc659abc13a8acbaa7e5978af8e59eff209cdbda5776880785b",
+  "digest": "fbeabe626a61d4f48e0ccc36d0387793f84181a8d48150dd271ba20eea2ebee1",
+  "events": [],
+  "id": "pkg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+  "kind": "package",
+  "objects": [
+   "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657"
+  ]
  }
 }

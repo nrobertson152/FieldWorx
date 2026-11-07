@@ -29,6 +29,17 @@ The first field release: QR scanning, engineering document access, part lookup a
 - **Bridge** (`fieldworx-bridge`, Python standard library): `pack` from RevisionWorx through `revisionworx link`
   with OpenMeridian stock and DraftWorx PDFs; `import`, `status`, `report` and `verify`; the write-once hub.
 - **Protocol 1** ([docs/PROTOCOL.md](docs/PROTOCOL.md)) with shared vectors both implementations reproduce.
+- **Units from RevisionWorx's unit register** (catalog version 2; version 1 still opens):
+  - The bridge packs a workspace's units through `revisionworx link units` when RevisionWorx has a unit register:
+    the chosen projects' units, every unit fitted in them, and every revision they name. A unit's FieldWorx 0.1
+    `ast_` id comes along as an alias, so records already made against it stay attached; an asset register row for
+    a unit the register holds is left out.
+  - Unit pages show every identifier with its issuer (and former ones), customer, site, status and dates, the build
+    standard, the revisions that apply with where each came from and how well it is known, what is fitted and
+    where the unit is fitted, and its history with voided entries marked.
+  - Labels: `FWX:A:unt_…` opens a unit by its permanent id (an earlier `ast_` id too, and never a tag that looks the
+    same); a unit's *Show label* gives its permanent label. Former codes still find a unit, marked *former*.
+  - Shared vectors for catalogs (`catalogs.json`) and a sample package of units (`units.fieldworx`).
 - **Demo**: Northline Hydraulics' HPU-75, built from scratch through RevisionWorx, with two units and their
   acceptance tests.
 - **Documentation**: architecture and decisions, protocol, roadmap, user guide, known limitations, development
