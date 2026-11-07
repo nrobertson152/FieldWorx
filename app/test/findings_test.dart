@@ -58,7 +58,12 @@ void main() {
 
     await tapAndWait(tester, row(['Replaced at P1: PMP-10 S/N 111 out, PMP-11 S/N 222 in']), find.text('FINDING'));
     expect(find.text('scrapped'), findsOneWidget);
-    await tester.tap(button('Void…'));
+    // The message after recording says what to do next, and covers the page's bottom action while it shows, as a
+    // message does on a phone: wait for it to go, as a person would.
+    expect(find.text('Recorded. Send a field log so the office sees it.'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
+    await tapOn(tester, button('Void…'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).last, 'recorded on the wrong unit');
     await tapAndWait(tester, find.widgetWithText(FilledButton, 'Void'),
