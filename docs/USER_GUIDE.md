@@ -24,10 +24,8 @@ tampered package is refused and nothing changes. **Try the demo** adds the built
 Point the camera at a label. FieldWorx understands:
 
 - its own labels: `FWX:A:unt_…` (a unit in RevisionWorx's unit register, by its permanent id), `FWX:A:<tag>`
-  (a unit by its tag), `FWX:P:<part>`, `FWX:D:<document>`, `FWX:J:<project>`, and `FWX:R:<document>@<revision>` on a
-  print, which opens the document and says whether that print is the released revision: if it is superseded, which
-  revision to work to; if the phone doesn't have it, that it may be newer than the phone's packages. DraftWorx and
-  OpenSchematix put that code on prints of a revision RevisionWorx controls, above the title block;
+  (a unit by its tag), `FWX:P:<part>` and `FWX:J:<project>`. Drawings have no label: which revision applies depends on
+  the machine, so scan the machine's label and its page lists the revisions it is built to;
 - a unit's serial plate, asset tag or an old code it used to carry, a part number, a maker's part number, a
   supplier's code, a document or project number;
 - a reference designator from the BOM, typed as on the schematic: `K1`, `V2`.
@@ -178,20 +176,19 @@ file in RevisionWorx doesn't match the hash RevisionWorx recorded for it, the bu
 ```sh
 fieldworx-bridge labels hpu.fieldworx -o units.pdf                            # a label for each unit and asset
 fieldworx-bridge labels hpu.fieldworx --parts --layout letter-30 -o bins.pdf  # parts, on US Letter sheets
-fieldworx-bridge labels hpu.fieldworx --revisions --only FRM-200 -o print.pdf # the released revision's, for its prints
 fieldworx-bridge labels hpu.fieldworx --only NH-26-0001 --copies 2 --skip 5 -o two.pdf
 ```
 
 `labels` lays out FieldWorx labels for what a package holds, as a PDF: a QR code, what it is, its number, a description
 and the code written out for typing. Units in RevisionWorx's unit register get their permanent label, `FWX:A:unt_…`,
 which never has to change: a new tag, a new owner or a rebuild don't affect it. Assets from an asset register get
-`FWX:A:<tag>`, parts `FWX:P:<part number>`, documents `FWX:D:<number>`, revisions `FWX:R:<number>@<revision>` (each
-document's released revision, unless `--only` names another), projects `FWX:J:<number>`. Nothing that changes is
-printed: the phone says whether a revision is still the released one when its label is scanned.
+`FWX:A:<tag>`, parts `FWX:P:<part number>`, projects `FWX:J:<number>`. Drawings get none: the machine's label finds
+the revisions it is built to, and a code on a print could only say which revision is released, which is the wrong
+answer for a machine built to an earlier one. Nothing that changes is printed: the phone says that when a label is
+scanned.
 
-- `--only` picks by any name a thing answers to (a tag, a serial, a unit id, a part, document or project number,
-  `DOCUMENT@REVISION`), in the order given; a name that matches nothing stops the command, so a sheet never leaves a
-  label out quietly.
+- `--only` picks by any name a thing answers to (a tag, a serial, a unit id, a part or project number), in the order
+  given; a name that matches nothing stops the command, so a sheet never leaves a label out quietly.
 - `--layout`: `a4-24` (A4, 24 labels of 70 x 37 mm, the default), `letter-30` (US Letter, 30 labels of 2-5/8 x 1 in),
   `roll-50x25` (a label printer, one 50 x 25 mm label per page) or `roll-25x12` (25 x 12 mm, for components and bins:
   just the code, its kind and its number). `--skip N` starts after positions already used on a

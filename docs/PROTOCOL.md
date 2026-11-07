@@ -313,14 +313,14 @@ A FieldWorx label is a QR code (or any barcode) holding `FWX:<kind>:<code>`:
 |---|---|---|
 | `A` | asset | its id or an alias when the code is one (`FWX:A:unt_…`, the permanent label of a unit); otherwise a current tag, then a current serial, then a current other code, then a former one |
 | `P` | part | part number |
-| `D` | document | document number |
 | `J` | project | project number |
-| `R` | one revision of a document: `FWX:R:<number>@<revision>`, the revision being what follows the last `@` | the document number; the result is the document, saying whether the labelled revision is the released one |
 
-A revision label goes on a print of that revision. Scanned, it finds the document by number and says one of three things:
-the labelled revision is the released one; it is another revision the device has (superseded, or not released), and which
-one is released; or the device doesn't have it, which says nothing about whether it is current, since it may be newer than
-the packages. A revision label without a number or a revision matches nothing and says it is malformed.
+Labels go on machines, tracked components, stock and projects, never on drawings. Which revision of a drawing applies is the
+machine's to say: its unit record lists the revisions it is built to (section 6.4), and the phone shows those. A code on a
+print or a binder could only say which revision is released, which is the wrong answer for a machine built to an earlier one.
+So `D` (a document) and `R` (one revision of a document, `FWX:R:<number>@<revision>`) were withdrawn before release
+(2026-11-07) and are never reused: a reader matches nothing for them and says that drawings are found from the machine or by
+searching for their number.
 
 `L` (a storage location) and `W` (a work order) are reserved for later versions. A reader that doesn't know a kind says so
 and matches nothing, even when the code alone would match something.
@@ -329,7 +329,7 @@ and matches nothing, even when the code alone would match something.
 at error correction level Q (M on labels 12 mm high, where Q's extra modules would be too small to read), with a quiet
 zone of at least 4 modules. A unit's code, `FWX:A:unt_` and its 32 hex digits, is fixed: printed labels must keep
 resolving for the life of the machine. The reference encoder is one standard-library file,
-`bridge/fieldworx_bridge/fwx_label.py`, which other programs copy unchanged to print FieldWorx codes. The words printed
+`bridge/fieldworx_bridge/fwx_label.py`; a program that prints FieldWorx labels copies it unchanged. The words printed
 beside a code are what it is, its number and a description, and the code itself for typing; never anything that changes
 (a revision's state, a unit's status, owner or site).
 

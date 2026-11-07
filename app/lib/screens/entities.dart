@@ -12,12 +12,12 @@ import '../widgets/common.dart';
 import '../widgets/fx_icon.dart';
 import 'inspect.dart';
 
-/// Opens what a label or a search found. [revision] is the revision a scanned revision label named, for a document.
-Future<void> openEntity(BuildContext context, ResultKind kind, String id, {String revision = ''}) {
+/// Opens what a label or a search found.
+Future<void> openEntity(BuildContext context, ResultKind kind, String id) {
   final Widget page = switch (kind) {
     ResultKind.asset => AssetScreen(id: id),
     ResultKind.part => PartScreen(id: id),
-    ResultKind.document => DocumentScreen(id: id, labelled: revision),
+    ResultKind.document => DocumentScreen(id: id),
     ResultKind.project => ProjectScreen(id: id),
     ResultKind.template => const SizedBox(),
   };
@@ -81,11 +81,8 @@ class _LabelAction extends StatelessWidget {
 
 // ------------------------------------------------------------------------------------------------ documents
 class DocumentScreen extends StatelessWidget {
-  const DocumentScreen({super.key, required this.id, this.labelled = ''});
+  const DocumentScreen({super.key, required this.id});
   final String id;
-
-  /// The revision a scanned revision label named (`FWX:R:<number>@<revision>`), when it was opened from one.
-  final String labelled;
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +104,8 @@ class DocumentScreen extends StatelessWidget {
     ];
     final viewable = cur?.rendition != null && m.store.objectFile(cur!.rendition!.object).existsSync();
     return Scaffold(
-      appBar: AppBar(title: Text(d.label), actions: [if (d.number.isNotEmpty) _LabelAction(ResultKind.document, d.number, d.label)]),
+      // No "Show label" here: drawings have no FieldWorx label, since which revision applies is the machine's to say.
+      appBar: AppBar(title: Text(d.label)),
       body: PageList(
         bottom: viewable
             ? PrimaryAction('Open ${cur.ext == '.pdf' ? 'drawing' : 'view'} · rev ${cur.label}',
@@ -120,10 +118,6 @@ class DocumentScreen extends StatelessWidget {
                   tone: stateTone(cur.state)),
             if (d.type.isNotEmpty) StatusChip(d.type),
           ]),
-          if (labelled.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            _LabelledRevisionBanner(LabelledRevision(d, labelled)),
-          ],
           if (released == null) ...[
             const SizedBox(height: 10),
             NoticeBanner(
@@ -205,24 +199,6 @@ class DocumentScreen extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-/// What a scanned revision label means here: the released revision, a superseded one (work to the released one), or one
-/// this phone doesn't have.
-class _LabelledRevisionBanner extends StatelessWidget {
-  const _LabelledRevisionBanner(this.label);
-  final LabelledRevision label;
-
-  @override
-  Widget build(BuildContext context) {
-    final tone = label.isReleased ? Tone.ok : (label.isSuperseded ? Tone.danger : Tone.warn);
-    final r = label.revision;
-    if (r == null || label.isReleased || r.rendition == null) {
-      return NoticeBanner(label.sentence, tone: tone, icon: label.isReleased ? 'check' : null);
-    }
-    // The labelled revision itself, to compare with the print; the page's main action stays the released one.
-    return NoticeBanner(label.sentence, tone: tone, action: 'Open rev ${r.label}', onAction: () => openRevision(context, r));
   }
 }
 

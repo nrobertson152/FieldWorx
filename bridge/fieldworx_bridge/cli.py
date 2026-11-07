@@ -197,19 +197,18 @@ def main(argv: list[str] | None = None) -> int:
     s.set_defaults(fn=cmd_verify)
 
     s = sub.add_parser("labels", help="FieldWorx labels (QR codes) for what a package holds, as a PDF to print",
-                       description="A label for each unit or asset in PACKAGE (or each part, document, released "
-                                   "revision or project), laid out to print on sheets of labels or a label printer. "
+                       description="A label for each unit or asset in PACKAGE (or each part or project), laid out to "
+                                   "print on sheets of labels or a label printer. Drawings get none: the machine's "
+                                   "label finds the revisions it is built to. "
                                    "Layouts: " + "; ".join(f"{k}: {v.description}" for k, v in labels.LAYOUTS.items()))
     s.add_argument("package", help="a .fieldworx package (fieldworx-bridge pack makes one)")
     s.add_argument("-o", "--output", required=True, help="the PDF to write")
     s.add_argument("--assets", action="store_true", help="units and assets (the default)")
     s.add_argument("--parts", action="store_true", help="parts, by part number")
-    s.add_argument("--documents", action="store_true", help="documents, by document number")
-    s.add_argument("--revisions", action="store_true", help="each document's released revision, for its prints")
     s.add_argument("--projects", action="store_true", help="projects, by project number")
     s.add_argument("--only", action="append", default=[], metavar="CODE",
-                   help="just this one, in the order given (repeatable): a tag, serial or unit id; a part, document "
-                        "or project number; DOCUMENT@REVISION")
+                   help="just this one, in the order given (repeatable): a tag, serial or unit id; a part or "
+                        "project number")
     s.add_argument("--layout", choices=sorted(labels.LAYOUTS), default=labels.DEFAULT_LAYOUT,
                    help=f"the label stock (default {labels.DEFAULT_LAYOUT})")
     s.add_argument("--skip", type=int, default=0, metavar="N", help="positions already used on the first sheet")

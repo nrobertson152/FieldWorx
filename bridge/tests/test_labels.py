@@ -34,7 +34,7 @@ def texts(labs: list[Label]) -> list[str]:
 
 
 # ---------------------------------------------------------------------------------------------- which labels
-def test_a_package_gives_a_label_for_each_unit_asset_part_document_revision_and_project(units):
+def test_a_package_gives_a_label_for_each_unit_asset_part_and_project(units):
     assert texts(labels.choose(units)[0]) == [
         "FWX:A:unt_" + "0c" * 16, "FWX:A:unt_" + "0d" * 16, "FWX:A:HPU-0002"], \
         "units carry their permanent id; an asset register row its tag"
@@ -42,47 +42,45 @@ def test_a_package_gives_a_label_for_each_unit_asset_part_document_revision_and_
     assert texts(every) == [
         "FWX:A:unt_" + "0c" * 16, "FWX:A:unt_" + "0d" * 16, "FWX:A:HPU-0002",
         "FWX:P:HPU-75", "FWX:P:FRM-200",
-        "FWX:D:FRM-200", "FWX:D:HPU-75-GA", "FWX:D:MAN-HPU-75",
-        "FWX:R:FRM-200@B", "FWX:R:HPU-75-GA@A", "FWX:R:MAN-HPU-75@A",     # released revisions only: FRM-200 A is superseded
         "FWX:J:J-2001"]
     assert notices == []
     unit = every[0]
     assert (unit.heading, unit.title, unit.detail) == ("Unit", "NH-26-0001", "Hydraulic power unit · HPU-75")
-    rev = every[8]
-    assert (rev.heading, rev.title, rev.detail) == ("Revision", "FRM-200 rev B", "Skid frame")
     assert all("Northline" not in f"{lab.title} {lab.detail}" for lab in every), "labels never carry the customer"
+
+
+def test_drawings_get_no_label(units):
+    """Which revision of a drawing applies is the machine's to say: its label finds the revisions it is built to. Document
+    and revision labels were withdrawn (PROTOCOL §7), so neither kind can be asked for, and no drawing's number names one."""
+    assert labels.KINDS == ("assets", "parts", "projects")
+    for kind in ("documents", "revisions"):
+        with pytest.raises(LabelError, match="labels are for assets, parts, projects"):
+            labels.choose(units, [kind])
+    with pytest.raises(LabelError, match="MAN-HPU-75: no asset or part or project in the package"):
+        labels.choose(units, labels.KINDS, ["MAN-HPU-75"])
+    texts_all = texts(labels.choose(units, labels.KINDS)[0])
+    assert not [t for t in texts_all if t.startswith(("FWX:D:", "FWX:R:"))]
 
 
 def test_only_picks_by_any_name_in_the_order_given(units):
     picked, _ = labels.choose(units, ["assets"], [" gp-4471 ", "unt_" + "0c" * 16, "HPU-0002", "GP-4471"])
     assert texts(picked) == ["FWX:A:unt_" + "0d" * 16, "FWX:A:unt_" + "0c" * 16, "FWX:A:HPU-0002"], \
         "a serial, an id and a tag each find their unit; asking twice prints it once (use --copies for more)"
-    picked, _ = labels.choose(units, ["revisions"], ["FRM-200@A", "frm-200", "HPU-75-GA"])
-    assert texts(picked) == ["FWX:R:FRM-200@A", "FWX:R:FRM-200@B", "FWX:R:HPU-75-GA@A"], \
-        "a named revision prints whatever its state (the phone says it is superseded); a document number means its " \
-        "released revision"
+    picked, _ = labels.choose(units, ["parts", "projects"], ["j-2001", "FRM-200"])
+    assert texts(picked) == ["FWX:J:J-2001", "FWX:P:FRM-200"], "part and project numbers, in the order given"
     with pytest.raises(LabelError, match="PMP-10: no asset in the package"):
         labels.choose(units, ["assets"], ["PMP-10"])
-    with pytest.raises(LabelError, match="FRM-200@C"):
-        labels.choose(units, ["revisions"], ["FRM-200@C"])
     with pytest.raises(LabelError):
         labels.choose(units, ["tools"])
 
 
 def test_what_cannot_be_labelled_is_said(units):
     c = copy.deepcopy(units)
-    frm = next(d for d in c["documents"] if d["number"] == "FRM-200")
-    frm["released"] = ""
     c["parts"][0]["number"] = ""
-    picked, notices = labels.choose(c, ["parts", "revisions"])
-    assert texts(picked) == ["FWX:P:FRM-200", "FWX:R:HPU-75-GA@A", "FWX:R:MAN-HPU-75@A"]
-    assert notices == ["1 without a number left out: a label needs one",
-                       "1 document(s) with no released revision in the package left out (name one as "
-                       "DOCUMENT@REVISION to print it)"]
-    assert texts(labels.choose(c, ["revisions"], ["FRM-200@B"])[0]) == ["FWX:R:FRM-200@B"]
-    with pytest.raises(LabelError, match="FRM-200 has no released revision in the package; name the one to print: "
-                                         "FRM-200@A, FRM-200@B"):
-        labels.choose(c, ["revisions"], ["FRM-200"])
+    c["projects"][0]["number"] = ""
+    picked, notices = labels.choose(c, ["parts", "projects"])
+    assert texts(picked) == ["FWX:P:FRM-200"]
+    assert notices == ["2 without a number left out: a label needs one"]
 
 
 # --------------------------------------------------------------------------------------------- on the page
@@ -102,7 +100,7 @@ def slot_box(layout: labels.Layout, k: int) -> tuple[float, float, float, float]
 
 LONG = [Label("P", "PMP-10-SS-316L-FLANGED-DN50-PN40", "Part", "PMP-10-SS-316L-FLANGED-DN50-PN40",
               "Centrifugal pump, stainless steel 316L, flanged DN50 PN40, with mechanical seal and a 7.5 kW 400 V motor"),
-        Label("D", "Füllstand-Ü/ø 3", "Document", "Füllstand-Ü/ø 3", "Füllstandsmessung — Ölbehälter „neu“ 配管"),
+        Label("P", "Füllstand-Ü/ø 3", "Part", "Füllstand-Ü/ø 3", "Füllstandsmessung — Ölbehälter „neu“ 配管"),
         Label("A", "unt_" + "ab12" * 8, "Unit", "", "")]
 
 
@@ -134,7 +132,7 @@ def test_every_label_prints_in_its_place_and_reads_back(units, name):
 
 def test_the_words_on_a_label(units):
     layout = labels.LAYOUTS["a4-24"]
-    labs = labels.choose(units, ["assets", "revisions"])[0] + LONG
+    labs = labels.choose(units, ["assets", "parts"])[0] + LONG
     pdf = pdfium.PdfDocument(labels.sheet(labs, layout)[0])
     page = pdf[0]
     text = page.get_textpage()
@@ -149,10 +147,10 @@ def test_the_words_on_a_label(units):
 
     assert words(0) == "UNIT NH-26-0001 unt_0c0c0c0c0c0c0c 0c0c0c0c0c0c0c0c0c Hydraulic power unit · HPU-75"
     assert words(2) == "ASSET HPU-0002 Unit 2 · HPU-75", "a tag is its own code: not printed twice"
-    assert words(3) == "REVISION FRM-200 rev B FRM-200@B Skid frame", "nothing about whether it is still released"
-    assert words(7) == "DOCUMENT Füllstand-Ü/ø 3 Füllstandsmessung — Ölbehälter „neu“ ??", \
+    assert words(4) == "PART FRM-200 Skid frame, welded", "a part number is its own code: not printed twice"
+    assert words(6) == "PART Füllstand-Ü/ø 3 Füllstandsmessung — Ölbehälter „neu“ ??", \
         "letters the built-in font lacks print as ?, while the QR code holds them"
-    assert "…" in words(6), "a description too long for the label ends in an ellipsis"
+    assert "…" in words(5), "a description too long for the label ends in an ellipsis"
 
 
 def test_text_fits_its_room():

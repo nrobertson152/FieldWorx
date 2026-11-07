@@ -19,8 +19,8 @@ from fieldworx_bridge.fwx_label import LEVELS, QRError, encode, label_code
 EC = {"L": qrcode.constants.ERROR_CORRECT_L, "M": qrcode.constants.ERROR_CORRECT_M,
       "Q": qrcode.constants.ERROR_CORRECT_Q, "H": qrcode.constants.ERROR_CORRECT_H}
 UNIT = "FWX:A:unt_" + "9f2c" * 8
-SAMPLES = [UNIT, "FWX:P:PMP-10", "FWX:D:SCH-12", "FWX:R:SCH-12@B", "FWX:J:J-2001", "HPU-0001", "x",
-           "FWX:D:Füllstand-Ü/ø 3", "FWX:R:ДОК-7@Б", "FWX:A:配管-12"]
+SAMPLES = [UNIT, "FWX:P:PMP-10", "FWX:P:SCH-12", "FWX:J:SCH-12@B", "FWX:J:J-2001", "HPU-0001", "x",
+           "FWX:P:Füllstand-Ü/ø 3", "FWX:J:ДОК-7@Б", "FWX:A:配管-12"]
 
 
 def reference(text: str, level: str, version: int, mask: int) -> list[list[bool]]:
@@ -119,11 +119,18 @@ def test_a_scuffed_label_still_reads():
 
 def test_label_codes():
     assert label_code("A", UNIT[6:]) == UNIT
-    assert label_code("R", "SCH-12@B") == "FWX:R:SCH-12@B"
-    assert label_code("R", "A@B@C") == "FWX:R:A@B@C", "the revision is what follows the last @"
-    for kind, code in [("X", "1"), ("a", "1"), ("A", ""), ("A", "  "), ("A", "a\nb"), ("P", "a\x7fb"),
-                       ("R", "SCH-12"), ("R", "@B"), ("R", "SCH-12@"), ("R", "SCH-12@ ")]:
+    assert (label_code("P", "PMP-10"), label_code("J", "J-2001")) == ("FWX:P:PMP-10", "FWX:J:J-2001")
+    for kind, code in [("X", "1"), ("a", "1"), ("A", ""), ("A", "  "), ("A", "a\nb"), ("P", "a\x7fb")]:
         with pytest.raises(QRError):
+            label_code(kind, code)
+
+
+def test_drawings_get_no_label():
+    """Which revision of a drawing applies is the machine's to say (PROTOCOL §7): document and revision labels were
+    withdrawn, so nothing makes one."""
+    assert fwx_label.KINDS == ("A", "P", "J")
+    for kind, code in [("D", "SCH-12"), ("R", "SCH-12@B")]:
+        with pytest.raises(QRError, match="one of A, P, J"):
             label_code(kind, code)
 
 

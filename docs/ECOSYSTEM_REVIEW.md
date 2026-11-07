@@ -105,13 +105,12 @@ leave its distribution to the Director.
 
 Ordered by value to the shop floor for the effort.
 
-1. **"Is this print current?"** DraftWorx and OpenSchematix title blocks carry a QR code `FWX:R:FRM-200@A`
-   (document and revision). Scanning a paper print on the bench says at once whether it's still the released
-   revision, and opens the current one if not. Stale prints are one of the commonest causes of rework; this needs a
-   new label kind in FieldWorx and a title-block field in each drawing program.
+1. ~~**"Is this print current?"**~~ Tried and withdrawn (2026-11-07): a QR code on a print, `FWX:R:FRM-200@A`, could
+   only say whether it was the released revision, which is the wrong answer for a machine built to an earlier one.
+   Which revision applies is the machine's to say, so the code goes on the machine (ARCHITECTURE.md, ADR-013).
 2. **Nonconformance → draft ECR**, with photos and the exact revision in hand (needs W6).
 3. **Label sheets from the bridge:** `fieldworx-bridge labels` writing a PDF of QR labels (units, parts, bins,
-   documents) for any label printer, so adopting FieldWorx doesn't need special printing software.
+   projects) for any label printer, so adopting FieldWorx doesn't need special printing software. Done.
 4. **Instrument traceability:** a measurement records which gauge took it and its calibration due date (a gauge
    register document), as ISO 9001 7.1.5 asks.
 5. **Witness and customer sign-off** on the same phone (hand it over, they type their name), recorded as its own

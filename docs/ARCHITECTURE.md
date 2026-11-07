@@ -174,8 +174,8 @@ what it is (*an OpenSchematix project*) and a note asking engineering to publish
 
 FieldWorx labels say what they point at and never contain a web address: `FWX:A:unt_…` (a unit's permanent id;
 its earlier `ast_` id works too, and an id never falls back to a tag that looks the same), `FWX:A:HPU-0001` (asset),
-`FWX:P:FRM-200` (part), `FWX:D:SCH-12` (document), `FWX:J:J-2001` (project), `FWX:R:SCH-12@B` (one revision, for its
-prints: the phone says whether it is the released one). Any other code (a maker's barcode,
+`FWX:P:FRM-200` (part), `FWX:J:J-2001` (project). Drawings have none: which revision applies is the machine's to say,
+so its label finds the revisions it is built to; `FWX:D:` and `FWX:R:` were withdrawn (ADR-013). Any other code (a maker's barcode,
 a serial plate, a supplier's SKU, a reference designator typed as *K1*) is matched exactly against the catalog.
 Several matches are all shown; none says none. Nothing is guessed. The scanner is zxing-cpp (Apache-2.0) through
 flutter_zxing, so scanning needs no Google Play services and works offline.
@@ -337,8 +337,8 @@ development tools.) LAN sync will add the network back, used only for the paired
 
 **Decision.** `fieldworx-bridge labels` lays out labels for what a package holds and writes a PDF itself, with the
 Helvetica and Courier every PDF reader has. The QR codes come from `fwx_label.py`, one standard-library file (Python 3.9
-or newer) for other programs to copy unchanged, as integrations copy RevisionWorx's `rwx_client.py`. DraftWorx and
-OpenSchematix use it for the revision codes on their prints, and their tests check their copy is this file. Labels print at error correction level Q. The layouts are four common stocks, the ones the Director chose on 2026-11-07:
+or newer) for a program printing FieldWorx labels to copy unchanged, as integrations copy RevisionWorx's `rwx_client.py`.
+Labels go on units, parts and projects. Labels print at error correction level Q. The layouts are four common stocks, the ones the Director chose on 2026-11-07:
 A4 70 x 37 mm, US Letter 2-5/8 x 1 in, and 50 x 25 mm and 25 x 12 mm label printers. The 25 x 12 mm label carries only
 the code, its kind and its number, at level M, so its modules stay readable. With labels in use, a unit's code
 `FWX:A:unt_<32 hex digits>` is fixed for the life of the machine.
@@ -352,3 +352,10 @@ python-qrcode draws the same symbol bit for bit at every version (1 to 10), leve
 the app uses, reads every code back, from the matrix and from each label of a rendered page (test-only dependencies,
 `bridge[dev]`). Text the built-in fonts lack prints as "?"; the code holds it exactly. Codes longer than version 10
 holds are refused with a message, not shrunk.
+**Withdrawn (2026-11-07): labels for drawings.** For a day, documents (`FWX:D:`) and revisions (`FWX:R:<number>@<revision>`)
+had labels too, and DraftWorx and OpenSchematix printed the revision's code on prints, so a phone could say whether a paper
+copy was the released revision. The Director pointed out that codes belong on machines and projects: a machine's record says
+which revision of each drawing applies to it, and a drawing can't know which machine it is being used on. Asked about a
+print of rev B, the phone could only say "rev C is released: work to that", the wrong advice for a machine built to rev B.
+Both kinds were withdrawn before release and are never reused; scanned, they match nothing and say to scan the machine or
+search for the drawing. DraftWorx and OpenSchematix print the drawing and nothing else.

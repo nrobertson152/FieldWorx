@@ -3,9 +3,10 @@
 sticky labels or on a label printer. Standard library only: the QR codes come from fwx_label.py, and the PDF is written
 here with the Helvetica every PDF reader has, so nothing is embedded or downloaded.
 
-A label says only what doesn't change: what it is, its number, a description, and the code in its QR code written out
-so it can be typed. Nothing that changes (a revision's state, a unit's status, where it is or who owns it) is printed;
-the phone says that when the label is scanned. Text the built-in font can't show (it covers Western European letters)
+Labels are for units and assets, parts and projects, never drawings: which revision of a drawing applies is the
+machine's to say, and its label finds it. A label says only what doesn't change: what it is, its number, a description,
+and the code in its QR code written out so it can be typed. Nothing that changes (a unit's status, its drawings, where it
+is or who owns it) is printed; the phone says that when the label is scanned. Text the built-in font can't show (it covers Western European letters)
 prints as "?"; the QR code always holds the exact text.
 """
 from __future__ import annotations
@@ -80,7 +81,7 @@ class Label:
 
 
 # ----------------------------------------------------------------------------------------------- choosing labels
-KINDS = ("assets", "parts", "documents", "revisions", "projects")
+KINDS = ("assets", "parts", "projects")      # never drawings: which revision applies is the machine's to say (PROTOCOL §7)
 
 
 def _norm(s: str) -> str:
@@ -101,10 +102,6 @@ def _asset_names(a: dict) -> set[str]:
     return {_norm(n) for n in names if n}
 
 
-def _released(d: dict) -> dict | None:
-    return next((r for r in d["revisions"] if r["id"] == d["released"]), None)
-
-
 def choose(c: dict, kinds: Iterable[str] = ("assets",), only: Iterable[str] = ()) -> tuple[list[Label], list[str]]:
     """The labels for a checked catalog: one for each thing of the kinds asked for, in the catalog's order, or only for
     the things ``only`` names, in that order. A name that matches nothing is an error, so a sheet never leaves a label
@@ -116,62 +113,36 @@ def choose(c: dict, kinds: Iterable[str] = ("assets",), only: Iterable[str] = ()
     order = [k for k in KINDS if k in kinds]
     notices: list[str] = []
     found: dict[str, list[tuple[set[str], Label]]] = {k: [] for k in order}
-    skipped = {"number": 0, "released": 0}
+    skipped = 0
     if "assets" in found:
         found["assets"] = [(_asset_names(a), _asset_label(a)) for a in assets_view(c) if a["id"].startswith("unt_")
                            or a["label"]]
     if "parts" in found:
         for p in c["parts"]:
             if not p["number"]:
-                skipped["number"] += 1
+                skipped += 1
                 continue
             found["parts"].append(({_norm(p["number"]), _norm(p["id"])},
                                    Label("P", p["number"], "Part", p["number"], p["description"])))
-    for d in c["documents"] if "documents" in found or "revisions" in found else []:
-        if not d["number"]:
-            skipped["number"] += 1
-            continue
-        if "documents" in found:
-            found["documents"].append(({_norm(d["number"]), _norm(d["id"])},
-                                       Label("D", d["number"], "Document", d["number"], d["title"])))
-        if "revisions" in found:
-            rel = _released(d)
-            for r in d["revisions"]:
-                names = {_norm(f"{d['number']}@{r['label']}"), _norm(r["id"])}
-                if r is rel:
-                    names |= {_norm(d["number"]), _norm(d["id"])}
-                if r is rel or only:
-                    found["revisions"].append((names, Label("R", f"{d['number']}@{r['label']}", "Revision",
-                                                            f"{d['number']} rev {r['label']}", d["title"])))
-            if rel is None and not only:
-                skipped["released"] += 1
     if "projects" in found:
         for j in c["projects"]:
             if not j["number"]:
-                skipped["number"] += 1
+                skipped += 1
                 continue
             found["projects"].append(({_norm(j["number"]), _norm(j["id"])},
                                       Label("J", j["number"], "Project", j["number"], j["name"])))
-    if skipped["number"]:
-        notices.append(f"{skipped['number']} without a number left out: a label needs one")
-    if skipped["released"]:
-        notices.append(f"{skipped['released']} document(s) with no released revision in the package left out "
-                       f"(name one as DOCUMENT@REVISION to print it)")
+    if skipped:
+        notices.append(f"{skipped} without a number left out: a label needs one")
     only = [o for o in only if o.strip()]
     if not only:
         return [lab for k in order for _, lab in found[k]], notices
     out: list[Label] = []
     for name in only:
         hits = [lab for k in order for names, lab in found[k] if _norm(name) in names]
-        unreleased = [d for d in c["documents"] if "revisions" in found and d["number"] and not d["released"]
-                      and _norm(d["number"]) == _norm(name)]
-        if not hits and unreleased:
-            revs = ", ".join(f"{d['number']}@{r['label']}" for d in unreleased for r in d["revisions"])
-            raise LabelError(f"{name} has no released revision in the package; name the one to print: {revs}")
         if not hits:
             what = " or ".join(k[:-1] for k in order)
-            raise LabelError(f"{name}: no {what} in the package answers to that (another kind? --parts, --documents, "
-                             f"--revisions, --projects)")
+            raise LabelError(f"{name}: no {what} in the package answers to that (another kind? --assets, --parts, "
+                             f"--projects)")
         out.extend(h for h in hits if h not in out)
     return out, notices
 
