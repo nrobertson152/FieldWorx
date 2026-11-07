@@ -144,6 +144,37 @@ class AppModel extends ChangeNotifier {
     await _changed();
   }
 
+  // --------------------------------------------------------------------------------------------- findings
+  Map<String, Object?> finding(String id) => store.finding(id);
+
+  /// Findings about a unit (or its earlier ids), newest first.
+  List<Map<String, Object?>> findingsFor(String assetId, {Iterable<String> also = const []}) {
+    final ids = {assetId, ...also};
+    final out = [
+      for (final s in store.findings())
+        if (s['valid'] == true && ids.contains(s['asset'])) s,
+    ]..sort((a, b) => ((b['recorded'] as Map)['time'] as String).compareTo((a['recorded'] as Map)['time'] as String));
+    return out;
+  }
+
+  Future<String> recordFinding(Map<String, Object?> body) async {
+    final id = await store.recordFinding(body);
+    await _changed();
+    return id;
+  }
+
+  Future<void> attachFindingPhoto(String id, File photo, {String caption = ''}) async {
+    final (sha, size) = await store.addFile(photo);
+    await store.record('finding.attach', id,
+        {'object': sha, 'size': size, 'media_type': photoMediaType(photo.path), 'caption': caption});
+    await _changed();
+  }
+
+  Future<void> voidFinding(String id, String reason) async {
+    await store.record('finding.void', id, {'reason': reason});
+    await _changed();
+  }
+
   File objectFile(String sha) => store.objectFile(sha);
 }
 

@@ -10,6 +10,7 @@ import '../platform/services.dart';
 import '../theme/theme.dart';
 import '../widgets/common.dart';
 import '../widgets/fx_icon.dart';
+import 'findings.dart';
 import 'inspect.dart';
 
 /// Opens what a label or a search found.
@@ -611,6 +612,7 @@ class AssetScreen extends StatelessWidget {
             )
           else
             RowsCard(children: [for (final s in history) InspectionRow(state: s)]),
+          FindingsSection(asset: a),
           if (a.history.isNotEmpty) ...[
             SectionHeader('Record (${a.history.length})'),
             RowsCard(children: [

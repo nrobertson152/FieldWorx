@@ -23,9 +23,9 @@ The directive's first scope: **QR scanning, engineering document access, part lo
 - Label sheets: `fieldworx-bridge labels` prints QR labels for units, parts and projects on A4 or US Letter label
   sheets, or 50 x 25 mm and 25 x 12 mm label printers. Drawings have none: the machine's label finds the revisions it
   is built to (revision labels on prints were tried and withdrawn, 2026-11-07).
-- Findings: a part replaced, what is fitted at a position, an engineering change carried out, or a note, recorded
-  as a proposal; the office accepts it into RevisionWorx's unit register as *reported* (`fieldworx-bridge accept`), and
-  a finding the register contradicts waits for a person. The phone screens for recording them come next.
+- Findings: a part replaced, what is fitted at a position, an engineering change carried out, or a note, with photos,
+  reported from the unit's page as a proposal; the office accepts it into RevisionWorx's unit register as *reported*
+  (`fieldworx-bridge accept`), and a finding the register contradicts waits for a person.
 - Files as the transport: packages in, field logs out, phone to phone; `fieldworx-bridge` packs, imports,
   reports and verifies.
 - Six family themes, AA contrast, large targets; release builds ask for the camera and nothing else.

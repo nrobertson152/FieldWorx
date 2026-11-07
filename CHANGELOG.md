@@ -58,6 +58,7 @@ The first field release: QR scanning, engineering document access, part lookup a
     used to be matched by its code alone.
 - **Findings** (PROTOCOL.md section 11): what someone found or changed on a unit (a part replaced, what is fitted at a
   position, an engineering change carried out, a note), with photos, as its own record, never a change to the unit.
+  **Report a finding** on a unit's page records one; a finding recorded by mistake can be voided.
   `fieldworx-bridge findings` lists them with where each stands in RevisionWorx; `fieldworx-bridge accept` records one in
   RevisionWorx's unit register as *reported*, with the field record as its evidence, once. A finding the register
   contradicts waits for a person's decision. Shared vectors (`findings.json`); the Dart core records and reduces them.

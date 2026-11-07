@@ -58,6 +58,20 @@ A unit from RevisionWorx's **unit register** (its page says *Unit*) shows more:
 
 The phone shows the unit as it was when the package was made. Changes to a unit are made in RevisionWorx.
 
+**Findings.** When you replace a part, find something fitted that the page doesn't show, carry out an engineering change,
+or see something the office should know, tap **Report a finding** on the unit's page:
+
+- **Replaced a part**: the position (P1); what came out (filled in from the page when it knows what's there) and where
+  it went (for repair, returned, scrapped, to stock, reused); what went in, by part number, serial or lot;
+- **What is fitted**: the position and what is there;
+- **Carried out a change**: tap one of the changes due on the unit, or type its number;
+- **Something else**: say what you found.
+
+Add the date it was done (today, unless you change it), a comment and photos, and tap **Record finding**. The finding is
+a field record like an inspection: it doesn't change the unit's page. It goes to the office in the next field log, and
+someone there decides what goes into RevisionWorx; the next package shows the unit as it is recorded there. A finding
+recorded by mistake can be voided (it stays on record, marked *voided*).
+
 ### Documents and drawings
 
 A document's page lists every revision with its state: *Released* in green, *Superseded* and *Not released* warned

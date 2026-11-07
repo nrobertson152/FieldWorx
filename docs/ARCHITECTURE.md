@@ -388,6 +388,5 @@ writes nothing twice and a finding is accepted at most once. The bridge compares
 says first: a replacement whose removed part isn't what the register has, or a find of something other than what is
 recorded, is not recorded until a person decides (`--as fit` or `--as note`). The write carries the unit's event count
 as read (`--if-events`), so a fact recorded meanwhile is never overwritten by a decision made without it.
-**Not done.** The phone screens for recording findings come next (the core already records them). A phone doesn't yet
-see that a finding was accepted: packages would need to carry the evidence, a new asset version. Photos stay in the
-hub; RevisionWorx holds the reference to the field record, not the photo.
+**Not done.** A phone doesn't yet see that a finding was accepted: packages would need to carry the evidence, a new
+asset version. Photos stay in the hub; RevisionWorx holds the reference to the field record, not the photo.
