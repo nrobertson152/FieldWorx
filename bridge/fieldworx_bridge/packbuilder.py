@@ -70,6 +70,7 @@ class PackBuilder:
         self.log = log
         self.notices: list[str] = []
         self.objects: dict[str, archive.ObjectSource] = {}
+        self.pdfs: dict[str, dict] = {}                # revision id -> the PDF attached to it in RevisionWorx (ADR-026)
         self.work = Path(tempfile.mkdtemp(prefix="fieldworx-pack-"))
 
     def note(self, text: str) -> None:
@@ -92,6 +93,7 @@ class PackBuilder:
             for d in rwx.documents(p["id"]):
                 full = rwx.document(d["id"])
                 histories[d["id"]] = [_rev(r) for r in full.get("history", [])]
+                self._attached_pdfs(full)
                 meta[d["id"]] = {**d, "project_id": p["id"]}
         # Units from RevisionWorx's unit register: those of the chosen projects and everything fitted in them. A document
         # a unit uses comes along even from another project, so the unit's page is complete (docs/PROTOCOL.md 6.4).
@@ -107,6 +109,7 @@ class PackBuilder:
                     continue
                 full = rwx.document(did)
                 histories[did] = [_rev(r) for r in full.get("history", [])]
+                self._attached_pdfs(full)
                 meta[did] = {**full, "project_id": full["project"]["id"]}
                 if full["project"]["id"] not in {c["id"] for c in chosen}:
                     extra_projects.setdefault(full["project"]["id"], by_project.get(full["project"]["id"], full["project"]))
@@ -342,6 +345,12 @@ class PackBuilder:
                 "milestones": {k: v["date"][:32] for k, v in u["milestones"].items() if k in cat_mod.MILESTONES},
                 "history": history, "changes": self._unit_changes(u), "notes": u["notes"][:4000], "source": "revisionworx"}
 
+    def _attached_pdfs(self, full: dict) -> None:
+        for r in full.get("history", []):
+            pdf = r.get("pdf")
+            if isinstance(pdf, dict) and isinstance(pdf.get("sha256"), str):
+                self.pdfs[r["id"]] = pdf
+
     def _selected(self, d: dict) -> dict | None:
         """The revision the phone should show: the released one, or the latest with ``unreleased``."""
         rel, lat = d.get("released"), d.get("latest")
@@ -359,6 +368,12 @@ class PackBuilder:
         if ext == ".pdf":
             return {"object": self._add_object(path, "application/pdf"), "media_type": "application/pdf",
                     "via": "content"}, path
+        attached = self.pdfs.get(r["id"])
+        if attached and rwx.has("pdf-derivatives"):   # engineering's own export of exactly this revision (ADR-026)
+            pdf = rwx.fetch_pdf(doc_id, r["label"], attached["sha256"], self.work)
+            via = "pdf attached in RevisionWorx" + (f" ({attached['tool']})" if attached.get("tool") else "")
+            return {"object": self._add_object(pdf, "application/pdf"), "media_type": "application/pdf",
+                    "via": via[:200]}, path
         if ext in sources.DraftWorx.EXTENSIONS:
             if dwx.available():
                 out = dwx.pdf(path, path.with_suffix(".rendition.pdf"))

@@ -100,6 +100,19 @@ class RevisionWorxSource:
                               "SHA-256; nothing was packed. Run 'revisionworx doctor'.")
         return path
 
+    def has(self, feature: str) -> bool:
+        return feature in (self.answer.get("features") or [])
+
+    def fetch_pdf(self, doc_id: str, label: str, expect_sha256: str, to_dir: Path) -> Path:
+        """Copy the PDF attached to one revision (RevisionWorx ADR-026), checked against ``expect_sha256``."""
+        sub = Path(tempfile.mkdtemp(dir=to_dir))
+        res = self._call(self.rwx.fetch, doc_id, str(sub), revision=label, pdf=True)
+        path = Path(res["path"])
+        if sha256_file(path) != expect_sha256:
+            raise SourceError(f"RevisionWorx gave a PDF for {doc_id} rev {label} that doesn't match its recorded SHA-256; "
+                              "nothing was packed. Run 'revisionworx doc verify'.")
+        return path
+
     def bom_convert(self, path: Path, out_dir: Path) -> dict | None:
         """The BOM in ``path`` as RevisionWorx's BOM JSON, or None if RevisionWorx doesn't read it as a BOM."""
         out = out_dir / f"bom-{hashlib.sha256(str(path).encode()).hexdigest()[:12]}.json"

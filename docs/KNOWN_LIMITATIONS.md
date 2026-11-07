@@ -10,8 +10,9 @@ What FieldWorx doesn't do yet, or hasn't been shown to do. Planned work is in [R
   are labelled *not live*.
 - **Photos taken on other phones don't travel in packages.** Their records do, so a unit's history shows the
   inspection and *photo not on this phone*; the hub and the bridge's HTML reports have every photo.
-- **Some formats have no phone view.** OpenSchematix projects, DWG, Inventor, SolidWorks and STEP files are listed
-  with their revisions but can't be opened: engineering publishes a PDF of them in RevisionWorx. DraftWorx and DXF
+- **Some formats have no phone view of their own.** OpenSchematix projects, DWG, Inventor, SolidWorks and STEP files
+  open on the phone only through the PDF engineering attaches to that exact revision in RevisionWorx (`revisionworx doc
+  pdf`); a revision without one is listed but can't be opened, and never shows another revision's PDF. DraftWorx and DXF
   drawings are turned into PDFs only when DraftWorx is installed on the computer that makes the package.
 - **Times are shown in UTC**, as recorded.
 
