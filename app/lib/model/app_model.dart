@@ -96,7 +96,7 @@ class AppModel extends ChangeNotifier {
   Map<String, Object?> inspection(String id) => store.inspection(id);
 
   /// Inspections recorded against an asset, part or document, newest first; [also] adds records made against its
-  /// earlier ids (a unit's FieldWorx 0.1 `ast_` id, from before it joined RevisionWorx's unit register).
+  /// earlier ids (a unit's `ast_` id from an asset register row, from before it joined RevisionWorx's unit register).
   List<Map<String, Object?>> inspectionsFor(String subjectId, {Iterable<String> also = const []}) {
     final ids = {subjectId, ...also};
     final out = [

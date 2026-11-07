@@ -115,14 +115,14 @@ does it by making the field data a **grow-only set of immutable, content-address
 
 Any topology then works, and the same files carry it:
 
-| Path | How (v0.1) |
+| Path | How (1.0) |
 |---|---|
 | phone → office | the phone writes a field log; the share sheet sends it (USB, e-mail, a shared-drive app); `fieldworx-bridge import` |
 | office → phones | `fieldworx-bridge pack` includes the hub's records in the next package |
 | phone → phone | Library → *Import a field log from another phone* |
 | office → office | several computers import into one hub folder on a shared drive (no locks needed), or each keeps its own and they exchange field logs |
 
-v0.1 moves files on purpose (ADR-007). Live LAN sync is the next step (section 7) and uses the same events and the
+1.0 moves files on purpose (ADR-007). Live LAN sync is the next step (section 7) and uses the same events and the
 same merge, only a different transport.
 
 ### 4.1 What can go wrong, and what happens
@@ -157,7 +157,7 @@ Units come from RevisionWorx's unit register when it has one (RevisionWorx ADR-0
 catalog version 2 assets (PROTOCOL.md section 6.4): a permanent `unt_` id, every identifier with its issuer (former
 ones kept), the revisions that apply with where each came from (build standard, the unit itself) and how well it is
 known, fitted components, milestones and the unit's history. RevisionWorx stays the record: the package is a
-snapshot of it, and nothing on the phone changes it. A unit that FieldWorx 0.1 knew from an asset register row keeps
+snapshot of it, and nothing on the phone changes it. A unit that an earlier package knew from an asset register row keeps
 that row's `ast_` id as an alias, so field records already made against it stay attached. Asset registers still work
 for units the unit register doesn't hold; a row for one it does hold is skipped. Version 1 catalogs still open.
 
@@ -283,7 +283,7 @@ and lose data. With causality explicit, every node computes the same answer and 
 
 ### ADR-007: Files first; LAN sync next; never the cloud
 
-**Decision.** v0.1 moves packages and field logs as files through whatever the shop already uses: USB, e-mail,
+**Decision.** The first release moves packages and field logs as files through whatever the shop already uses: USB, e-mail,
 shared drives, the share sheet.
 **Why.** It works today on every phone and network (including none), adds no listener to any computer, and is easy
 to audit. The protocol is transport-independent, so LAN sync (section 7) adds a transport, not a new model.
@@ -307,7 +307,7 @@ A PDF made by the owning program is exactly what it prints.
 
 ### ADR-010: People are names; devices are ids; signatures come later
 
-**Decision.** v0.1 records the name typed on the phone (`actor`) and the device id. There are no accounts.
+**Decision.** The first release records the name typed on the phone (`actor`) and the device id. There are no accounts.
 **Why.** The directive rules out accounts and servers, and shop phones are often shared. Device ids and hash chains
 already make every record attributable to a device and tamper-evident.
 **Next.** Device keys (Ed25519) signing each event, with the public key registered at the hub when a phone is

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// The v0.1 workflows end to end, on the real store with the demo package: first run, scanning, documents and the
+// The workflows end to end, on the real store with the demo package: first run, scanning, documents and the
 // drawing viewer, part lookup, an inspection from start to field log, conflicts between two phones, and the library.
 
 import 'dart:io';
@@ -118,7 +118,7 @@ void main() {
 
       s.scan('FWX:A:ast_${'0e' * 16}');
       await waitFor(tester, find.text('UNIT'));
-      expect(find.text('Former code'), findsOneWidget, reason: 'its FieldWorx 0.1 label still opens it');
+      expect(find.text('Former code'), findsOneWidget, reason: 'its asset register label still opens it');
       await back(tester);
 
       s.scan('FWX:A:$hpu');

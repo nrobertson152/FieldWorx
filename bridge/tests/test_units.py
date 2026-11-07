@@ -63,7 +63,7 @@ def test_units_become_version_2_assets_with_their_own_revisions(plant, tmp_path)
         assert set(assets) == {"NH-26-0001", "NH-26-0002", "NH-26-0003", "GP-4471"}
         u1 = assets["NH-26-0001"]
         assert u1["id"].startswith("unt_") and u1["source"] == "revisionworx" and u1["status"] == "in-service"
-        # The FieldWorx 0.1 id stays, so inspections recorded against the register row still find the unit.
+        # The asset register id stays, so inspections recorded against the register row still find the unit.
         assert u1["aliases"] == [asset_id(arc.manifest["source"]["workspace"], "HPU-0001")]
         assert {(i["scheme"], i["value"]) for i in u1["identifiers"]} == {("tag", "HPU-0001"), ("serial", "NH-26-0001")}
         frm = next(d for d in c["documents"] if d["number"] == "FRM-200")

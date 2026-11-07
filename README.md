@@ -10,10 +10,10 @@ FieldWorx is part of a family of free engineering programs: [RevisionWorx](https
 (stock) and FluidWorx (hydraulics). Designers, builders, inspectors and field technicians all work from the same
 released engineering, and nothing in the field can change it.
 
-> **Status: 0.1 in development.** Scanning, documents and drawings, part lookup and inspections work end to end
+> **Status: 1.0 in development.** Scanning, documents and drawings, part lookup and inspections work end to end
 > with the built-in demo. Not yet released: releases are made by the project's Director. See
 > [docs/ROADMAP.md](docs/ROADMAP.md) for what comes next and [docs/KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md)
-> for what 0.1 doesn't do.
+> for what it doesn't do yet.
 
 ## How it works
 

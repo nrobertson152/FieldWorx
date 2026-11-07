@@ -645,7 +645,7 @@ class Catalog {
   final Map<String, Part> parts = {};
   final Map<String, Asset> assets = {};
 
-  /// Earlier ids of assets (a unit's FieldWorx 0.1 `ast_` id): alias -> asset id.
+  /// Earlier ids of assets (a unit's `ast_` id from an asset register row): alias -> asset id.
   final Map<String, String> assetAliases = {};
   final List<BomLine> bom = [];
   final List<TemplateEntry> templates = [];
