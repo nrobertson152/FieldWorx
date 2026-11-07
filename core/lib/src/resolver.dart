@@ -6,7 +6,9 @@
 //   FWX:P:FRM-200      a part, by part number
 //   FWX:D:FRM-200      a document, by document number
 //   FWX:J:J-2001       a project, by project number
+//   FWX:R:FRM-200@B    one revision of a document: the document, and whether that revision is the released one
 //
+// A label of a kind this version doesn't know (FWX:L:..., FWX:W:...) says so and matches nothing.
 // Everything else (a manufacturer's barcode, a serial plate, a hand-typed number, an internal id) is matched
 // exactly against tags, serials, part numbers, MPNs, SKUs, document and project numbers and reference
 // designators. Nothing is guessed: several matches are all shown, and none means none.
@@ -21,18 +23,77 @@ class ScanMatch {
 }
 
 class ScanResult {
-  ScanResult(this.raw, this.code, this.matches, {this.typed});
+  ScanResult(this.raw, this.code, this.matches, {this.typed, this.revision = '', this.problem = ''});
   final String raw;
 
   /// The text that was looked up (the label's value, without any FWX prefix).
   final String code;
   final List<ScanMatch> matches;
 
-  /// The kind a FieldWorx label said it was, if it was one.
+  /// The kind a FieldWorx label said it was, if it was one. A revision label is a document's.
   final ResultKind? typed;
+
+  /// The revision a revision label (`FWX:R:<number>@<revision>`) names; empty for any other scan.
+  final String revision;
+
+  /// Why the label itself can't be used (a kind this version doesn't read, a malformed revision label), else empty.
+  final String problem;
 
   bool get isUnique => matches.length == 1;
 }
+
+/// What a revision label says about a document on this phone: whether the revision it names is the released one, in
+/// words for whoever is holding the print. Nothing is assumed about a revision the phone doesn't have: it may be newer
+/// than the packages.
+class LabelledRevision {
+  LabelledRevision(this.document, this.label);
+  final Document document;
+
+  /// The revision as the label names it.
+  final String label;
+
+  /// The labelled revision, if this phone has it.
+  Revision? get revision {
+    for (final r in document.revisions) {
+      if (norm(r.label) == norm(label)) return r;
+    }
+    return null;
+  }
+
+  /// Whether the label names the revision released on this phone.
+  bool get isReleased {
+    final r = revision, rel = document.released;
+    return r != null && rel != null && r.id == rel.id;
+  }
+
+  /// Whether the label names a revision this phone has, and another one is released.
+  bool get isSuperseded {
+    final r = revision, rel = document.released;
+    return r != null && rel != null && r.id != rel.id;
+  }
+
+  /// A few words, for a list of matches.
+  String get why {
+    final r = revision, rel = document.released;
+    if (isReleased) return 'revision ${r!.label}, released';
+    final which = r == null ? 'revision $label, not on this phone' : 'revision ${r.label} (${_stateWord(r)})';
+    return rel == null ? '$which; none released' : '$which; ${rel.label} is released';
+  }
+
+  /// A sentence for the document's page.
+  String get sentence {
+    final r = revision, rel = document.released;
+    if (isReleased) return 'This label is for revision ${r!.label}, the released revision.';
+    if (r == null) {
+      return 'This label is for revision $label, which isn’t in this phone’s packages (it may be newer than they are). '
+          '${rel == null ? 'No revision of this document is released here.' : 'Revision ${rel.label} is the released one here.'}';
+    }
+    return 'This label is for revision ${r.label}, which is ${_stateWord(r)}. '
+        '${rel == null ? 'No revision of this document is released here: check with engineering.' : 'Revision ${rel.label} is released: work to that.'}';
+  }
+}
+
+String _stateWord(Revision r) => (r.stateName.isEmpty ? r.state : r.stateName).toLowerCase();
 
 final RegExp _reInternal = RegExp(r'^(doc|prt|ast|unt|prj|rev)_[0-9a-f]{32}$');
 final RegExp _reAssetId = RegExp(r'^(unt|ast)_[0-9a-f]{32}$');
@@ -45,14 +106,14 @@ String _clean(String raw) {
 }
 
 /// Builds labels the resolver understands, for the app's "show label" screen. A unit's permanent label carries its id
-/// ([Asset.labelCode]).
+/// ([Asset.labelCode]). Templates have no label.
 String labelFor(ResultKind kind, String code) {
   final t = switch (kind) {
     ResultKind.asset => 'A',
     ResultKind.part => 'P',
     ResultKind.document => 'D',
     ResultKind.project => 'J',
-    ResultKind.template => 'T',
+    ResultKind.template => throw ArgumentError.value(kind, 'kind', 'templates have no FieldWorx label'),
   };
   return 'FWX:$t:$code';
 }
@@ -62,14 +123,21 @@ ScanResult resolve(Catalog c, String raw) {
   ResultKind? typed;
   final fwx = RegExp(r'^FWX:([A-Za-z]+):(.+)$').firstMatch(code);
   if (fwx != null) {
-    typed = switch (fwx.group(1)!.toUpperCase()) {
+    final kind = fwx.group(1)!.toUpperCase();
+    code = fwx.group(2)!.trim();
+    if (kind == 'R' || kind == 'REVISION') return _revisionLabel(c, raw, code);
+    typed = switch (kind) {
       'A' || 'ASSET' => ResultKind.asset,
       'P' || 'PART' => ResultKind.part,
       'D' || 'DOC' || 'DOCUMENT' => ResultKind.document,
       'J' || 'PROJECT' => ResultKind.project,
       _ => null,
     };
-    code = fwx.group(2)!.trim();
+    if (typed == null) {
+      return ScanResult(raw, code, const [],
+          problem: 'This is a FieldWorx label of a kind ($kind) this version of FieldWorx doesn’t read. A newer '
+              'version may.');
+    }
   } else if (RegExp(r'^https?://', caseSensitive: false).hasMatch(code)) {
     // A URL on a label: FieldWorx never opens it; the last path segment is often the part or serial number.
     final uri = Uri.tryParse(code);
@@ -142,4 +210,23 @@ ScanResult resolve(Catalog c, String raw) {
   }
   out.sort((a, b) => b.priority - a.priority);
   return ScanResult(raw, code, out, typed: typed);
+}
+
+/// `FWX:R:<number>@<revision>`: the documents with that number (the revision is what follows the last @), each saying
+/// whether the labelled revision is the released one.
+ScanResult _revisionLabel(Catalog c, String raw, String code) {
+  final at = code.lastIndexOf('@');
+  final number = at < 0 ? '' : code.substring(0, at).trim();
+  final label = at < 0 ? '' : code.substring(at + 1).trim();
+  if (number.isEmpty || label.isEmpty) {
+    return ScanResult(raw, code, const [],
+        typed: ResultKind.document,
+        problem: 'A revision label holds a document number and a revision, like FWX:R:FRM-200@B. This one doesn’t.');
+  }
+  final out = <ScanMatch>[
+    for (final d in c.documents.values)
+      if (norm(d.number) == norm(number))
+        ScanMatch(ResultKind.document, d.id, d.label, d.title, LabelledRevision(d, label).why, 85),
+  ];
+  return ScanResult(raw, code, out, typed: ResultKind.document, revision: label);
 }

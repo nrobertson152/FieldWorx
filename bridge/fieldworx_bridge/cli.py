@@ -6,6 +6,7 @@
     fieldworx-bridge report -w WORKSPACE -o reports/                            inspection register and records
     fieldworx-bridge status -w WORKSPACE                                        what the hub holds
     fieldworx-bridge verify FILE                                                check a package or field log
+    fieldworx-bridge labels hpu.fieldworx [--parts ...] -o labels.pdf          QR labels to print
 
 The hub (field records) lives in WORKSPACE/.fieldworx unless --hub says otherwise. Exit codes: 0 done, 1 problems
 found (verify, status), 2 refused (nothing was changed).
@@ -17,7 +18,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-from . import __version__, archive, catalog as cat_mod, events as ev_mod, inspections, report, safefile, sources
+from . import __version__, archive, catalog as cat_mod, events as ev_mod, inspections, labels, report, safefile, sources
 from .hub import Hub, HubError
 from .packbuilder import PackOptions, build_package
 
@@ -123,6 +124,34 @@ def cmd_verify(a) -> int:
     return 0
 
 
+def cmd_labels(a) -> int:
+    with archive.read(Path(a.package)) as arc:
+        if arc.catalog is None:
+            raise labels.LabelError(f"{a.package} is a field log: labels come from a package (fieldworx-bridge pack)")
+        c = cat_mod.check_catalog(arc.catalog)
+        title = arc.manifest["title"]
+    if not 1 <= a.copies <= 100:
+        raise labels.LabelError("copies is 1 to 100")
+    kinds = [k for k in labels.KINDS if getattr(a, k)] or ["assets"]
+    chosen, notices = labels.choose(c, kinds, a.only)
+    if not chosen:
+        raise labels.LabelError(f"the package has no {' or '.join(kinds)} to label")
+    layout = labels.LAYOUTS[a.layout]
+    data, pages = labels.sheet([lab for lab in chosen for _ in range(a.copies)], layout, skip=a.skip,
+                               title=f"FieldWorx labels: {title}" if title else "FieldWorx labels",
+                               producer=f"fieldworx-bridge {__version__}")
+    out = Path(a.output)
+    safefile.write_output(out, lambda f: f.write(data), overwrite=a.overwrite)
+    sheets = "page" if layout.per_page == 1 else "sheet"
+    print(f"wrote {out}: {len(chosen) * a.copies} label(s) on {pages} {sheets}{'s' if pages != 1 else ''}, "
+          f"{layout.name}: {layout.description}")
+    print("  print at actual size (100%), not fit to page; a test print on plain paper held against a sheet shows "
+          "whether it lines up")
+    for n in notices:
+        print(f"  note: {n}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="fieldworx-bridge", description=__doc__.split("\n\n")[0])
     p.add_argument("--version", action="version", version=f"fieldworx-bridge {__version__}")
@@ -167,11 +196,32 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("file")
     s.set_defaults(fn=cmd_verify)
 
+    s = sub.add_parser("labels", help="FieldWorx labels (QR codes) for what a package holds, as a PDF to print",
+                       description="A label for each unit or asset in PACKAGE (or each part, document, released "
+                                   "revision or project), laid out to print on sheets of labels or a label printer. "
+                                   "Layouts: " + "; ".join(f"{k}: {v.description}" for k, v in labels.LAYOUTS.items()))
+    s.add_argument("package", help="a .fieldworx package (fieldworx-bridge pack makes one)")
+    s.add_argument("-o", "--output", required=True, help="the PDF to write")
+    s.add_argument("--assets", action="store_true", help="units and assets (the default)")
+    s.add_argument("--parts", action="store_true", help="parts, by part number")
+    s.add_argument("--documents", action="store_true", help="documents, by document number")
+    s.add_argument("--revisions", action="store_true", help="each document's released revision, for its prints")
+    s.add_argument("--projects", action="store_true", help="projects, by project number")
+    s.add_argument("--only", action="append", default=[], metavar="CODE",
+                   help="just this one, in the order given (repeatable): a tag, serial or unit id; a part, document "
+                        "or project number; DOCUMENT@REVISION")
+    s.add_argument("--layout", choices=sorted(labels.LAYOUTS), default=labels.DEFAULT_LAYOUT,
+                   help=f"the label stock (default {labels.DEFAULT_LAYOUT})")
+    s.add_argument("--skip", type=int, default=0, metavar="N", help="positions already used on the first sheet")
+    s.add_argument("--copies", type=int, default=1, metavar="N", help="copies of each label (default 1)")
+    s.add_argument("--overwrite", action="store_true", help="replace OUTPUT if it exists")
+    s.set_defaults(fn=cmd_labels)
+
     a = p.parse_args(argv)
     try:
         return a.fn(a)
     except (sources.SourceError, HubError, archive.ArchiveError, ev_mod.EventError, cat_mod.CatalogError,
-            inspections.TemplateError, safefile.AlreadyExists, OSError) as exc:
+            inspections.TemplateError, labels.LabelError, safefile.AlreadyExists, OSError) as exc:
         msg = f"{exc} already exists (use --overwrite)" if isinstance(exc, safefile.AlreadyExists) else str(exc)
         print(f"error: {msg}", file=sys.stderr)
         return 2

@@ -171,6 +171,48 @@ void main() {
       final row = c.assets['ast_${'05' * 16}']!;
       expect((row.isUnit, row.labelCode, row.tag), equals((false, 'HPU-0002', 'HPU-0002')));
     });
+    test('a revision label finds its document and says whether that revision is the released one', () {
+      final cat = fx.asMap(((v['accept']! as List)[1] as Map<String, Object?>)['catalog'], 'catalog');
+      final c = Catalog()
+        ..add(
+            PackageInfo(id: 'pkg_x', title: 't', series: '', created: '', digest: '', source: {}, notices: [], createdBy: {}),
+            cat);
+      final current = resolve(c, 'FWX:R:FRM-200@B');
+      expect((current.typed, current.code, current.revision, current.problem),
+          equals((ResultKind.document, 'FRM-200@B', 'B', '')));
+      expect(current.matches.single.why, equals('revision B, released'));
+      final frm = c.documents[current.matches.single.id]!;
+      expect(frm.number, equals('FRM-200'));
+      expect((LabelledRevision(frm, 'B').isReleased, LabelledRevision(frm, 'B').isSuperseded), equals((true, false)));
+      expect(LabelledRevision(frm, 'B').sentence, equals('This label is for revision B, the released revision.'));
+
+      final old = resolve(c, 'FWX:R:frm-200@a');
+      expect((old.matches.single.id, old.revision), equals((frm.id, 'a')));
+      expect(old.matches.single.why, equals('revision A (superseded); B is released'));
+      expect(LabelledRevision(frm, 'a').isSuperseded, isTrue);
+      expect(LabelledRevision(frm, 'a').sentence,
+          equals('This label is for revision A, which is superseded. Revision B is released: work to that.'));
+
+      final newer = resolve(c, 'FWX:R:FRM-200@C');
+      expect(newer.matches.single.why, equals('revision C, not on this phone; B is released'));
+      expect(LabelledRevision(frm, 'C').revision, isNull);
+      expect((LabelledRevision(frm, 'C').isReleased, LabelledRevision(frm, 'C').isSuperseded), equals((false, false)),
+          reason: 'a revision the phone doesn’t have may be newer than the package: nothing is assumed');
+      expect(LabelledRevision(frm, 'C').sentence,
+          equals('This label is for revision C, which isn’t in this phone’s packages (it may be newer than they are). '
+              'Revision B is the released one here.'));
+
+      final unknown = resolve(c, 'FWX:R:SCH-99@A');
+      expect(unknown.matches, isEmpty, reason: 'no such document: nothing guessed');
+      expect((unknown.problem, unknown.revision), equals(('', 'A')));
+      for (final bad in ['FWX:R:FRM-200', 'FWX:R:@B', 'FWX:R:FRM-200@', 'FWX:R: @ ']) {
+        final r = resolve(c, bad);
+        expect(r.matches, isEmpty, reason: bad);
+        expect(r.problem, contains('like FWX:R:FRM-200@B'), reason: bad);
+      }
+      expect(resolve(c, 'FWX:R:A@B@C').revision, equals('C'), reason: 'the revision is what follows the last @');
+      expect(resolve(c, 'FWX:D:FRM-200').revision, isEmpty);
+    });
     test('a version 1 asset reads as the register row it was', () {
       final cat = fx.asMap(((v['accept']! as List)[0] as Map<String, Object?>)['catalog'], 'catalog');
       final c = Catalog()

@@ -85,6 +85,7 @@ on-device store. It has no Flutter and no plugins, so it runs in the app, in `da
   OpenMeridian company file (opened read-only) and PDFs of DraftWorx drawings (through `draftworx pdf`).
 - `import` brings field logs into the hub; `status` and `report` show what the hub holds.
 - `verify` checks any package or field log without changing anything.
+- `labels` prints FieldWorx labels for what a package holds, as a PDF for sheets of labels or a label printer (ADR-013).
 
 It is the reference implementation of the protocol: `spec/make_vectors.py` writes the shared test vectors from it,
 and the Dart core must reproduce them byte for byte.
@@ -173,7 +174,8 @@ what it is (*an OpenSchematix project*) and a note asking engineering to publish
 
 FieldWorx labels say what they point at and never contain a web address: `FWX:A:unt_…` (a unit's permanent id;
 its earlier `ast_` id works too, and an id never falls back to a tag that looks the same), `FWX:A:HPU-0001` (asset),
-`FWX:P:FRM-200` (part), `FWX:D:SCH-12` (document), `FWX:J:J-2001` (project). Any other code (a maker's barcode,
+`FWX:P:FRM-200` (part), `FWX:D:SCH-12` (document), `FWX:J:J-2001` (project), `FWX:R:SCH-12@B` (one revision, for its
+prints: the phone says whether it is the released one). Any other code (a maker's barcode,
 a serial plate, a supplier's SKU, a reference designator typed as *K1*) is matched exactly against the catalog.
 Several matches are all shown; none says none. Nothing is guessed. The scanner is zxing-cpp (Apache-2.0) through
 flutter_zxing, so scanning needs no Google Play services and works offline.
@@ -330,3 +332,21 @@ APK asks for anything but the camera.
 **Why.** "No telemetry" is then a property of the build, not a promise: a release FieldWorx cannot send anything
 anywhere, and a new library can't quietly widen what the app may do. (Debug builds keep INTERNET for Flutter's
 development tools.) LAN sync will add the network back, used only for the paired hub.
+
+### ADR-013: The bridge prints labels; one standard-library file draws the QR codes
+
+**Decision.** `fieldworx-bridge labels` lays out labels for what a package holds and writes a PDF itself, with the
+Helvetica and Courier every PDF reader has. The QR codes come from `fwx_label.py`, one standard-library file (Python 3.9
+or newer) for other programs to copy unchanged, as integrations copy RevisionWorx's `rwx_client.py`: DraftWorx and
+OpenSchematix are to use it for revision codes on their drawings. Labels print at error correction level Q. The layouts are three common stocks (A4 70 x 37
+mm, US Letter 2-5/8 x 1 in, a 50 x 25 mm label printer), proposed: which the family supports is the Director's decision.
+**Why.** Printing from the package means a label always names something the phones that carry that package can find,
+and it needs no label software, account or network. A library would be a runtime dependency in a bridge that has none.
+One file copied keeps every program's codes identical without one program importing another. At level Q a code still
+reads with up to a quarter of it dirty or scratched, and a unit's permanent label (42 characters) still fits a 33-module
+code.
+**Consequences.** An encoder written here has to be right, so the tests hold it to two programs it shares no code with:
+python-qrcode draws the same symbol bit for bit at every version (1 to 10), level and mask, and zxing-cpp, the decoder
+the app uses, reads every code back, from the matrix and from each label of a rendered page (test-only dependencies,
+`bridge[dev]`). Text the built-in fonts lack prints as "?"; the code holds it exactly. Codes longer than version 10
+holds are refused with a message, not shrunk.
