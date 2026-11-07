@@ -3,7 +3,8 @@
 
 Every event belongs to one device's stream (``device``, ``seq``, ``prev``: a hash chain) and to one entity
 (``entity``, ``deps``: the events of that entity its author had seen). Its id is the SHA-256 of its canonical bytes,
-so an event cannot change without becoming a different event.
+so an event cannot change without becoming a different event. A version 2 event (section 12) is also signed with its
+device's Ed25519 key: its id is the digest of everything but the signature, and the signature is over the id.
 
 ``FieldLog`` is the in-memory set every node keeps. ``import_events`` is all-or-nothing: a batch either fits on to
 what is already known (chains continue, dependencies exist, no device has two different events at one sequence
@@ -11,24 +12,31 @@ number) or nothing from it is used. The Dart implementation (core/lib/src/events
 """
 from __future__ import annotations
 
+import hashlib
 import re
 import secrets
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Iterable
 
-from . import fxjson
+from . import ed25519, fxjson
 
 EVENT_DOMAIN = "event/v1"
+EVENT_DOMAIN_V2 = "event/v2"
+SIGNATURE_DOMAIN = b"fieldworx/event-signature/v1\0"     # signed: these bytes, then the id as 64 ASCII hex digits
+FINGERPRINT_DOMAIN = b"fieldworx/key-fingerprint/v1\0"
 MAX_EVENT_BYTES = 256 * 1024
 MAX_DEPS = 64
 ENVELOPE_KEYS = frozenset({"v", "device", "seq", "prev", "time", "actor", "type", "entity", "deps", "body"})
+ENVELOPE_KEYS_V2 = ENVELOPE_KEYS | {"key", "sig"}
 
 RE_DEVICE = re.compile(r"dev_[0-9a-f]{32}\Z")
 RE_ENTITY = re.compile(r"[a-z]{3}_[0-9a-f]{32}\Z")
 RE_HASH = re.compile(r"[0-9a-f]{64}\Z")
 RE_TIME = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,6})?Z\Z")
 RE_TYPE = re.compile(r"[a-z][a-z0-9]*(\.[a-z][a-z0-9_]*)+\Z")
+RE_KEY = re.compile(r"[0-9a-f]{64}\Z")
+RE_SIG = re.compile(r"[0-9a-f]{128}\Z")
 
 
 class EventError(ValueError):
@@ -56,20 +64,34 @@ def utc_now() -> str:
     return t.strftime("%Y-%m-%dT%H:%M:%S.") + f"{t.microsecond // 1000:03d}Z"
 
 
+def fingerprint(public: str) -> str:
+    """What a phone shows and a person compares (section 12.1): the first 8 bytes of SHA-256 of the domain and the public
+    key, as 16 uppercase hex digits in four groups joined by ``-``."""
+    h = hashlib.sha256(FINGERPRINT_DOMAIN + bytes.fromhex(public)).hexdigest()[:16].upper()
+    return "-".join(h[i:i + 4] for i in range(0, 16, 4))
+
+
+def signature_message(event_id: str) -> bytes:
+    return SIGNATURE_DOMAIN + event_id.encode("ascii")
+
+
 def _text_ok(s: Any, limit: int) -> bool:
     return isinstance(s, str) and len(s) <= limit and not any(ord(c) < 0x20 or ord(c) == 0x7F for c in s)
 
 
 def check_envelope(ev: Any) -> None:
-    """Raise EventError unless ``ev`` is a well-formed version 1 event. Bodies are checked when they are used."""
+    """Raise EventError unless ``ev`` is a well-formed event of version 1 or 2. Bodies are checked when they are used; a
+    version 2 event's signature when it is read (``from_bytes``)."""
     if not isinstance(ev, dict):
         raise EventError("an event is a JSON object")
+    v = ev.get("v")
+    if v not in (1, 2) or isinstance(v, bool):
+        raise EventError(f"event version {v!r} is not supported by this FieldWorx; update it")
+    expected = ENVELOPE_KEYS if v == 1 else ENVELOPE_KEYS_V2
     keys = set(ev)
-    if keys != ENVELOPE_KEYS:
-        missing, extra = ENVELOPE_KEYS - keys, keys - ENVELOPE_KEYS
+    if keys != expected:
+        missing, extra = expected - keys, keys - expected
         raise EventError(f"event fields wrong (missing {sorted(missing)}, unknown {sorted(extra)})")
-    if ev["v"] != 1:
-        raise EventError(f"event version {ev['v']!r} is not supported by this FieldWorx; update it")
     if not isinstance(ev["device"], str) or not RE_DEVICE.match(ev["device"]):
         raise EventError("device id malformed")
     seq = ev["seq"]
@@ -99,6 +121,11 @@ def check_envelope(ev: Any) -> None:
         raise EventError("deps must be sorted and unique")
     if not isinstance(ev["body"], dict):
         raise EventError("body must be an object")
+    if v == 2:                                           # whether the key is a point is the signature check's
+        if not isinstance(ev["key"], str) or not RE_KEY.match(ev["key"]):
+            raise EventError("key must be the device's Ed25519 public key, 64 lowercase hex digits")
+        if not isinstance(ev["sig"], str) or not RE_SIG.match(ev["sig"]):
+            raise EventError("sig must be an Ed25519 signature, 128 lowercase hex digits")
 
 
 @dataclass(frozen=True)
@@ -143,13 +170,49 @@ class Event:
     def actor(self) -> str:
         return self.data["actor"]
 
+    @property
+    def version(self) -> int:
+        return self.data["v"]
+
+    @property
+    def key(self) -> str:
+        """The signing device's public key; ``""`` for a version 1 event, which isn't signed."""
+        return self.data.get("key", "")
+
+    @property
+    def sig(self) -> str:
+        return self.data.get("sig", "")
+
 
 def event_id(raw: bytes) -> str:
+    """The id of a version 1 event from its canonical bytes."""
     return fxjson.digest_bytes(EVENT_DOMAIN, raw)
 
 
-def from_bytes(raw: bytes, expected_id: str | None = None) -> Event:
-    """Check canonical form, envelope and (if given) the id. Raises EventError."""
+def _id(data: dict, raw: bytes) -> str:
+    if data["v"] == 1:
+        return event_id(raw)
+    return fxjson.digest(EVENT_DOMAIN_V2, {k: v for k, v in data.items() if k != "sig"})
+
+
+def signature_holds(ev: Event) -> bool:
+    """Whether a version 2 event's signature holds over its id with the key it carries. True for version 1."""
+    if ev.version == 1:
+        return True
+    return ed25519.verify(bytes.fromhex(ev.key), signature_message(ev.id), bytes.fromhex(ev.sig))
+
+
+def check_signature(ev: Event) -> None:
+    if not signature_holds(ev):
+        raise EventError(f"record {ev.id[:12]} of device {ev.device[:12]}: its signature doesn't hold. It was changed "
+                         "after it was signed, or wasn't signed with the key it carries")
+
+
+def from_bytes(raw: bytes, expected_id: str | None = None, *, check_sig: bool = True) -> Event:
+    """Check canonical form, envelope, (if given) the id and, for a version 2 event, its signature. Raises EventError.
+
+    ``check_sig=False`` is for a copy's own store, which holds only events checked when they came in, and for an
+    importer that checks the events new to it (``check_signature``) rather than the ones it has already."""
     if len(raw) > MAX_EVENT_BYTES:
         raise EventError(f"event larger than {MAX_EVENT_BYTES} bytes")
     try:
@@ -157,21 +220,30 @@ def from_bytes(raw: bytes, expected_id: str | None = None) -> Event:
     except fxjson.FxJsonError as exc:
         raise EventError(f"event is not canonical JSON: {exc}") from None
     check_envelope(data)
-    eid = event_id(raw)
+    eid = _id(data, raw)
     if expected_id is not None and eid != expected_id:
         raise EventError(f"event content does not match its id {expected_id[:12]}")
-    return Event(eid, raw, data)
+    ev = Event(eid, raw, data)
+    if check_sig:
+        check_signature(ev)
+    return ev
 
 
 def make(device: str, seq: int, prev: str, actor: str, type_: str, entity: str, deps: Iterable[str], body: dict,
-         time: str | None = None) -> Event:
+         time: str | None = None, seed: bytes | None = None) -> Event:
+    """A new event: version 1, or version 2 signed with ``seed`` (the device's 32-byte Ed25519 seed)."""
     data = {"v": 1, "device": device, "seq": seq, "prev": prev, "time": time or utc_now(), "actor": actor,
             "type": type_, "entity": entity, "deps": sorted(set(deps)), "body": body}
+    if seed is not None:
+        data.update(v=2, key=ed25519.public_key(seed).hex(), sig="0" * 128)
+        check_envelope(data)
+        eid = _id(data, b"")
+        data["sig"] = ed25519.sign(seed, signature_message(eid)).hex()
     check_envelope(data)
     raw = fxjson.encode(data)
     if len(raw) > MAX_EVENT_BYTES:
         raise EventError(f"event larger than {MAX_EVENT_BYTES} bytes")
-    return Event(event_id(raw), raw, data)
+    return Event(_id(data, raw), raw, data)
 
 
 class FieldLog:
@@ -221,6 +293,14 @@ class FieldLog:
         if ev.seq > 1 and stream[-1] != ev.prev:
             raise ForkError(f"device {ev.device[:12]}: record {ev.seq} does not follow record {ev.seq - 1} here; its "
                             "history was forked. Nothing was imported")
+        if ev.seq > 1:                                   # section 12.2: one key per device, and no going back
+            before = self.events.get(stream[-1]) or pending.get(stream[-1])
+            if before is not None and before.version == 2 and ev.version == 1:
+                raise EventError(f"device {ev.device[:12]}: record {ev.seq} isn't signed, but the records before it "
+                                 "are. Nothing was imported")
+            if before is not None and before.version == 2 and ev.key != before.key:
+                raise EventError(f"device {ev.device[:12]} signs with two different keys (record {ev.seq}): its store "
+                                 "was damaged or copied. Nothing was imported")
         for d in ev.deps:
             dep = self.events.get(d) or pending.get(d)
             if dep is None:

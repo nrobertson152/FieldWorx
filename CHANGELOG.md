@@ -31,6 +31,12 @@ The first field release: QR scanning, engineering document access, part lookup a
   OpenMeridian company files of format 1 and 2 (serial numbers for units made) are read the same way, read-only; a
   format it doesn't know is refused with a message.
 - **Protocol 1** ([docs/PROTOCOL.md](docs/PROTOCOL.md)) with shared vectors both implementations reproduce.
+- **Signed field records** (PROTOCOL.md section 12, ARCHITECTURE.md ADR-015): every phone has its own Ed25519 key, made the
+  first time this version starts (a phone from before keys keeps its device id), and signs every record it makes with
+  it. The phone, the bridge's `import` and `verify`, and `fxtool verify` refuse a record changed after it was signed, a
+  device with two keys, or an unsigned record after a signed one; each new record is checked once, when it arrives.
+  Field logs name the phone's key. Records made before keys stay readable, unsigned. Ed25519 and SHA-512 in pure Dart and
+  pure Python, held to RFC 8032's vectors and the family's (`signatures.json`).
 - **Units from RevisionWorx's unit register** (catalog version 2; version 1 still opens):
   - The bridge packs a workspace's units through `revisionworx link units` when RevisionWorx has a unit register:
     the chosen projects' units, every unit fitted in them, and every revision they name. A unit's earlier `ast_`

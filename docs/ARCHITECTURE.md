@@ -393,7 +393,7 @@ as read (`--if-events`), so a fact recorded meanwhile is never overwritten by a 
 **Not done.** A phone doesn't yet see that a finding was accepted: packages would need to carry the evidence, a new
 asset version. Photos stay in the hub; RevisionWorx holds the reference to the field record, not the photo.
 
-### ADR-015: Device keys, enrolled to workspace accounts (Director's decision, 2026-11-07) — being built
+### ADR-015: Device keys, enrolled to workspace accounts (Director's decision, 2026-11-07) — signed records built; enrolment and acceptance being built
 
 **Decision.** Before 1.0.0, every phone signs the field records it makes with its own Ed25519 key (RFC 8032), and an
 administrator of a RevisionWorx team workspace enrols the phone to the person's account. A finding signed by an
@@ -412,6 +412,13 @@ team already checks who may change what (RevisionWorx ADR-024).
   the event's id, which is computed without `sig`. Ed25519 signatures are deterministic, so an event still has exactly one
   stored form and the hub's fork check is unchanged. Readers refuse a bad signature, a device with two keys, or an
   unsigned record after a signed one. Version 1 events stay valid: records made before keys are unsigned.
+- *Checking once.* A copy checks the signature of each event new to it when it takes it in (a phone importing a field
+  log or a package, the hub importing a field log), and every event when asked to check an archive; its own store isn't
+  checked again on every read. A phone's field log carries its whole history and the hub keeps everything, so checking
+  every signature on every read would grow without end: about 1.5 ms each in the bridge's pure Python, a few ms in Dart.
+  The checks are in `bridge/fieldworx_bridge/events.py` and `ed25519.py` (copied from RevisionWorx) and
+  `core/lib/src/events.dart`, `ed25519.dart` (TweetNaCl's arithmetic with RFC 8032's checks) and `sha512.dart`, held to
+  the same vectors.
 - *Enrolment* is an administrator's act in RevisionWorx, recorded in the account (`devices`), which only administrators
   may change under the rules every computer already applies, so no new rule and no format change. The phone shows its
   device id and a 64-bit fingerprint; a field log carries its key; `fieldworx-bridge enrol` refuses unless the

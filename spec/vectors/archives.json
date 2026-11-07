@@ -37,6 +37,18 @@
    "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657"
   ]
  },
+ "signed.fieldlog": {
+  "catalog_digest": "",
+  "digest": "35bd1d1b1f7e99a7630d01851bfe90d0d36cda0783c5ba05bf1e309216337862",
+  "events": [
+   "823378884ffc24034aa57961153d3423aa9c1035b08d9b9331fc4fff70cea998",
+   "02277db9d4988540a581f5e5610c48dd83c356a7153c851f9ed6dd88a5f69b9f",
+   "0dd82396b552fe14a979e615517d43bd1261295bdb7ead8fe4e3e4a15acbf002"
+  ],
+  "id": "flg_08080808080808080808080808080808",
+  "kind": "fieldlog",
+  "objects": []
+ },
  "units.fieldworx": {
   "catalog_digest": "af7f5fa708f48b5ca2653d90df2b289190757cfe30837b426d4d50fa1ac1c15c",
   "digest": "1f9a745d7467cd252bbd95794e0a524790f15d70ffb41776513fbc05eaa5da42",

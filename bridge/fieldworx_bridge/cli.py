@@ -46,7 +46,7 @@ def cmd_pack(a) -> int:
                        revisionworx=a.revisionworx, draftworx=a.draftworx, field_events=events)
     out = Path(a.output)
     manifest = build_package(opts, out, overwrite=a.overwrite, log=lambda s: print(s, file=sys.stderr))
-    arc = archive.read(out)
+    arc = archive.read(out, check_signatures=False)     # the hub's records, checked when they came in
     c = arc.catalog
     arc.close()
     print(f"wrote {out}: {len(c['documents'])} document(s), {len(c['parts'])} part(s), {len(c['assets'])} asset(s), "
@@ -63,7 +63,7 @@ def cmd_import(a) -> int:
     rc = 0
     for f in a.files:
         try:
-            with archive.read(Path(f)) as arc:
+            with archive.read(Path(f), check_signatures=False) as arc:   # the hub checks the new ones
                 rep = hub.import_archive(arc)
             print(f"{f}: {rep.text()}")
         except (archive.ArchiveError, ev_mod.EventError, HubError, OSError) as exc:
@@ -128,7 +128,7 @@ def cmd_verify(a) -> int:
 
 
 def cmd_labels(a) -> int:
-    with archive.read(Path(a.package)) as arc:
+    with archive.read(Path(a.package), check_signatures=False) as arc:
         if arc.catalog is None:
             raise labels.LabelError(f"{a.package} is a field log: labels come from a package (fieldworx-bridge pack)")
         c = cat_mod.check_catalog(arc.catalog)

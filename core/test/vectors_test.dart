@@ -61,7 +61,13 @@ void main() {
   test('envelopes', () {
     final d = load('envelopes.json')! as Map<String, Object?>;
     for (final g in (d['good']! as List).cast<Map<String, Object?>>()) {
-      expect(Event.fromBytes(utf8.encode(g['event']! as String)).id, equals(g['id']));
+      final ev = Event.fromBytes(utf8.encode(g['event']! as String));
+      expect(ev.id, equals(g['id']));
+      if (g['unsigned_digest'] != null) {
+        expect(ev.version, equals(2));
+        expect(ev.id, equals(g['unsigned_digest']));
+        expect(ev.signatureHolds, isTrue);
+      }
     }
     for (final b in (d['bad']! as List).cast<Map<String, Object?>>()) {
       expect(() => Event.fromBytes(utf8.encode(b['event']! as String)), throwsA(isA<EventError>()),
@@ -243,7 +249,7 @@ void main() {
 
   group('archives written by the bridge', () {
     final expected = load('archives.json')! as Map<String, Object?>;
-    for (final name in ['sample.fieldworx', 'sample.fieldlog', 'units.fieldworx']) {
+    for (final name in ['sample.fieldworx', 'sample.fieldlog', 'units.fieldworx', 'signed.fieldlog']) {
       test(name, () async {
         final want = expected[name]! as Map<String, Object?>;
         final a = await FieldArchive.open(File('$vectorsDir/$name'), verifyObjects: true);

@@ -2,7 +2,7 @@
 // The on-device store (docs/ARCHITECTURE.md, ADR-004). Everything is a file written once, under its final name
 // only when complete:
 //
-//   device.json                      this copy's device id (never restored from a backup: see the Android rules)
+//   device.json                      this copy's device id and signing key (never backed up or restored: section 9)
 //   settings.json                    name and theme (the only file that is replaced)
 //   objects/<aa>/<sha256>            drawings and photos, named by their content
 //   packages/<package id>/           manifest.json and catalog.json of each installed package
@@ -54,6 +54,9 @@ class FieldStore {
 
   final Directory root;
   late String deviceId;
+
+  /// This device's Ed25519 key (PROTOCOL.md section 12): every record it makes is signed with it.
+  late SigningKey signingKey;
   Map<String, Object?> settings = {};
   final FieldLog log = FieldLog();
   Catalog catalog = Catalog();
@@ -68,6 +71,9 @@ class FieldStore {
   Directory get _tmp => Directory('${root.path}/tmp');
 
   String get userName => (settings['user'] as String?) ?? '';
+
+  /// What this phone shows for enrolling it to someone's account: compare it with what the office sees.
+  String get fingerprint => signingKey.fingerprint;
   String get theme => (settings['theme'] as String?) ?? 'modern_light';
 
   static Future<FieldStore> open(Directory root) async {
@@ -87,13 +93,23 @@ class FieldStore {
       } catch (_) {}
     }
     final dev = File('${root.path}/device.json');
+    var m = <String, Object?>{};
     if (await dev.exists()) {
-      final m = fx.asMap(fx.parseBytes(await dev.readAsBytes()), 'device.json');
+      m = fx.asMap(fx.parseBytes(await dev.readAsBytes()), 'device.json');
       deviceId = fx.asString(m['device'], 'device');
       if (!reDevice.hasMatch(deviceId)) throw StoreError('device.json is damaged');
     } else {
       deviceId = newId('dev');
-      await _writeAtomic(dev, fx.encode({'device': deviceId, 'created': utcNow()}));
+      m = {'device': deviceId, 'created': utcNow()};
+    }
+    if (m['key'] == null) {
+      // A new device, or one from before records were signed: it gets its key now and keeps its id. Records it made
+      // before stay unsigned. This is the only time device.json is replaced.
+      signingKey = SigningKey.generate();
+      m = {...m, 'key': {'seed': toHex(signingKey.seed), 'public': signingKey.publicHex, 'created': utcNow()}};
+      await _writeAtomic(dev, fx.encode(m));
+    } else {
+      signingKey = _keyFrom(m['key']);
     }
     final set = File('${root.path}/settings.json');
     if (await set.exists()) {
@@ -106,6 +122,16 @@ class FieldStore {
     }
     await _loadEvents();
     await reloadCatalog();
+  }
+
+  static SigningKey _keyFrom(Object? k) {
+    const damaged = "device.json is damaged: this device's signing key can't be read";
+    if (k is! Map || k['seed'] is! String || k['public'] is! String) throw StoreError(damaged);
+    final seed = k['seed'] as String, public = k['public'] as String;
+    if (!reKey.hasMatch(seed) || !reKey.hasMatch(public)) throw StoreError(damaged);
+    final key = SigningKey.fromSeedHex(seed);
+    if (key.publicHex != public) throw StoreError(damaged);
+    return key;
   }
 
   Future<void> saveSettings(Map<String, Object?> changes) async {
@@ -123,7 +149,8 @@ class FieldStore {
         if (!reDevice.hasMatch(name)) continue;
         await for (final f in d.list()) {
           if (f is! File || !f.path.endsWith('.json') || f.uri.pathSegments.last.startsWith('.')) continue;
-          final ev = Event.fromBytes(await f.readAsBytes());
+          // This store's own records were checked when they came in; their signatures aren't checked again here.
+          final ev = Event.fromBytes(await f.readAsBytes(), checkSignature: false);
           if (ev.device != name || f.uri.pathSegments.last != '${ev.seq.toString().padLeft(10, '0')}.json') {
             throw EventError('${f.path} is in the wrong place');
           }
@@ -161,10 +188,25 @@ class FieldStore {
       entity: entity,
       deps: log.entityHeads(entity),
       body: body,
+      signingKey: signingKey,
     );
     await _persist(ev);
     log.append(ev);
     return ev;
+  }
+
+  /// The events of [incoming] that are new here, in an order they can be added, once they are shown to fit with this
+  /// device's and each new one's signature holds. Changes nothing; throws EventError otherwise.
+  List<Event> _checkIncoming(List<Event> incoming) {
+    final scratch = FieldLog()
+      ..events.addAll(log.events)
+      ..streams.addAll({for (final e in log.streams.entries) e.key: List.of(e.value)})
+      ..byEntity.addAll({for (final e in log.byEntity.entries) e.key: List.of(e.value)});
+    final added = scratch.importEvents(incoming);
+    for (final ev in added) {
+      ev.checkSignature();
+    }
+    return added;
   }
 
   Future<List<Event>> _importEvents(List<Event> events) async {
@@ -268,7 +310,7 @@ class FieldStore {
   /// Checks and installs a package file. Nothing is kept unless everything in it is intact and its field records
   /// fit with this device's.
   Future<InstallResult> installPackage(File file) async {
-    final a = await FieldArchive.open(file);
+    final a = await FieldArchive.open(file, checkSignatures: false); // the new records' are checked below
     try {
       if (a.kind != 'package') throw StoreError('This is a field log, not a package. Use "Import field log".');
       try {
@@ -285,20 +327,17 @@ class FieldStore {
         }
       }
       // Field records first, all-or-nothing, so a package whose records don't fit changes nothing.
-      final scratch = FieldLog()
-        ..events.addAll(log.events)
-        ..streams.addAll({for (final e in log.streams.entries) e.key: List.of(e.value)})
-        ..byEntity.addAll({for (final e in log.byEntity.entries) e.key: List.of(e.value)});
+      final List<Event> fresh;
       try {
-        scratch.importEvents(a.events);
+        fresh = _checkIncoming(a.events);
       } on EventError catch (e) {
-        throw StoreError("This package's field records don't fit with this device's: ${e.message}");
+        throw StoreError("This package's field records can't be used: ${e.message}");
       }
       var newObjects = 0;
       for (final sha in a.objects.keys) {
         if (await _putObjectFromArchive(a, sha)) newObjects++;
       }
-      final added = await _importEvents(a.events);
+      final added = await _importEvents(fresh);
       final stage = Directory('${_tmp.path}/${a.id}');
       await stage.create(recursive: true);
       await File('${stage.path}/manifest.json').writeAsBytes(a.manifestBytes, flush: true);
@@ -403,7 +442,7 @@ class FieldStore {
       archiveId: newId('flg'),
       title: 'Field records from ${userName.isEmpty ? 'a device' : userName}',
       created: utcNow(),
-      createdBy: {'device': deviceId, 'user': userName, 'tool': tool},
+      createdBy: {'device': deviceId, 'key': signingKey.publicHex, 'user': userName, 'tool': tool},
       events: log.ordered(),
       objects: objects,
     );
@@ -415,24 +454,21 @@ class FieldStore {
 
   /// Brings in a field log (from another device, or one written here earlier).
   Future<ImportResult> importFieldLog(File file) async {
-    final a = await FieldArchive.open(file);
+    final a = await FieldArchive.open(file, checkSignatures: false); // the new records' are checked below
     try {
       if (a.kind != 'fieldlog') throw StoreError('This is a package, not a field log. Use "Add package".');
       final known = a.events.where((e) => log.contains(e.id)).length;
-      final scratch = FieldLog()
-        ..events.addAll(log.events)
-        ..streams.addAll({for (final e in log.streams.entries) e.key: List.of(e.value)})
-        ..byEntity.addAll({for (final e in log.byEntity.entries) e.key: List.of(e.value)});
+      final List<Event> fresh;
       try {
-        scratch.importEvents(a.events);
+        fresh = _checkIncoming(a.events);
       } on EventError catch (e) {
-        throw StoreError("These field records don't fit with this device's: ${e.message}");
+        throw StoreError("These field records can't be used: ${e.message}");
       }
       var newObjects = 0;
       for (final sha in a.objects.keys) {
         if (await _putObjectFromArchive(a, sha)) newObjects++;
       }
-      final added = await _importEvents(a.events);
+      final added = await _importEvents(fresh);
       return ImportResult(added.length, known, newObjects);
     } finally {
       await a.close();
