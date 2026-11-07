@@ -24,7 +24,7 @@ The directive's first scope: **QR scanning, engineering document access, part lo
   revision and which one to work to if not. DraftWorx and OpenSchematix print it on drawings of a controlled revision
   (DraftWorx #13, OpenSchematix #106), with `fwx_label.py` copied unchanged.
 - Label sheets: `fieldworx-bridge labels` prints QR labels for units, parts, documents, revisions and projects on A4
-  or US Letter label sheets or a label printer (the layouts are proposals for the Director).
+  or US Letter label sheets, or 50 x 25 mm and 25 x 12 mm label printers.
 - Files as the transport: packages in, field logs out, phone to phone; `fieldworx-bridge` packs, imports,
   reports and verifies.
 - Six family themes, AA contrast, large targets; release builds ask for the camera and nothing else.

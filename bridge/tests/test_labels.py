@@ -123,7 +123,7 @@ def test_every_label_prints_in_its_place_and_reads_back(units, name):
         crop = images[page][int(top):int(bottom), int(left):int(right)]
         found = zxingcpp.read_barcodes(crop, formats=zxingcpp.BarcodeFormat.QRCode)
         assert [f.bytes for f in found] == [lab.text.encode()], (name, i, lab.text)
-        assert found[0].ec_level == labels.LEVEL
+        assert found[0].ec_level == layout.level
         p = found[0].position
         corners = [(c.x, c.y) for c in (p.top_left, p.top_right, p.bottom_left, p.bottom_right)]
         assert all(1.0 * px <= x and 1.0 * px <= y and y <= crop.shape[0] - px for x, y in corners), \
@@ -231,3 +231,19 @@ def test_the_labels_command(tmp_path, capsys):
     damaged.write_bytes(bytes(raw))
     assert main(["labels", str(damaged), "-o", str(refused)]) == 2, "a damaged package is refused whole"
     assert not refused.exists(), "nothing is written when a request is refused"
+
+
+def test_the_small_label_has_the_code_its_kind_and_its_number(units):
+    layout = labels.LAYOUTS["roll-25x12"]
+    labs = labels.choose(units, ["assets", "parts"])[0]
+    pdf = pdfium.PdfDocument(labels.sheet(labs, layout)[0])
+    assert len(pdf) == len(labs)
+    assert " ".join(pdf[0].get_textpage().get_text_range().split()) == "UNIT NH-26-0001", \
+        "no description and no code written out: the QR code holds it"
+    assert " ".join(pdf[3].get_textpage().get_text_range().split()) == "PART HPU-75"
+    assert layout.level == "M" and labels.LAYOUTS["roll-50x25"].level == labels.LEVEL == "Q"
+    image = render(labels.sheet(labs[:1], layout)[0])[0]
+    found = zxingcpp.read_barcodes(image, formats=zxingcpp.BarcodeFormat.QRCode)
+    p = found[0].position
+    side_mm = abs(p.top_right.x - p.top_left.x) / (DPI / 25.4)
+    assert side_mm / 29 > 0.28, "a unit's code is 29 modules at level M, each big enough for a phone"

@@ -338,8 +338,10 @@ development tools.) LAN sync will add the network back, used only for the paired
 **Decision.** `fieldworx-bridge labels` lays out labels for what a package holds and writes a PDF itself, with the
 Helvetica and Courier every PDF reader has. The QR codes come from `fwx_label.py`, one standard-library file (Python 3.9
 or newer) for other programs to copy unchanged, as integrations copy RevisionWorx's `rwx_client.py`. DraftWorx and
-OpenSchematix use it for the revision codes on their prints, and their tests check their copy is this file. Labels print at error correction level Q. The layouts are three common stocks (A4 70 x 37
-mm, US Letter 2-5/8 x 1 in, a 50 x 25 mm label printer), proposed: which the family supports is the Director's decision.
+OpenSchematix use it for the revision codes on their prints, and their tests check their copy is this file. Labels print at error correction level Q. The layouts are four common stocks, the ones the Director chose on 2026-11-07:
+A4 70 x 37 mm, US Letter 2-5/8 x 1 in, and 50 x 25 mm and 25 x 12 mm label printers. The 25 x 12 mm label carries only
+the code, its kind and its number, at level M, so its modules stay readable. With labels in use, a unit's code
+`FWX:A:unt_<32 hex digits>` is fixed for the life of the machine.
 **Why.** Printing from the package means a label always names something the phones that carry that package can find,
 and it needs no label software, account or network. A library would be a runtime dependency in a bridge that has none.
 One file copied keeps every program's codes identical without one program importing another. At level Q a code still

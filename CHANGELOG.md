@@ -47,7 +47,8 @@ The first field release: QR scanning, engineering document access, part lookup a
   without one never shows another revision's.
 - **Labels:**
   - `fieldworx-bridge labels` prints labels for a package's units and assets, parts, documents, released revisions or
-    projects, as a PDF for A4 or US Letter label sheets or a label printer. Each label has a QR code (level Q), what
+    projects, as a PDF for A4 or US Letter label sheets or a label printer (50 x 25 mm, or 25 x 12 mm for components
+    and bins, which carries just the code, its kind and its number). Each label has a QR code (level Q), what
     it is, its number, a description and the code to type. `--only`, `--skip` and `--copies` pick what and where.
   - Revision labels, `FWX:R:<document>@<revision>`, for prints: the phone opens the document and says whether that
     revision is the released one, which one to work to if it is superseded, and that a revision it doesn't have may
