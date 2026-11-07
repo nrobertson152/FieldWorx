@@ -4,7 +4,7 @@ What is built, what comes next, and in what order. Versions are proposals: relea
 the Director's to decide. Each step keeps the rules of [ARCHITECTURE.md](ARCHITECTURE.md): engineering stays
 read-only on phones, field records are append-only, nothing is resolved silently, nothing needs the cloud.
 
-## 0.1: the first field release (this work)
+## 1.0: the first field release (this work)
 
 The directive's first scope: **QR scanning, engineering document access, part lookup and basic inspections.**
 
@@ -13,7 +13,7 @@ The directive's first scope: **QR scanning, engineering document access, part lo
 - Units (assets) with their as-built revisions, what has been revised since, and their inspection history.
 - Units from RevisionWorx's unit register (catalog version 2): permanent `FWX:A:unt_…` labels, every identifier
   (former ones too), build standard and this unit's own revisions, fitted components and where it is fitted, the
-  unit's history. FieldWorx 0.1's asset registers and their records carry over.
+  unit's history. Asset registers, and the records made against their units, carry over.
 - Documents with every revision's state; released PDFs pinch-zoomable and searchable; superseded and unreleased
   revisions flagged in red and amber.
 - Parts: makers' and suppliers' codes, BOM *made from* and *used in* with reference designators, stock on hand
@@ -24,9 +24,9 @@ The directive's first scope: **QR scanning, engineering document access, part lo
   reports and verifies.
 - Six family themes, AA contrast, large targets; release builds ask for the camera and nothing else.
 - Tests: protocol vectors shared by Python and Dart, the bridge against real RevisionWorx and OpenMeridian,
-  widget tests of every v0.1 workflow, an end-to-end run, Android and iOS builds in CI.
+  widget tests of every workflow, an end-to-end run, Android and iOS builds in CI.
 
-## 0.2: closing the loop
+## Next: closing the loop
 
 1. **LAN sync** (ARCHITECTURE.md section 7): `fieldworx-bridge serve`, pairing by QR code with a pinned
    certificate, frontier exchange of events and objects, packages offered automatically.
@@ -43,7 +43,7 @@ The directive's first scope: **QR scanning, engineering document access, part lo
    in FieldWorx.
 8. **Hardware scanners:** keyboard-wedge input without focusing the code field; Zebra DataWedge intents.
 
-## 0.3: work in the field
+## Then: work in the field
 
 1. **Work orders:** a job for a unit (from the office or raised on the phone), with its documents, templates
    and parts; status, time and parts used recorded as events.

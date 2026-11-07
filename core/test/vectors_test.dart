@@ -150,7 +150,7 @@ void main() {
             cat);
       final hpu = 'unt_${'0c' * 16}';
       expect(resolve(c, 'FWX:A:$hpu').matches.single.id, equals(hpu));
-      expect(resolve(c, 'FWX:A:ast_${'0e' * 16}').matches.single.id, equals(hpu), reason: 'its FieldWorx 0.1 id');
+      expect(resolve(c, 'FWX:A:ast_${'0e' * 16}').matches.single.id, equals(hpu), reason: 'its asset register id');
       expect(resolve(c, 'FWX:A:unt_${'77' * 16}').matches, isEmpty, reason: 'an unknown unit: nothing guessed');
       expect(resolve(c, 'hpu-0001').matches.single.why, equals('asset tag (Acme)'));
       expect(resolve(c, 'OLD-17').matches.single.why, equals('former code (Previous owner)'));

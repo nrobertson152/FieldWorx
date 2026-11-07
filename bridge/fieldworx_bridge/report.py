@@ -130,7 +130,7 @@ record {e(entity)}</div>
 {('<h3>Photos</h3>' + general) if general else ''}
 {('<h3>Notes</h3><ul>' + notes + '</ul>') if notes else ''}
 {('<h3>Problems</h3><ul>' + problems + '</ul>') if problems else ''}
-<p class="by">Names are as entered on each device; FieldWorx 0.1 does not verify who used a device. Times are the
+<p class="by">Names are as entered on each device; FieldWorx does not yet verify who used a device. Times are the
 devices' own clocks (UTC). Template digest {e(s['template']['digest'])}.</p>
 </body></html>
 """

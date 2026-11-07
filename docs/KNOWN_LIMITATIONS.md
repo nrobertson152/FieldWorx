@@ -1,6 +1,6 @@
-# Known limitations (0.1)
+# Known limitations
 
-What FieldWorx 0.1 doesn't do, or hasn't been shown to do. Planned work is in [ROADMAP.md](ROADMAP.md).
+What FieldWorx doesn't do yet, or hasn't been shown to do. Planned work is in [ROADMAP.md](ROADMAP.md).
 
 ## What the phone knows
 
@@ -29,7 +29,7 @@ What FieldWorx 0.1 doesn't do, or hasn't been shown to do. Planned work is in [R
 
 - **Inspections only.** Nonconformances, redlines, work orders and inventory transactions are planned (0.2, 0.3).
 - **Names are as typed.** A record carries the name entered on the phone and the phone's device id; there are no
-  accounts and, in 0.1, no signatures. Hash chains make records tamper-evident, not proof of who held the phone.
+  accounts and, so far, no signatures. Hash chains make records tamper-evident, not proof of who held the phone.
 - **Clocks are the phones' own.** Times are for people; ordering never depends on them.
 - **An inspection keeps the template revision it started with**, even if a newer one arrives mid-inspection.
 - **Unsent records live only on the phone.** A lost or broken phone loses what wasn't sent. The Inspect tab counts
@@ -39,7 +39,7 @@ What FieldWorx 0.1 doesn't do, or hasn't been shown to do. Planned work is in [R
 
 ## Moving files
 
-- **Files, not a network, in 0.1.** Packages and field logs travel through the share sheet, USB, e-mail or a shared
+- **Files, not a network, so far.** Packages and field logs travel through the share sheet, USB, e-mail or a shared
   drive. LAN sync is planned (0.2).
 - **A field log always carries every record the phone holds**, so it grows over time. That is what makes resending
   harmless; it is small (a few kilobytes per inspection) until there are many thousands of records.
@@ -55,7 +55,7 @@ What FieldWorx 0.1 doesn't do, or hasn't been shown to do. Planned work is in [R
 ## What has and hasn't been verified
 
 - **Automated:** the protocol (shared vectors in Python and Dart), the bridge against real RevisionWorx and
-  OpenMeridian, every 0.1 workflow as widget tests against the real store and demo package (with a fake camera,
+  OpenMeridian, every workflow as widget tests against the real store and demo package (with a fake camera,
   PDF engine, file picker and share sheet), the bridge and the Dart core end to end through real files, and Android
   and iOS builds.
 - **Not automated:** the camera scanner, the PDF engine, the file picker, photo capture and the share sheet on real

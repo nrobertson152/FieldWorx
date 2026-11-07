@@ -2,7 +2,7 @@
 
 All notable changes to FieldWorx. Versions and release dates are set by the Director when a release is made.
 
-## Unreleased (proposed 0.1.0)
+## Unreleased (proposed 1.0.0)
 
 The first field release: QR scanning, engineering document access, part lookup and basic inspections.
 
@@ -31,8 +31,8 @@ The first field release: QR scanning, engineering document access, part lookup a
 - **Protocol 1** ([docs/PROTOCOL.md](docs/PROTOCOL.md)) with shared vectors both implementations reproduce.
 - **Units from RevisionWorx's unit register** (catalog version 2; version 1 still opens):
   - The bridge packs a workspace's units through `revisionworx link units` when RevisionWorx has a unit register:
-    the chosen projects' units, every unit fitted in them, and every revision they name. A unit's FieldWorx 0.1
-    `ast_` id comes along as an alias, so records already made against it stay attached; an asset register row for
+    the chosen projects' units, every unit fitted in them, and every revision they name. A unit's earlier `ast_`
+    id (from an asset register row) comes along as an alias, so records already made against it stay attached; an asset register row for
     a unit the register holds is left out.
   - Unit pages show every identifier with its issuer (and former ones), customer, site, status and dates, the build
     standard, the revisions that apply with where each came from and how well it is known, what is fitted and

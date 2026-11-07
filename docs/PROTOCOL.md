@@ -216,8 +216,8 @@ Computed from the entity's events **sorted by id** (never by arrival order or ti
 `projects`, `documents`, `parts`, `bom`, `assets`, `templates`. Every cross-reference must point inside the catalog;
 ids are unique. A newer `version` is refused with a request to update.
 
-Versions 1 and 2 differ only in the shape of an asset (section 6.4). Writers write version 2. A version 1 reader (FieldWorx
-0.1) refuses a version 2 package whole, asking for an update, which is the intended failure. A version 2 reader reads a version 1
+Versions 1 and 2 differ only in the shape of an asset (section 6.4). Writers write version 2. A version 1 reader (an earlier
+build) refuses a version 2 package whole, asking for an update, which is the intended failure. A version 2 reader reads a version 1
 asset as the version 2 asset section 6.4 derives from it, so an old package keeps working.
 
 ### 6.1 Projects and documents

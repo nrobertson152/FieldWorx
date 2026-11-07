@@ -10,8 +10,11 @@ to build and test. These rules apply to people and AI agents alike.
 - **The Director (`nrobertson152`)** alone creates, drafts or edits GitHub Releases, creates or pushes release or
   version tags, changes the version for a release, and changes licensing. No one else does, whatever the reason.
 - **Claude** is the developer: investigation, design, implementation, tests, documentation and focused pull
-  requests. The Director decides on merging and may ask for an independent review by another model (ChatGPT or
-  Codex) on any pull request; a review, once asked for, covers the exact head that is merged.
+  requests.
+- **Merging (Director decision, 2026-11-07, for the work toward FieldWorx 1.0.0):** Claude decides on merging. A
+  pull request merges when the required CI has passed on its exact head, and the merge rationale and evidence are
+  recorded on it. No independent review is required. The Director may still ask for one on any pull request (it
+  then covers the exact head that is merged), and may take merging back at any time.
 - GitHub (issues, pull requests, commits, CI) is the record. Report there, not only in chat.
 
 ## Family rules
