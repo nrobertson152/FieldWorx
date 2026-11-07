@@ -490,23 +490,28 @@ Only in a RevisionWorx team workspace, where accounts live (RevisionWorx ADR-024
 
 1. The phone shows its device id and fingerprint (Library, *This phone*).
 2. The phone sends a field log; it carries the key.
-3. `fieldworx-bridge enrol FIELDLOG --account riley --fingerprint 3F2A-91C0-77B1-04DE [--name "Riley's phone"]` reads
-   the device id and key from the field log, refuses unless the fingerprint typed from the phone's screen matches, and
-   asks RevisionWorx to record the device in the account (`revisionworx link device-enrol`, its `docs/INTEGRATION.md`),
-   in the logged-in administrator's name.
+3. `fieldworx-bridge enrol FIELDLOG -w WORKSPACE --account riley --fingerprint 3F2A-91C0-77B1-04DE [--name "Riley's
+   phone"]` reads the device id and key from the field log, refuses unless the fingerprint typed from the phone's screen
+   matches, and asks RevisionWorx to record the device in the account (`revisionworx link device-enrol`, feature
+   `field-signatures`, its `docs/INTEGRATION.md`), in the logged-in administrator's name. RevisionWorx checks the
+   fingerprint again, and refuses a device or key enrolled before, revoked ones included.
 
 RevisionWorx keeps enrolled devices in the account record, which only an administrator may change. A device enrolled to
-two accounts counts as enrolled to neither. Revoking one (`revisionworx account device revoke`, with a reason) refuses
-its signatures from then on; what was accepted before stays.
+two accounts counts as enrolled to neither. Revoking one (`revisionworx user device revoke NAME DEVICE --reason R`)
+refuses its signatures from then on; what was accepted before stays. A revoked phone is never enrolled again: a phone
+that changes hands is reset, and starts again as a new device.
 
 ### 12.5 Accepting signed findings
 
-For a finding whose record event is version 2, `fieldworx-bridge accept` passes `--field-signature DEVICE:EVENT:SIG`
-to the `revisionworx link` command it runs. RevisionWorx checks that DEVICE is enrolled to exactly one active account
-and not revoked, and that SIG holds over EVENT with the enrolled key; it then records the fact with basis `verified` and
-the evidence `field-signature:DEVICE:EVENT`, labelled with the account. Otherwise it refuses (`kind` `signature`) and
-writes nothing; the finding can still be accepted as *reported*. An unsigned finding, or one from a phone that isn't
-enrolled, is accepted as *reported*, as before. The txid is unchanged: it comes from the record event's id.
+For a finding whose record event is version 2, `fieldworx-bridge accept` passes `--field-signature DEVICE:EVENT:SIG`,
+`--basis verified` and its usual `--evidence fieldworx-event:EVENT` to the `revisionworx link` command it runs.
+RevisionWorx checks that DEVICE is enrolled to exactly one account, isn't revoked, its account is active, and SIG holds
+over EVENT with the enrolled key; it then records the fact with basis `verified` and two more evidence items:
+`field-signature` (ref `DEVICE:EVENT`, label SIG) and `field-signer` (ref the account, label the phone's name).
+Otherwise it refuses (`kind` `signature`) and writes nothing; the finding can still be accepted as *reported*. An
+unsigned finding, or one from a phone that isn't enrolled, is accepted as *reported*, as before. The txid is unchanged:
+it comes from the record event's id, so a retry after the phone was revoked still answers what was recorded.
+RevisionWorx's `unit verify` checks each signed acceptance again.
 
 Vectors (with the implementations): `signatures.json` (RFC 8032's test vectors and the family's: keys, signatures over
 event ids, fingerprints) and version 2 envelopes in `envelopes.json` and `fieldlog.json` (a valid one; a bad signature;
