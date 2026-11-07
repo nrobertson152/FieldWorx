@@ -38,8 +38,8 @@
   ]
  },
  "units.fieldworx": {
-  "catalog_digest": "a4b909af4e343bc659abc13a8acbaa7e5978af8e59eff209cdbda5776880785b",
-  "digest": "fbeabe626a61d4f48e0ccc36d0387793f84181a8d48150dd271ba20eea2ebee1",
+  "catalog_digest": "ff321a5b56032431b14cbd5fcd2d74a9a7313092833a48e28884abe29095f7be",
+  "digest": "30f8442fd0beff5de4960d6008438b2cd410e76b697e71adf2992502dbef1c6e",
   "events": [],
   "id": "pkg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
   "kind": "package",

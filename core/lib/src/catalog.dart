@@ -19,9 +19,15 @@ final RegExp _reAlias = RegExp(r'^ast_[0-9a-f]{32}$');
 const Set<String> _assetV1 = {'id', 'tag', 'serial', 'name', 'part', 'project', 'location', 'built', 'notes', 'as_built'};
 const Set<String> _assetV2 = {
   'id', 'aliases', 'label', 'class', 'name', 'model', 'part', 'project', 'customer', 'site', 'location', 'status', //
-  'identifiers', 'parent', 'standard', 'documents', 'components', 'milestones', 'history', 'notes', 'source',
+  'identifiers', 'parent', 'standard', 'documents', 'components', 'milestones', 'history', 'changes', 'notes', //
+  'source',
 };
 const List<String> assetClasses = ['product', 'component', 'instrument', 'tool'];
+const List<String> changeKinds = ['', 'production', 'retrofit-required', 'retrofit-optional', 'unit', 'documentation'];
+const List<String> changeStates = [
+  'pending', 'offered', 'accepted', 'scheduled', 'deferred', 'declined', 'installed', 'verified', 'not-applicable', //
+  'reversed',
+];
 const List<String> assetStatuses = ['', 'planned', 'in-build', 'built', 'in-service', 'out-of-service', 'retired', 'scrapped'];
 const List<String> _schemes = ['serial', 'tag', 'other'];
 const List<String> _sources = ['standard', 'unit', 'register'];
@@ -309,6 +315,24 @@ void _checkAssetsV2(List<Object?> assets, void Function(String, String) unique, 
       _choice(hm['basis'], assetBases, 'history basis');
       _bool(hm['voided'], 'history voided');
     }
+    final seenChanges = <String>{};
+    for (final ch in _list(am['changes'], 'asset changes', 200)) {
+      final cm = _keys(ch, {'change', 'number', 'title', 'kind', 'required', 'state', 'since', 'documents'}, 'change');
+      final cid = _s(cm['change'], 'change id', 64);
+      if (cid.isEmpty || !seenChanges.add(cid)) throw CatalogError('each change is given once, with its id');
+      _s(cm['number'], 'change number', 64);
+      _s(cm['title'], 'change title', 200);
+      _choice(cm['kind'], changeKinds, 'change kind');
+      _bool(cm['required'], 'change required');
+      _choice(cm['state'], changeStates, 'change state');
+      _s(cm['since'], 'change since', 32);
+      for (final row in _list(cm['documents'], 'change documents', 100)) {
+        final rm = _keys(row, {'number', 'from', 'to'}, 'change document');
+        for (final k in ['number', 'from', 'to']) {
+          _s(rm[k], 'change document $k', 64);
+        }
+      }
+    }
   }
   for (final a in assets) {
     final am = fx.asMap(a, 'asset');
@@ -364,6 +388,7 @@ Map<String, Object?> assetView(Map<String, Object?> a, int version, Map<String, 
     'components': <Object?>[],
     'milestones': built.isEmpty ? <String, Object?>{} : <String, Object?>{'built': built},
     'history': <Object?>[],
+    'changes': <Object?>[],
     'notes': a['notes'],
     'source': '',
   };
@@ -509,6 +534,20 @@ class AssetEvent {
   final bool voided;
 }
 
+/// An engineering change RevisionWorx records as reaching a unit, and where it stands on it (PROTOCOL.md section 6.4). The
+/// phone shows it; it is settled in RevisionWorx.
+class AssetChange {
+  AssetChange(this.change, this.number, this.title, this.kind, this.required, this.state, this.since, this.documents);
+  final String change, number, title, kind, state, since;
+  final bool required;
+
+  /// `(document number, from revision, to revision)`.
+  final List<(String, String, String)> documents;
+
+  /// Required, and neither verified nor not applicable.
+  bool get outstanding => required && state != 'verified' && state != 'not-applicable';
+}
+
 /// A unit built: from RevisionWorx's unit register (`source` is `revisionworx`), or a row of an asset register.
 class Asset {
   Asset({
@@ -533,6 +572,7 @@ class Asset {
     required this.components,
     required this.milestones,
     required this.history,
+    required this.changes,
     required this.notes,
     required this.source,
     required this.package,
@@ -578,6 +618,22 @@ class Asset {
           AssetEvent(h['n']! as int, h['type']! as String, h['summary']! as String, h['effective']! as String,
               h['time']! as String, h['actor']! as String, h['basis']! as String, h['voided']! as bool),
       ],
+      changes: [
+        for (final c in (v['changes']! as List).cast<Map<String, Object?>>())
+          AssetChange(
+            c['change']! as String,
+            c['number']! as String,
+            c['title']! as String,
+            c['kind']! as String,
+            c['required']! as bool,
+            c['state']! as String,
+            c['since']! as String,
+            [
+              for (final d in (c['documents']! as List).cast<Map<String, Object?>>())
+                (d['number']! as String, d['from']! as String, d['to']! as String),
+            ],
+          ),
+      ],
       notes: v['notes']! as String,
       source: v['source']! as String,
       package: package,
@@ -592,7 +648,13 @@ class Asset {
   final List<AssetComponent> components;
   final Map<String, String> milestones;
   final List<AssetEvent> history;
+
+  /// Engineering changes that reach it, outstanding ones first, as RevisionWorx sent them.
+  final List<AssetChange> changes;
   final PackageInfo package;
+
+  /// Required changes it hasn't finished.
+  List<AssetChange> get outstandingChanges => [for (final c in changes) if (c.outstanding) c];
 
   String _current(String scheme) {
     for (final i in identifiers) {

@@ -164,6 +164,10 @@ void main() {
       expect(a.documents[2].applies, isFalse);
       expect(a.asBuilt.length, equals(2));
       expect(a.history.last.voided, isTrue);
+      expect(a.changes.map((c) => c.number).toList(), equals(['ECO-0042', 'ECO-0040']));
+      expect(a.outstandingChanges.single.number, equals('ECO-0042'), reason: 'required and only scheduled');
+      expect(a.changes.first.documents.single, equals(('FRM-200', 'A', 'B')));
+      expect(a.changes.last.outstanding, isFalse, reason: 'an optional change is never outstanding');
       final row = c.assets['ast_${'05' * 16}']!;
       expect((row.isUnit, row.labelCode, row.tag), equals((false, 'HPU-0002', 'HPU-0002')));
     });
@@ -176,6 +180,7 @@ void main() {
       final a = c.assets.values.single;
       expect((a.label, a.tag, a.serial, a.built), equals(('HPU-0001', 'HPU-0001', 'NH-26-0001', '2026-03-18')));
       expect(a.documents.single.source, equals('register'));
+      expect(a.changes, isEmpty);
       expect(resolve(c, 'FWX:A:HPU-0001').matches.single.why, equals('asset tag'));
     });
   });

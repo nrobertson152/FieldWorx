@@ -20,6 +20,8 @@ What FieldWorx doesn't do yet, or hasn't been shown to do. Planned work is in [R
 - **The phone shows a unit as it was when the package was made.** A part fitted or a document changed since then
   appears in the next package. What a unit was *on a given date* is answered in RevisionWorx
   (`revisionworx unit show --on DATE`), not on the phone.
+- **Engineering changes show where they stood when the package was made**, and can't be updated from the phone: a retrofit
+  done in the field is recorded as an inspection, and engineering records it in RevisionWorx (`unit change install`).
 - **Records about a unit don't reach its unit register yet.** Inspections are kept in the hub and shown on the
   unit's page; turning a field finding (a serial read off a pump, a part replaced) into an entry in RevisionWorx's
   unit register, marked as reported, is planned.

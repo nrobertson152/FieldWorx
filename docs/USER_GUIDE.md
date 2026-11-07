@@ -50,6 +50,9 @@ A unit from RevisionWorx's **unit register** (its page says *Unit*) shows more:
   records says *reported* or *from old records*;
 - **Fitted**: what is fitted in it, by position (a pump, a motor, by serial or lot), and **Fitted in**: the unit it
   is part of. Tap one to open it;
+- **Engineering changes**: each change engineering has decided reaches the unit (a retrofit, a modification, a drawing
+  correction), with the drawings it moves and where it stands on this unit (*pending*, *scheduled*, *installed*, *verified*...).
+  A required change not yet verified counts as outstanding, and the top of the page says how many there are;
 - **Record**: its history from the unit register, newest first. A correction shows as *voided*, never erased.
 
 The phone shows the unit as it was when the package was made. Changes to a unit are made in RevisionWorx.

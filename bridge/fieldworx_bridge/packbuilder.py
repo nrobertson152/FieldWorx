@@ -227,6 +227,7 @@ class PackBuilder:
                 "documents": [{"document": rev_doc[r], "revision": r, "source": "register", "basis": "legacy"}
                               for r in row["_as_built_ids"]],
                 "components": [], "milestones": {"built": row["built"][:32]} if row["built"] else {}, "history": [],
+                "changes": [],
                 "notes": row["notes"][:4000], "source": src[:200]})
             held.add(aid)
         seen_assets: set[str] = set()
@@ -284,6 +285,19 @@ class PackBuilder:
                       "out; pack without --project to include every unit.")
         return sorted(out, key=lambda u: (u["label"].casefold(), u["id"]))
 
+    @staticmethod
+    def _unit_changes(u: dict) -> list[dict]:
+        """The engineering changes RevisionWorx says reach a unit (its ``unit-changes`` feature), as PROTOCOL.md section 6.4
+        keeps them: what the phone needs to show where each stands, nothing it could change."""
+        out = []
+        for c in (u.get("changes") or [])[:200]:
+            out.append({"change": str(c["change"])[:64], "number": str(c["number"])[:64],
+                        "title": str(c.get("title", ""))[:200], "kind": c.get("kind", ""), "required": bool(c["required"]),
+                        "state": c["state"], "since": str(c.get("since", ""))[:32],
+                        "documents": [{"number": str(d.get("number", ""))[:64], "from": str(d.get("from_label", ""))[:64],
+                                       "to": str(d.get("to_label", ""))[:64]} for d in (c.get("documents") or [])[:100]]})
+        return out
+
     def _unit_asset(self, u: dict, units: list[dict], part_by_num: dict, project_ids: set, rev_doc: dict) -> dict:
         """One unit of RevisionWorx's register as a version 2 catalog asset (docs/PROTOCOL.md section 6.4)."""
         included = {x["id"] for x in units}
@@ -326,7 +340,7 @@ class PackBuilder:
                 "standard": {"number": std["number"][:64], "title": std["title"][:200]} if std else None,
                 "documents": docs, "components": comps,
                 "milestones": {k: v["date"][:32] for k, v in u["milestones"].items() if k in cat_mod.MILESTONES},
-                "history": history, "notes": u["notes"][:4000], "source": "revisionworx"}
+                "history": history, "changes": self._unit_changes(u), "notes": u["notes"][:4000], "source": "revisionworx"}
 
     def _selected(self, d: dict) -> dict | None:
         """The revision the phone should show: the released one, or the latest with ``unreleased``."""

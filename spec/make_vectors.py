@@ -416,19 +416,25 @@ def sample_catalog_v2() -> dict:
                       "voided": False},
                      {"n": 2, "type": "note", "summary": "wrong unit", "effective": "", "time": "2026-11-06T10:01:00+00:00",
                       "actor": "Dana Whitfield", "basis": "declared", "voided": True}],
+         "changes": [{"change": "eco_" + "0a" * 16, "number": "ECO-0042", "title": "Thicker frame gussets",
+                      "kind": "retrofit-required", "required": True, "state": "scheduled", "since": "2026-11-20",
+                      "documents": [{"number": "FRM-200", "from": "A", "to": "B"}]},
+                     {"change": "eco_" + "0b" * 16, "number": "ECO-0040", "title": "Quieter pump mount",
+                      "kind": "retrofit-optional", "required": False, "state": "declined", "since": "2026-10-02",
+                      "documents": []}],
          "notes": "Line 2", "source": "revisionworx"},
         {"id": pump, "aliases": [], "label": "GP-4471", "class": "component", "name": "", "model": "PMP-10",
          "part": "", "project": "", "customer": "", "site": "", "location": "", "status": "built",
          "identifiers": [{"scheme": "serial", "issuer": "Hydrix", "value": "GP-4471", "active": True}],
          "parent": {"asset": hpu, "position": "P1"}, "standard": None, "documents": [], "components": [],
-         "milestones": {}, "history": [], "notes": "", "source": "revisionworx"},
+         "milestones": {}, "history": [], "changes": [], "notes": "", "source": "revisionworx"},
         {"id": row, "aliases": [], "label": "HPU-0002", "class": "product", "name": "Unit 2", "model": "HPU-75",
          "part": "pn:hpu-75", "project": "prj_" + "01" * 16, "customer": "", "site": "", "location": "Bayside",
          "status": "", "identifiers": [{"scheme": "tag", "issuer": "", "value": "HPU-0002", "active": True}],
          "parent": None, "standard": None,
          "documents": [{"document": "doc_" + "02" * 16, "revision": "rev_" + "04" * 16, "source": "register",
                         "basis": "legacy"}],
-         "components": [], "milestones": {"built": "2026-06-20"}, "history": [], "notes": "",
+         "components": [], "milestones": {"built": "2026-06-20"}, "history": [], "changes": [], "notes": "",
          "source": "AST-HPU-75 rev A"}]
     cat_mod.check_catalog(c)
     return c
@@ -472,6 +478,12 @@ def catalog_vectors() -> dict:
         bad("an unknown milestone", lambda c: a(c, 0)["milestones"].update(delivered="2026-04-01")),
         bad("a version 1 asset in a version 2 catalog", lambda c: c.update(assets=sample_catalog()["assets"])),
         bad("a missing key", lambda c: a(c, 1).pop("site")),
+        bad("an unknown change state", lambda c: a(c, 0)["changes"][0].update(state="done")),
+        bad("an unknown change kind", lambda c: a(c, 0)["changes"][0].update(kind="recall")),
+        bad("required that isn't true or false", lambda c: a(c, 0)["changes"][0].update(required="yes")),
+        bad("a change twice", lambda c: a(c, 0)["changes"].append(dict(a(c, 0)["changes"][0]))),
+        bad("a change without its id", lambda c: a(c, 0)["changes"][1].update(change="")),
+        bad("a change document with an unknown key", lambda c: a(c, 0)["changes"][0]["documents"][0].update(rev="B")),
     ]
     return {"accept": accept, "refuse": refuse}
 

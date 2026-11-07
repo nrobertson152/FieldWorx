@@ -123,13 +123,15 @@ void main() {
 
       s.scan('FWX:A:$hpu');
       await waitFor(tester, find.text('UNIT'));
-      for (final chip in ['HPU-0001', 'in service', 'built 2026-03-18', '1 drawing revised since']) {
+      for (final chip in ['HPU-0001', 'in service', 'built 2026-03-18', '1 drawing revised since', '1 change outstanding']) {
         expect(find.text(chip), findsOneWidget, reason: chip);
       }
       expect(find.text('Build standard'), findsOneWidget);
       await reveal(tester, row(['FRM-200 rev A', 'current is rev B', 'this unit only']));
       await reveal(tester, row(['HPU-75-GA rev A', 'declared']));
       await reveal(tester, row(['MAN-HPU-75', 'doesn’t apply to this unit']));
+      await reveal(tester, row(['ECO-0042', 'Thicker frame gussets · FRM-200 rev A → B', 'scheduled', 'retrofit required']));
+      await reveal(tester, row(['ECO-0040', 'declined', 'retrofit optional']));
       await reveal(tester, row(['M1 · MTR-7K5', 'S/N M-998877']));
       await reveal(tester, row(['wrong unit', 'voided']));
 
