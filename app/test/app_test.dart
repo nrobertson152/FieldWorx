@@ -108,33 +108,23 @@ void main() {
       await tapAndWait(tester, button('Search for “NOPE-1”'), find.text('No matches'));
     });
 
-    testWidgets('a revision label on a print says whether it is the released revision; an unknown kind matches nothing',
+    testWidgets('a drawing has no label: a document or revision label says how to find it; an unknown kind matches nothing',
         (tester) async {
       phone(tester, height: 900);
       final (m, s) = await openPhone(tester);
       await showApp(tester, m);
 
       s.scan('FWX:R:FRM-200@B');
-      await waitFor(tester, find.text('This label is for revision B, the released revision.'));
-      expect(button('Open rev B'), findsNothing, reason: 'the page’s own action already opens the released revision');
-      await back(tester);
-
-      s.scan('FWX:R:frm-200@a');
-      await waitFor(tester,
-          find.text('This label is for revision A, which is superseded. Revision B is released: work to that.'));
-      expect(button('Open drawing · rev B'), findsOneWidget, reason: 'the primary action is still the released revision');
-      await tapAndWait(tester, button('Open rev A'), find.text('Superseded. The current revision is B.'));
-      await back(tester);
-      await back(tester);
-
-      s.scan('FWX:R:FRM-200@C');
-      await waitFor(tester, find.textContaining('This label is for revision C, which isn’t in this phone’s packages'));
-      expect(find.textContaining('Revision B is the released one here.'), findsOneWidget);
-      await back(tester);
-
-      s.scan('FWX:R:FRM-200');
       await waitFor(tester, find.text('Not found'));
-      expect(find.textContaining('like FWX:R:FRM-200@B. This one doesn’t.'), findsOneWidget);
+      expect(find.text('FIELDWORX LABEL'), findsOneWidget);
+      expect(find.textContaining('Drawings don’t have FieldWorx labels'), findsOneWidget);
+      expect(find.textContaining('work to that'), findsNothing, reason: 'no advice about a revision without its machine');
+      await tapAndWait(tester, button('Search for “FRM-200”'), row(['FRM-200', 'Document']));
+      await back(tester);
+      await back(tester);
+
+      s.scan('FWX:D:FRM-200');
+      await waitFor(tester, find.textContaining('Drawings don’t have FieldWorx labels'));
       await back(tester);
 
       s.scan('FWX:L:FRM-200');

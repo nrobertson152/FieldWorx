@@ -9,7 +9,7 @@ The first field release: QR scanning, engineering document access, part lookup a
 ### Added
 
 - **App** (Flutter, Android and iOS): Scan, Find, Inspect and Library tabs.
-  - Scanning of FieldWorx labels (`FWX:A:`, `FWX:P:`, `FWX:D:`, `FWX:J:`), serial plates, part numbers, makers' part
+  - Scanning of FieldWorx labels (`FWX:A:`, `FWX:P:`, `FWX:J:`), serial plates, part numbers, makers' part
     numbers, supplier codes and reference designators; typed codes and rugged-phone scanners; several matches
     listed, none guessed.
   - Unit pages with as-built revisions, revisions released since, and inspection history.
@@ -46,14 +46,13 @@ The first field release: QR scanning, engineering document access, part lookup a
   other CAD revision opens on the phone through the PDF attached to exactly that revision (`revisionworx doc pdf`); a revision
   without one never shows another revision's.
 - **Labels:**
-  - `fieldworx-bridge labels` prints labels for a package's units and assets, parts, documents, released revisions or
-    projects, as a PDF for A4 or US Letter label sheets or a label printer (50 x 25 mm, or 25 x 12 mm for components
+  - `fieldworx-bridge labels` prints labels for a package's units and assets, parts or projects, as a PDF for A4 or US Letter label sheets or a label printer (50 x 25 mm, or 25 x 12 mm for components
     and bins, which carries just the code, its kind and its number). Each label has a QR code (level Q), what
     it is, its number, a description and the code to type. `--only`, `--skip` and `--copies` pick what and where.
-  - Revision labels, `FWX:R:<document>@<revision>`, for prints: the phone opens the document and says whether that
-    revision is the released one, which one to work to if it is superseded, and that a revision it doesn't have may
-    be newer than its packages.
-  - `fwx_label.py`, the standard-library QR encoder other programs copy to print FieldWorx codes, checked bit for bit
+  - Drawings have no label. Which revision applies depends on the machine, so its label finds the revisions it is
+    built to. Document and revision labels (`FWX:D:`, `FWX:R:`) were tried and withdrawn before release: scanned,
+    they match nothing and say to scan the machine or search for the drawing.
+  - `fwx_label.py`, the standard-library QR encoder a program copies to print FieldWorx labels, checked bit for bit
     against python-qrcode and read back with zxing-cpp.
   - A label of a kind the phone doesn't read (`FWX:L:…`) now matches nothing and says so, as the protocol says. It
     used to be matched by its code alone.

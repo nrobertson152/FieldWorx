@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """QR codes for FieldWorx labels: one standard-library file, Python 3.9 or newer, no other imports.
 
-This is the reference copy, in FieldWorx (bridge/fieldworx_bridge/fwx_label.py). Programs that print FieldWorx codes
-copy it unchanged, as integrations copy RevisionWorx's rwx_client.py, so every program draws the same code for the same
+This is the reference copy, in FieldWorx (bridge/fieldworx_bridge/fwx_label.py). A program that prints FieldWorx labels
+copies it unchanged, as integrations copy RevisionWorx's rwx_client.py, so every program draws the same code for the same
 text without importing another. Keep the FWX_LABEL_VERSION line so copies can be compared.
 
     from fwx_label import encode, label_code
-    rows = encode(label_code("R", "SCH-12@B"), "Q")    # rows of booleans, True = dark; no quiet zone
+    rows = encode(label_code("P", "PMP-10"), "Q")    # rows of booleans, True = dark; no quiet zone
 
 What it draws: QR Code model 2 (ISO/IEC 18004:2015), versions 1 to 10 (up to 271 bytes at level L), the text as UTF-8 in
 byte mode without an ECI header, the smallest version that holds it and the mask with the lowest penalty score. Leave a
@@ -20,7 +20,7 @@ from __future__ import annotations
 __all__ = ["encode", "label_code", "LEVELS", "KINDS", "QRError", "FWX_LABEL_VERSION"]
 
 FWX_LABEL_VERSION = 1
-KINDS = ("A", "P", "D", "J", "R")     # asset, part, document, project, revision (docs/PROTOCOL.md section 7)
+KINDS = ("A", "P", "J")     # asset, part, project (docs/PROTOCOL.md section 7); never drawings: D and R were withdrawn
 
 LEVELS = ("L", "M", "Q", "H")
 _FORMAT_BITS = {"L": 1, "M": 0, "Q": 3, "H": 2}
@@ -299,19 +299,11 @@ def encode(text: str, level: str = "M", version: int | None = None, mask: int | 
 
 
 def label_code(kind: str, code: str) -> str:
-    """The text a FieldWorx label holds (docs/PROTOCOL.md section 7): ``FWX:<kind>:<code>``. For a revision, ``code`` is
-    ``<document number>@<revision>``."""
+    """The text a FieldWorx label holds (docs/PROTOCOL.md section 7): ``FWX:<kind>:<code>``."""
     if kind not in KINDS:
         raise QRError(f"a label's kind is one of {', '.join(KINDS)}, not {kind!r}")
     if not code.strip():
         raise QRError("a label's code is empty")
     if any(ord(ch) < 32 or ord(ch) == 127 for ch in code):
         raise QRError(f"a label's code has a control character: {code!r}")
-    if kind == "R" and not _revision_code(code):
-        raise QRError(f"a revision label's code is DOCUMENT@REVISION, not {code!r}")
     return f"FWX:{kind}:{code}"
-
-
-def _revision_code(code: str) -> bool:
-    number, at, revision = code.rpartition("@")
-    return bool(at and number.strip() and revision.strip())

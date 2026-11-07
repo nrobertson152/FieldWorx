@@ -20,11 +20,9 @@ The directive's first scope: **QR scanning, engineering document access, part lo
   from OpenMeridian (marked not live), labels.
 - Inspections from controlled templates: checks, exact measurements against limits, text, choices, photos,
   notes; complete, reopen, void; conflicts between phones shown and settled.
-- "Is this print current?": a revision label, `FWX:R:<document>@<revision>`, says whether a print is the released
-  revision and which one to work to if not. DraftWorx and OpenSchematix print it on drawings of a controlled revision
-  (DraftWorx #13, OpenSchematix #106), with `fwx_label.py` copied unchanged.
-- Label sheets: `fieldworx-bridge labels` prints QR labels for units, parts, documents, revisions and projects on A4
-  or US Letter label sheets, or 50 x 25 mm and 25 x 12 mm label printers.
+- Label sheets: `fieldworx-bridge labels` prints QR labels for units, parts and projects on A4 or US Letter label
+  sheets, or 50 x 25 mm and 25 x 12 mm label printers. Drawings have none: the machine's label finds the revisions it
+  is built to (revision labels on prints were tried and withdrawn, 2026-11-07).
 - Files as the transport: packages in, field logs out, phone to phone; `fieldworx-bridge` packs, imports,
   reports and verifies.
 - Six family themes, AA contrast, large targets; release builds ask for the camera and nothing else.
