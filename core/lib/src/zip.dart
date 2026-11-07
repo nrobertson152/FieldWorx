@@ -191,6 +191,19 @@ class ZipReader {
     final inflater = e.method == 8 ? ZLibDecoder(raw: true).startChunkedConversion(_ChunkSink(take)) : null;
     await _file.setPosition(start);
     var remaining = e.compressedSize;
+    // Compressed data that doesn't decompress is a damaged member, refused like any other (not zlib's own error).
+    void inflate(List<int> b, {bool last = false}) {
+      try {
+        if (last) {
+          inflater!.close();
+        } else {
+          inflater!.add(b);
+        }
+      } on FormatException {
+        throw ZipError('member ${e.name} is damaged: its compressed data doesn’t decompress');
+      }
+    }
+
     while (remaining > 0) {
       final n = remaining < 65536 ? remaining : 65536;
       final b = await _file.read(n);
@@ -199,11 +212,11 @@ class ZipReader {
       if (inflater == null) {
         take(b);
       } else {
-        inflater.add(b);
+        inflate(b);
       }
       await flush();
     }
-    inflater?.close();
+    if (inflater != null) inflate(const [], last: true);
     await flush();
     if (produced != e.size) throw ZipError('member ${e.name} has the wrong size');
     if (crc.value != e.crc) throw ZipError('member ${e.name} is damaged (CRC)');

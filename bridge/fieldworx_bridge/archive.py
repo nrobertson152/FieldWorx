@@ -18,6 +18,7 @@ import hashlib
 import io
 import re
 import zipfile
+import zlib
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import BinaryIO, Iterable
@@ -170,8 +171,8 @@ def read(path: Path | str | BinaryIO, verify_objects: bool = True) -> Archive:
     except ArchiveError:
         z.close()
         raise
-    except (zipfile.BadZipFile, OSError, EOFError, NotImplementedError, RuntimeError) as exc:
-        z.close()
+    except (zipfile.BadZipFile, zlib.error, OSError, EOFError, NotImplementedError, RuntimeError) as exc:
+        z.close()                                   # zlib.error: compressed data that doesn't decompress
         raise ArchiveError(f"damaged FieldWorx file: {exc}") from None
 
 
