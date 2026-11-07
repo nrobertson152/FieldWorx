@@ -23,6 +23,9 @@ What FieldWorx doesn't do yet, or hasn't been shown to do. Planned work is in [R
   (`revisionworx unit show --on DATE`), not on the phone.
 - **Engineering changes show where they stood when the package was made**, and can't be updated from the phone. A change
   carried out in the field is a finding, which the office accepts into RevisionWorx (`fieldworx-bridge accept`).
+- **Deviations too.** Whether one is in effect is as the package says; *past its end date* uses the phone's own date, so a
+  phone with the wrong date shows it wrongly. A temporary part replaced by the right one is a finding; engineering clears
+  the deviation in RevisionWorx.
 - **A phone doesn't see that a finding was accepted.** The unit's page shows the new configuration from the next package,
   but not which finding it came from; packages would need to carry the evidence (a new asset version).
 - **A finding's photos stay in the hub.** RevisionWorx records the field record as evidence, not the photo; the bridge's

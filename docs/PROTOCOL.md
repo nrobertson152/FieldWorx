@@ -284,6 +284,7 @@ places, and the phone shows exactly what that record says.
 | `milestones` | object: at most `built`, `shipped`, `installed`, `commissioned`, `decommissioned`, each a date text ≤ 32 (`""` = date unknown) |
 | `history` | ≤ 1000 `{n, type, summary, effective, time, actor, basis, voided}` oldest first: `n` 1, 2, 3 … increasing; `type` ≤ 64; `summary` ≤ 500; `effective`, `time` ≤ 32; `actor` ≤ 200; `voided` boolean |
 | `changes` | ≤ 200 `{change, number, title, kind, required, state, since, documents}`: the engineering changes RevisionWorx records as reaching this unit (its `docs/UNITS.md` section 10). `change` and `number` text ≤ 64, `title` ≤ 200; `kind` `production`, `retrofit-required`, `retrofit-optional`, `unit`, `documentation` or `""`; `required` boolean; `state` `pending`, `offered`, `accepted`, `scheduled`, `deferred`, `declined`, `installed`, `verified`, `not-applicable` or `reversed`; `since` ≤ 32; `documents` ≤ 100 `{number, from, to}`, text ≤ 64: a document and the revisions the change takes it from and to. A change appears once |
+| `deviations` | ≤ 200 `{deviation, number, kind, title, departure, temporary, until, state, since, documents}`: the deviations and concessions RevisionWorx records as covering this unit (its `docs/UNITS.md` section 12): approved departures from its documents. `deviation` and `number` text ≤ 64 (`deviation` not empty); `kind` `deviation` or `concession`; `title` ≤ 200; `departure` ≤ 4000, what differs; `temporary` boolean; `until` `""` or a date `YYYY-MM-DD`, and `""` when not temporary; `state` `in-effect`, `cleared` or `not-used`; `since` ≤ 32; `documents` ≤ 100 `{number, revision}`, text ≤ 64: a document and the revision it departs from. A deviation appears once |
 | `notes` | ≤ 4000 |
 | `source` | ≤ 200: `revisionworx`, or the register it came from (`AST-HPU-75 rev A`, `units.fwassets.csv (uncontrolled)`) |
 
@@ -292,12 +293,17 @@ Ids and aliases are unique across the catalog's assets, and no asset is fitted i
 A change is **outstanding** on a unit when it is `required` and its state is neither `verified` nor `not-applicable`. The phone
 shows outstanding changes first and counts them; it never changes them (they are settled in RevisionWorx).
 
+A deviation **in effect** means the unit may differ from its documents as `departure` says: that isn't a discrepancy to report.
+One is **past its end date** when it is `temporary`, in effect, and `until` is not empty and earlier than the phone's own date
+(`YYYY-MM-DD`, compared as text). The phone shows those in effect first and counts those past their end date; it never changes
+them (they are settled in RevisionWorx).
+
 **A version 1 asset** (`id, tag, serial, name, part, project, location, built, notes, as_built`) is read as: `aliases` `[]`,
 `label` its tag, else serial; `class` `product`; `model`, `customer`, `site` and `status` `""`; `identifiers` its tag then its
 serial, each when not empty, issuer `""`, active; `parent` and `standard` `null`; `documents` one `{document: the revision's
 document, revision, source: "register", basis: "legacy"}` per `as_built` revision, in that order; `components` and `history`
-`[]`; `milestones` `{"built": built}` when built isn't empty, else `{}`; `changes` `[]`; `source` `""`. The vectors (`catalogs.json`) hold both
-readings.
+`[]`; `milestones` `{"built": built}` when built isn't empty, else `{}`; `changes` and `deviations` `[]`; `source` `""`. The vectors
+(`catalogs.json`) hold both readings.
 
 ### 6.5 Templates
 

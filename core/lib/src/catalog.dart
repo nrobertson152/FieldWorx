@@ -19,8 +19,8 @@ final RegExp _reAlias = RegExp(r'^ast_[0-9a-f]{32}$');
 const Set<String> _assetV1 = {'id', 'tag', 'serial', 'name', 'part', 'project', 'location', 'built', 'notes', 'as_built'};
 const Set<String> _assetV2 = {
   'id', 'aliases', 'label', 'class', 'name', 'model', 'part', 'project', 'customer', 'site', 'location', 'status', //
-  'identifiers', 'parent', 'standard', 'documents', 'components', 'milestones', 'history', 'changes', 'notes', //
-  'source',
+  'identifiers', 'parent', 'standard', 'documents', 'components', 'milestones', 'history', 'changes', 'deviations', //
+  'notes', 'source',
 };
 const List<String> assetClasses = ['product', 'component', 'instrument', 'tool'];
 const List<String> changeKinds = ['', 'production', 'retrofit-required', 'retrofit-optional', 'unit', 'documentation'];
@@ -28,6 +28,9 @@ const List<String> changeStates = [
   'pending', 'offered', 'accepted', 'scheduled', 'deferred', 'declined', 'installed', 'verified', 'not-applicable', //
   'reversed',
 ];
+const List<String> deviationKinds = ['deviation', 'concession'];
+const List<String> deviationStates = ['in-effect', 'cleared', 'not-used'];
+final RegExp _reDate = RegExp(r'^\d{4}-\d{2}-\d{2}$');
 const List<String> assetStatuses = ['', 'planned', 'in-build', 'built', 'in-service', 'out-of-service', 'retired', 'scrapped'];
 const List<String> _schemes = ['serial', 'tag', 'other'];
 const List<String> _sources = ['standard', 'unit', 'register'];
@@ -333,6 +336,35 @@ void _checkAssetsV2(List<Object?> assets, void Function(String, String) unique, 
         }
       }
     }
+    final seenDeviations = <String>{};
+    for (final dv in _list(am['deviations'], 'asset deviations', 200)) {
+      final dm = _keys(
+          dv,
+          {'deviation', 'number', 'kind', 'title', 'departure', 'temporary', 'until', 'state', 'since', 'documents'},
+          'deviation');
+      final did = _s(dm['deviation'], 'deviation id', 64);
+      if (did.isEmpty || !seenDeviations.add(did)) throw CatalogError('each deviation is given once, with its id');
+      _s(dm['number'], 'deviation number', 64);
+      _choice(dm['kind'], deviationKinds, 'deviation kind');
+      _s(dm['title'], 'deviation title', 200);
+      _s(dm['departure'], 'deviation departure', 4000);
+      if (_bool(dm['temporary'], 'deviation temporary')) {
+        final until = _s(dm['until'], 'deviation until', 32);
+        if (until.isNotEmpty && !_reDate.hasMatch(until)) {
+          throw CatalogError("a deviation's end date is YYYY-MM-DD, or empty");
+        }
+      } else if (dm['until'] != '') {
+        throw CatalogError('only a temporary deviation has an end date');
+      }
+      _choice(dm['state'], deviationStates, 'deviation state');
+      _s(dm['since'], 'deviation since', 32);
+      for (final row in _list(dm['documents'], 'deviation documents', 100)) {
+        final rm = _keys(row, {'number', 'revision'}, 'deviation document');
+        for (final k in ['number', 'revision']) {
+          _s(rm[k], 'deviation document $k', 64);
+        }
+      }
+    }
   }
   for (final a in assets) {
     final am = fx.asMap(a, 'asset');
@@ -389,6 +421,7 @@ Map<String, Object?> assetView(Map<String, Object?> a, int version, Map<String, 
     'milestones': built.isEmpty ? <String, Object?>{} : <String, Object?>{'built': built},
     'history': <Object?>[],
     'changes': <Object?>[],
+    'deviations': <Object?>[],
     'notes': a['notes'],
     'source': '',
   };
@@ -548,6 +581,24 @@ class AssetChange {
   bool get outstanding => required && state != 'verified' && state != 'not-applicable';
 }
 
+/// A deviation (permission before the work) or concession (acceptance afterwards) that lets a unit differ from its
+/// documents, and where it stands on the unit (PROTOCOL.md section 6.4). It is settled in RevisionWorx.
+class AssetDeviation {
+  AssetDeviation(this.deviation, this.number, this.kind, this.title, this.departure, this.temporary, this.until,
+      this.state, this.since, this.documents);
+  final String deviation, number, kind, title, departure, until, state, since;
+  final bool temporary;
+
+  /// `(document number, revision label)`: the revisions it departs from.
+  final List<(String, String)> documents;
+
+  /// The unit may differ from its documents as it says.
+  bool get inEffect => state == 'in-effect';
+
+  /// Temporary, still in effect, and past its end date ([today] is `YYYY-MM-DD`).
+  bool overdue(String today) => temporary && inEffect && until.isNotEmpty && until.compareTo(today) < 0;
+}
+
 /// A unit built: from RevisionWorx's unit register (`source` is `revisionworx`), or a row of an asset register.
 class Asset {
   Asset({
@@ -573,6 +624,7 @@ class Asset {
     required this.milestones,
     required this.history,
     required this.changes,
+    required this.deviations,
     required this.notes,
     required this.source,
     required this.package,
@@ -634,6 +686,24 @@ class Asset {
             ],
           ),
       ],
+      deviations: [
+        for (final d in (v['deviations']! as List).cast<Map<String, Object?>>())
+          AssetDeviation(
+            d['deviation']! as String,
+            d['number']! as String,
+            d['kind']! as String,
+            d['title']! as String,
+            d['departure']! as String,
+            d['temporary']! as bool,
+            d['until']! as String,
+            d['state']! as String,
+            d['since']! as String,
+            [
+              for (final r in (d['documents']! as List).cast<Map<String, Object?>>())
+                (r['number']! as String, r['revision']! as String),
+            ],
+          ),
+      ],
       notes: v['notes']! as String,
       source: v['source']! as String,
       package: package,
@@ -651,7 +721,13 @@ class Asset {
 
   /// Engineering changes that reach it, outstanding ones first, as RevisionWorx sent them.
   final List<AssetChange> changes;
+
+  /// Deviations and concessions that cover it, those in effect first, as RevisionWorx sent them.
+  final List<AssetDeviation> deviations;
   final PackageInfo package;
+
+  /// Deviations and concessions in effect: where the unit may differ from its documents.
+  List<AssetDeviation> get deviationsInEffect => [for (final d in deviations) if (d.inEffect) d];
 
   /// Required changes it hasn't finished.
   List<AssetChange> get outstandingChanges => [for (final c in changes) if (c.outstanding) c];

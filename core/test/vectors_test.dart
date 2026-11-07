@@ -192,6 +192,14 @@ void main() {
       expect(a.outstandingChanges.single.number, equals('ECO-0042'), reason: 'required and only scheduled');
       expect(a.changes.first.documents.single, equals(('FRM-200', 'A', 'B')));
       expect(a.changes.last.outstanding, isFalse, reason: 'an optional change is never outstanding');
+      expect(a.deviations.map((d) => d.number).toList(), equals(['DEV-0007', 'CON-0002']));
+      expect(a.deviationsInEffect.length, equals(2));
+      final (dev, con) = (a.deviations.first, a.deviations.last);
+      expect((dev.kind, dev.temporary, dev.until, dev.documents.single), equals(('deviation', true, '2026-03-31', ('BOM-75', 'B'))));
+      expect(dev.overdue('2026-03-31'), isFalse, reason: 'in effect through its end date');
+      expect(dev.overdue('2026-04-01'), isTrue, reason: 'past it the day after');
+      expect((con.kind, con.temporary, con.overdue('2099-01-01')), equals(('concession', false, false)),
+          reason: 'a permanent one is never past an end date');
       final row = c.assets['ast_${'05' * 16}']!;
       expect((row.isUnit, row.labelCode, row.tag), equals((false, 'HPU-0002', 'HPU-0002')));
     });
@@ -228,6 +236,7 @@ void main() {
       expect((a.label, a.tag, a.serial, a.built), equals(('HPU-0001', 'HPU-0001', 'NH-26-0001', '2026-03-18')));
       expect(a.documents.single.source, equals('register'));
       expect(a.changes, isEmpty);
+      expect(a.deviations, isEmpty);
       expect(resolve(c, 'FWX:A:HPU-0001').matches.single.why, equals('asset tag'));
     });
   });
@@ -253,5 +262,36 @@ void main() {
         }
       });
     }
+    test('compressed data that doesn’t decompress is a damaged archive, refused with a message', () async {
+      final raw = File('$vectorsDir/sample.fieldlog').readAsBytesSync();
+      // The manifest's local header: signature, then its name and extra field lengths at 26 and 28.
+      final at = _localHeader(raw, 'manifest.json');
+      final data = at + 30 + (raw[at + 26] | raw[at + 27] << 8) + (raw[at + 28] | raw[at + 29] << 8);
+      final bad = List<int>.of(raw)..[data] = 0xFF; // BFINAL 1, BTYPE 11: reserved, so not inflatable
+      final dir = Directory.systemTemp.createTempSync('fwx-damaged');
+      try {
+        final f = File('${dir.path}/bad.fieldlog')..writeAsBytesSync(bad);
+        await expectLater(FieldArchive.open(f),
+            throwsA(isA<ArchiveError>().having((e) => e.message, 'message', contains('damaged'))));
+      } finally {
+        dir.deleteSync(recursive: true);
+      }
+    });
   });
+}
+
+/// Where member [name]'s local file header starts: searched for by its signature followed, 26 bytes on, by its name.
+int _localHeader(List<int> raw, String name) {
+  final want = utf8.encode(name);
+  for (var i = 0; i + 30 + want.length <= raw.length; i++) {
+    if (raw[i] != 0x50 || raw[i + 1] != 0x4b || raw[i + 2] != 0x03 || raw[i + 3] != 0x04) continue;
+    final nameLen = raw[i + 26] | raw[i + 27] << 8;
+    if (nameLen != want.length) continue;
+    var same = true;
+    for (var k = 0; k < want.length && same; k++) {
+      same = raw[i + 30 + k] == want[k];
+    }
+    if (same) return i;
+  }
+  throw StateError('no member $name');
 }

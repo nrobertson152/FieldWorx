@@ -159,8 +159,9 @@ so on the unit's page (*current is rev B*); a superseded drawing opens with a re
 Units come from RevisionWorx's unit register when it has one (RevisionWorx ADR-025, `revisionworx link units`), as
 catalog version 2 assets (PROTOCOL.md section 6.4): a permanent `unt_` id, every identifier with its issuer (former
 ones kept), the revisions that apply with where each came from (build standard, the unit itself) and how well it is
-known, fitted components, milestones, the unit's history, and the engineering changes that reach it with where each stands
-(RevisionWorx's `unit-changes` feature). RevisionWorx stays the record: the package is a
+known, fitted components, milestones, the unit's history, the engineering changes that reach it with where each stands
+(RevisionWorx's `unit-changes` feature), and the deviations and concessions that allow it to differ from its drawings
+(`unit-deviations`). RevisionWorx stays the record: the package is a
 snapshot of it, and nothing on the phone changes it. A unit that an earlier package knew from an asset register row keeps
 that row's `ast_` id as an alias, so field records already made against it stay attached. Asset registers still work
 for units the unit register doesn't hold; a row for one it does hold is skipped. Version 1 catalogs still open.

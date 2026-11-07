@@ -8,6 +8,7 @@
      "class": "product",
      "components": [],
      "customer": "",
+     "deviations": [],
      "documents": [
       {
        "basis": "legacy",
@@ -330,6 +331,37 @@
       }
      ],
      "customer": "Acme Manufacturing",
+     "deviations": [
+      {
+       "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+       "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+       "documents": [
+        {
+         "number": "BOM-75",
+         "revision": "B"
+        }
+       ],
+       "kind": "deviation",
+       "number": "DEV-0007",
+       "since": "2026-02-02",
+       "state": "in-effect",
+       "temporary": true,
+       "title": "PMP-11 for PMP-10 at P1",
+       "until": "2026-03-31"
+      },
+      {
+       "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+       "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+       "documents": [],
+       "kind": "concession",
+       "number": "CON-0002",
+       "since": "2026-03-20",
+       "state": "in-effect",
+       "temporary": false,
+       "title": "Weld undercut W4",
+       "until": ""
+      }
+     ],
      "documents": [
       {
        "basis": "verified",
@@ -419,6 +451,7 @@
      "class": "component",
      "components": [],
      "customer": "",
+     "deviations": [],
      "documents": [],
      "history": [],
      "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -453,6 +486,7 @@
      "class": "product",
      "components": [],
      "customer": "",
+     "deviations": [],
      "documents": [
       {
        "basis": "legacy",
@@ -546,6 +580,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -635,6 +700,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -669,6 +735,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -1021,6 +1088,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -1110,6 +1208,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -1144,6 +1243,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -1494,6 +1594,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -1583,6 +1714,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -1617,6 +1749,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -1967,6 +2100,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -2056,6 +2220,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -2090,6 +2255,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -2441,6 +2607,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -2530,6 +2727,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -2564,6 +2762,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -2914,6 +3113,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -3003,6 +3233,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -3037,6 +3268,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -3387,6 +3619,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -3476,6 +3739,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -3510,6 +3774,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -3860,6 +4125,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -3949,6 +4245,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -3983,6 +4280,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -4333,6 +4631,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -4428,6 +4757,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -4462,6 +4792,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -4812,6 +5143,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -4901,6 +5263,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -4935,6 +5298,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -5285,6 +5649,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -5374,6 +5769,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -5408,6 +5804,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -5758,6 +6155,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -5847,6 +6275,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -5881,6 +6310,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -6231,6 +6661,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -6323,6 +6784,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -6357,6 +6819,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -6707,6 +7170,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -6796,6 +7290,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -6830,6 +7325,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -7180,6 +7676,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -7269,6 +7796,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -7303,6 +7831,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -7653,6 +8182,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -7742,6 +8302,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -7776,6 +8337,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -8126,6 +8688,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -8215,6 +8808,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -8249,6 +8843,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -8599,6 +9194,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -8689,6 +9315,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -8723,6 +9350,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -9347,6 +9975,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -9436,6 +10095,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -9469,6 +10129,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -9819,6 +10480,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -9908,6 +10600,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -9942,6 +10635,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -10292,6 +10986,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -10381,6 +11106,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -10415,6 +11141,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -10765,6 +11492,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -10854,6 +11612,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -10888,6 +11647,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -11254,6 +12014,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -11343,6 +12134,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -11377,6 +12169,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -11727,6 +12520,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -11816,6 +12640,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -11850,6 +12675,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -12201,6 +13027,37 @@
        }
       ],
       "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
       "documents": [
        {
         "basis": "verified",
@@ -12290,6 +13147,7 @@
       "class": "component",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [],
       "history": [],
       "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
@@ -12324,6 +13182,7 @@
       "class": "product",
       "components": [],
       "customer": "",
+      "deviations": [],
       "documents": [
        {
         "basis": "legacy",
@@ -12614,6 +13473,4577 @@
     "version": 2
    },
    "name": "a change document with an unknown key"
+  },
+  {
+   "catalog": {
+    "assets": [
+     {
+      "aliases": [
+       "ast_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e"
+      ],
+      "changes": [
+       {
+        "change": "eco_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+        "documents": [
+         {
+          "from": "A",
+          "number": "FRM-200",
+          "to": "B"
+         }
+        ],
+        "kind": "retrofit-required",
+        "number": "ECO-0042",
+        "required": true,
+        "since": "2026-11-20",
+        "state": "scheduled",
+        "title": "Thicker frame gussets"
+       },
+       {
+        "change": "eco_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "documents": [],
+        "kind": "retrofit-optional",
+        "number": "ECO-0040",
+        "required": false,
+        "since": "2026-10-02",
+        "state": "declined",
+        "title": "Quieter pump mount"
+       }
+      ],
+      "class": "product",
+      "components": [
+       {
+        "asset": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "basis": "reported",
+        "lot": "",
+        "number": "PMP-10",
+        "part": "",
+        "position": "P1",
+        "serial": "",
+        "since": "2026-03-18"
+       },
+       {
+        "asset": "",
+        "basis": "declared",
+        "lot": "",
+        "number": "MTR-7K5",
+        "part": "",
+        "position": "M1",
+        "serial": "M-998877",
+        "since": ""
+       }
+      ],
+      "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "open",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
+      "documents": [
+       {
+        "basis": "verified",
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_03030303030303030303030303030303",
+        "source": "unit"
+       },
+       {
+        "basis": "declared",
+        "document": "doc_08080808080808080808080808080808",
+        "revision": "rev_09090909090909090909090909090909",
+        "source": "standard"
+       },
+       {
+        "basis": "declared",
+        "document": "doc_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+        "revision": "",
+        "source": "unit"
+       }
+      ],
+      "history": [
+       {
+        "actor": "Dana Whitfield",
+        "basis": "legacy",
+        "effective": "",
+        "n": 1,
+        "summary": "registered (serial NH-26-0001)",
+        "time": "2026-11-06T10:00:00+00:00",
+        "type": "unit.registered",
+        "voided": false
+       },
+       {
+        "actor": "Dana Whitfield",
+        "basis": "declared",
+        "effective": "",
+        "n": 2,
+        "summary": "wrong unit",
+        "time": "2026-11-06T10:01:00+00:00",
+        "type": "note",
+        "voided": true
+       }
+      ],
+      "id": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "",
+        "scheme": "serial",
+        "value": "NH-26-0001"
+       },
+       {
+        "active": true,
+        "issuer": "Acme",
+        "scheme": "tag",
+        "value": "HPU-0001"
+       },
+       {
+        "active": false,
+        "issuer": "Previous owner",
+        "scheme": "other",
+        "value": "OLD-17"
+       }
+      ],
+      "label": "NH-26-0001",
+      "location": "Pump house",
+      "milestones": {
+       "built": "2026-03-18",
+       "commissioned": ""
+      },
+      "model": "HPU-75",
+      "name": "Hydraulic power unit",
+      "notes": "Line 2",
+      "parent": null,
+      "part": "pn:hpu-75",
+      "project": "prj_01010101010101010101010101010101",
+      "site": "Milltown",
+      "source": "revisionworx",
+      "standard": {
+       "number": "HPU-75-A",
+       "title": "HPU-75 standard A"
+      },
+      "status": "in-service"
+     },
+     {
+      "aliases": [],
+      "changes": [],
+      "class": "component",
+      "components": [],
+      "customer": "",
+      "deviations": [],
+      "documents": [],
+      "history": [],
+      "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "Hydrix",
+        "scheme": "serial",
+        "value": "GP-4471"
+       }
+      ],
+      "label": "GP-4471",
+      "location": "",
+      "milestones": {},
+      "model": "PMP-10",
+      "name": "",
+      "notes": "",
+      "parent": {
+       "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+       "position": "P1"
+      },
+      "part": "",
+      "project": "",
+      "site": "",
+      "source": "revisionworx",
+      "standard": null,
+      "status": "built"
+     },
+     {
+      "aliases": [],
+      "changes": [],
+      "class": "product",
+      "components": [],
+      "customer": "",
+      "deviations": [],
+      "documents": [
+       {
+        "basis": "legacy",
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_04040404040404040404040404040404",
+        "source": "register"
+       }
+      ],
+      "history": [],
+      "id": "ast_05050505050505050505050505050505",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "",
+        "scheme": "tag",
+        "value": "HPU-0002"
+       }
+      ],
+      "label": "HPU-0002",
+      "location": "Bayside",
+      "milestones": {
+       "built": "2026-06-20"
+      },
+      "model": "HPU-75",
+      "name": "Unit 2",
+      "notes": "",
+      "parent": null,
+      "part": "pn:hpu-75",
+      "project": "prj_01010101010101010101010101010101",
+      "site": "",
+      "source": "AST-HPU-75 rev A",
+      "standard": null,
+      "status": ""
+     }
+    ],
+    "bom": [
+     {
+      "child": "pn:frm-200",
+      "find_number": "10",
+      "note": "",
+      "parent": "pn:hpu-75",
+      "provenance": "declared",
+      "quantity": "1",
+      "refdes": [],
+      "source": "doc_x@rev_y",
+      "unit": "EA"
+     }
+    ],
+    "documents": [
+     {
+      "id": "doc_02020202020202020202020202020202",
+      "latest": "rev_04040404040404040404040404040404",
+      "number": "FRM-200",
+      "path": "FRM-200.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_04040404040404040404040404040404",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_03030303030303030303030303030303",
+        "label": "A",
+        "rendition": null,
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "size": 10,
+        "state": "superseded",
+        "state_name": "Superseded"
+       },
+       {
+        "author": "am",
+        "created": "2026-06-02T09:00:00+00:00",
+        "description": "Lugs added",
+        "ext": ".pdf",
+        "id": "rev_04040404040404040404040404040404",
+        "label": "B",
+        "rendition": {
+         "media_type": "application/pdf",
+         "object": "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657",
+         "via": "content"
+        },
+        "sha256": "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657",
+        "size": 142,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "Skid frame",
+      "type": "pdf"
+     },
+     {
+      "id": "doc_08080808080808080808080808080808",
+      "latest": "rev_09090909090909090909090909090909",
+      "number": "HPU-75-GA",
+      "path": "HPU-75-GA.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_09090909090909090909090909090909",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_09090909090909090909090909090909",
+        "label": "A",
+        "rendition": null,
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "size": 12,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "General arrangement",
+      "type": "pdf"
+     },
+     {
+      "id": "doc_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+      "latest": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+      "number": "MAN-HPU-75",
+      "path": "MAN.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "label": "A",
+        "rendition": null,
+        "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "size": 12,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "Manual",
+      "type": "pdf"
+     }
+    ],
+    "format": "fieldworx.catalog",
+    "parts": [
+     {
+      "attributes": {},
+      "description": "Hydraulic power unit",
+      "documents": [],
+      "id": "pn:hpu-75",
+      "kind": "assembly",
+      "manufacturers": [],
+      "number": "HPU-75",
+      "revision": "A",
+      "status": "active",
+      "stock": null,
+      "unit": "EA",
+      "vendors": []
+     },
+     {
+      "attributes": {
+       "Material": "S355"
+      },
+      "description": "Skid frame, welded",
+      "documents": [
+       {
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_04040404040404040404040404040404",
+        "role": "drawing"
+       }
+      ],
+      "id": "pn:frm-200",
+      "kind": "assembly",
+      "manufacturers": [
+       {
+        "mpn": "IB-200",
+        "name": "Ironbridge"
+       }
+      ],
+      "number": "FRM-200",
+      "revision": "B",
+      "status": "active",
+      "stock": {
+       "as_of": "2026-11-06T10:00:00Z",
+       "bin": "C2",
+       "on_hand": "2.5",
+       "source": "OpenMeridian",
+       "unit": "EA"
+      },
+      "unit": "EA",
+      "vendors": []
+     }
+    ],
+    "projects": [
+     {
+      "customer": "Northline",
+      "id": "prj_01010101010101010101010101010101",
+      "name": "HPU-75",
+      "number": "J-2001"
+     }
+    ],
+    "templates": [
+     {
+      "document": "",
+      "revision": "",
+      "state": "uncontrolled",
+      "template": {
+       "description": "",
+       "format": "fieldworx.template",
+       "id": "ITP-TEST",
+       "revision": "B",
+       "sections": [
+        {
+         "items": [
+          {
+           "help": "",
+           "id": "1",
+           "kind": "check",
+           "photo": "none",
+           "prompt": "Guards fitted",
+           "required": true
+          },
+          {
+           "help": "",
+           "id": "2",
+           "kind": "measure",
+           "max": "0.05",
+           "min": "-0.05",
+           "nominal": "0",
+           "photo": "none",
+           "prompt": "Offset",
+           "required": true,
+           "unit": "mm"
+          },
+          {
+           "help": "",
+           "id": "3",
+           "kind": "measure",
+           "max": "",
+           "min": "100",
+           "nominal": "",
+           "photo": "none",
+           "prompt": "Insulation",
+           "required": true,
+           "unit": "MΩ"
+          }
+         ],
+         "title": "Checks"
+        },
+        {
+         "items": [
+          {
+           "help": "",
+           "id": "4",
+           "kind": "text",
+           "photo": "optional",
+           "prompt": "Remarks",
+           "required": false
+          },
+          {
+           "choices": [
+            "A",
+            "B"
+           ],
+           "help": "",
+           "id": "5",
+           "kind": "choice",
+           "photo": "none",
+           "prompt": "Frame revision",
+           "required": true
+          },
+          {
+           "help": "",
+           "id": "6",
+           "kind": "check",
+           "photo": "required",
+           "prompt": "Nameplate",
+           "required": true
+          }
+         ],
+         "title": "Records"
+        }
+       ],
+       "title": "Vector template",
+       "version": 1
+      }
+     }
+    ],
+    "version": 2
+   },
+   "name": "an unknown deviation state"
+  },
+  {
+   "catalog": {
+    "assets": [
+     {
+      "aliases": [
+       "ast_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e"
+      ],
+      "changes": [
+       {
+        "change": "eco_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+        "documents": [
+         {
+          "from": "A",
+          "number": "FRM-200",
+          "to": "B"
+         }
+        ],
+        "kind": "retrofit-required",
+        "number": "ECO-0042",
+        "required": true,
+        "since": "2026-11-20",
+        "state": "scheduled",
+        "title": "Thicker frame gussets"
+       },
+       {
+        "change": "eco_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "documents": [],
+        "kind": "retrofit-optional",
+        "number": "ECO-0040",
+        "required": false,
+        "since": "2026-10-02",
+        "state": "declined",
+        "title": "Quieter pump mount"
+       }
+      ],
+      "class": "product",
+      "components": [
+       {
+        "asset": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "basis": "reported",
+        "lot": "",
+        "number": "PMP-10",
+        "part": "",
+        "position": "P1",
+        "serial": "",
+        "since": "2026-03-18"
+       },
+       {
+        "asset": "",
+        "basis": "declared",
+        "lot": "",
+        "number": "MTR-7K5",
+        "part": "",
+        "position": "M1",
+        "serial": "M-998877",
+        "since": ""
+       }
+      ],
+      "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "waiver",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
+      "documents": [
+       {
+        "basis": "verified",
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_03030303030303030303030303030303",
+        "source": "unit"
+       },
+       {
+        "basis": "declared",
+        "document": "doc_08080808080808080808080808080808",
+        "revision": "rev_09090909090909090909090909090909",
+        "source": "standard"
+       },
+       {
+        "basis": "declared",
+        "document": "doc_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+        "revision": "",
+        "source": "unit"
+       }
+      ],
+      "history": [
+       {
+        "actor": "Dana Whitfield",
+        "basis": "legacy",
+        "effective": "",
+        "n": 1,
+        "summary": "registered (serial NH-26-0001)",
+        "time": "2026-11-06T10:00:00+00:00",
+        "type": "unit.registered",
+        "voided": false
+       },
+       {
+        "actor": "Dana Whitfield",
+        "basis": "declared",
+        "effective": "",
+        "n": 2,
+        "summary": "wrong unit",
+        "time": "2026-11-06T10:01:00+00:00",
+        "type": "note",
+        "voided": true
+       }
+      ],
+      "id": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "",
+        "scheme": "serial",
+        "value": "NH-26-0001"
+       },
+       {
+        "active": true,
+        "issuer": "Acme",
+        "scheme": "tag",
+        "value": "HPU-0001"
+       },
+       {
+        "active": false,
+        "issuer": "Previous owner",
+        "scheme": "other",
+        "value": "OLD-17"
+       }
+      ],
+      "label": "NH-26-0001",
+      "location": "Pump house",
+      "milestones": {
+       "built": "2026-03-18",
+       "commissioned": ""
+      },
+      "model": "HPU-75",
+      "name": "Hydraulic power unit",
+      "notes": "Line 2",
+      "parent": null,
+      "part": "pn:hpu-75",
+      "project": "prj_01010101010101010101010101010101",
+      "site": "Milltown",
+      "source": "revisionworx",
+      "standard": {
+       "number": "HPU-75-A",
+       "title": "HPU-75 standard A"
+      },
+      "status": "in-service"
+     },
+     {
+      "aliases": [],
+      "changes": [],
+      "class": "component",
+      "components": [],
+      "customer": "",
+      "deviations": [],
+      "documents": [],
+      "history": [],
+      "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "Hydrix",
+        "scheme": "serial",
+        "value": "GP-4471"
+       }
+      ],
+      "label": "GP-4471",
+      "location": "",
+      "milestones": {},
+      "model": "PMP-10",
+      "name": "",
+      "notes": "",
+      "parent": {
+       "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+       "position": "P1"
+      },
+      "part": "",
+      "project": "",
+      "site": "",
+      "source": "revisionworx",
+      "standard": null,
+      "status": "built"
+     },
+     {
+      "aliases": [],
+      "changes": [],
+      "class": "product",
+      "components": [],
+      "customer": "",
+      "deviations": [],
+      "documents": [
+       {
+        "basis": "legacy",
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_04040404040404040404040404040404",
+        "source": "register"
+       }
+      ],
+      "history": [],
+      "id": "ast_05050505050505050505050505050505",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "",
+        "scheme": "tag",
+        "value": "HPU-0002"
+       }
+      ],
+      "label": "HPU-0002",
+      "location": "Bayside",
+      "milestones": {
+       "built": "2026-06-20"
+      },
+      "model": "HPU-75",
+      "name": "Unit 2",
+      "notes": "",
+      "parent": null,
+      "part": "pn:hpu-75",
+      "project": "prj_01010101010101010101010101010101",
+      "site": "",
+      "source": "AST-HPU-75 rev A",
+      "standard": null,
+      "status": ""
+     }
+    ],
+    "bom": [
+     {
+      "child": "pn:frm-200",
+      "find_number": "10",
+      "note": "",
+      "parent": "pn:hpu-75",
+      "provenance": "declared",
+      "quantity": "1",
+      "refdes": [],
+      "source": "doc_x@rev_y",
+      "unit": "EA"
+     }
+    ],
+    "documents": [
+     {
+      "id": "doc_02020202020202020202020202020202",
+      "latest": "rev_04040404040404040404040404040404",
+      "number": "FRM-200",
+      "path": "FRM-200.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_04040404040404040404040404040404",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_03030303030303030303030303030303",
+        "label": "A",
+        "rendition": null,
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "size": 10,
+        "state": "superseded",
+        "state_name": "Superseded"
+       },
+       {
+        "author": "am",
+        "created": "2026-06-02T09:00:00+00:00",
+        "description": "Lugs added",
+        "ext": ".pdf",
+        "id": "rev_04040404040404040404040404040404",
+        "label": "B",
+        "rendition": {
+         "media_type": "application/pdf",
+         "object": "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657",
+         "via": "content"
+        },
+        "sha256": "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657",
+        "size": 142,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "Skid frame",
+      "type": "pdf"
+     },
+     {
+      "id": "doc_08080808080808080808080808080808",
+      "latest": "rev_09090909090909090909090909090909",
+      "number": "HPU-75-GA",
+      "path": "HPU-75-GA.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_09090909090909090909090909090909",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_09090909090909090909090909090909",
+        "label": "A",
+        "rendition": null,
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "size": 12,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "General arrangement",
+      "type": "pdf"
+     },
+     {
+      "id": "doc_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+      "latest": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+      "number": "MAN-HPU-75",
+      "path": "MAN.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "label": "A",
+        "rendition": null,
+        "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "size": 12,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "Manual",
+      "type": "pdf"
+     }
+    ],
+    "format": "fieldworx.catalog",
+    "parts": [
+     {
+      "attributes": {},
+      "description": "Hydraulic power unit",
+      "documents": [],
+      "id": "pn:hpu-75",
+      "kind": "assembly",
+      "manufacturers": [],
+      "number": "HPU-75",
+      "revision": "A",
+      "status": "active",
+      "stock": null,
+      "unit": "EA",
+      "vendors": []
+     },
+     {
+      "attributes": {
+       "Material": "S355"
+      },
+      "description": "Skid frame, welded",
+      "documents": [
+       {
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_04040404040404040404040404040404",
+        "role": "drawing"
+       }
+      ],
+      "id": "pn:frm-200",
+      "kind": "assembly",
+      "manufacturers": [
+       {
+        "mpn": "IB-200",
+        "name": "Ironbridge"
+       }
+      ],
+      "number": "FRM-200",
+      "revision": "B",
+      "status": "active",
+      "stock": {
+       "as_of": "2026-11-06T10:00:00Z",
+       "bin": "C2",
+       "on_hand": "2.5",
+       "source": "OpenMeridian",
+       "unit": "EA"
+      },
+      "unit": "EA",
+      "vendors": []
+     }
+    ],
+    "projects": [
+     {
+      "customer": "Northline",
+      "id": "prj_01010101010101010101010101010101",
+      "name": "HPU-75",
+      "number": "J-2001"
+     }
+    ],
+    "templates": [
+     {
+      "document": "",
+      "revision": "",
+      "state": "uncontrolled",
+      "template": {
+       "description": "",
+       "format": "fieldworx.template",
+       "id": "ITP-TEST",
+       "revision": "B",
+       "sections": [
+        {
+         "items": [
+          {
+           "help": "",
+           "id": "1",
+           "kind": "check",
+           "photo": "none",
+           "prompt": "Guards fitted",
+           "required": true
+          },
+          {
+           "help": "",
+           "id": "2",
+           "kind": "measure",
+           "max": "0.05",
+           "min": "-0.05",
+           "nominal": "0",
+           "photo": "none",
+           "prompt": "Offset",
+           "required": true,
+           "unit": "mm"
+          },
+          {
+           "help": "",
+           "id": "3",
+           "kind": "measure",
+           "max": "",
+           "min": "100",
+           "nominal": "",
+           "photo": "none",
+           "prompt": "Insulation",
+           "required": true,
+           "unit": "MΩ"
+          }
+         ],
+         "title": "Checks"
+        },
+        {
+         "items": [
+          {
+           "help": "",
+           "id": "4",
+           "kind": "text",
+           "photo": "optional",
+           "prompt": "Remarks",
+           "required": false
+          },
+          {
+           "choices": [
+            "A",
+            "B"
+           ],
+           "help": "",
+           "id": "5",
+           "kind": "choice",
+           "photo": "none",
+           "prompt": "Frame revision",
+           "required": true
+          },
+          {
+           "help": "",
+           "id": "6",
+           "kind": "check",
+           "photo": "required",
+           "prompt": "Nameplate",
+           "required": true
+          }
+         ],
+         "title": "Records"
+        }
+       ],
+       "title": "Vector template",
+       "version": 1
+      }
+     }
+    ],
+    "version": 2
+   },
+   "name": "an unknown deviation kind"
+  },
+  {
+   "catalog": {
+    "assets": [
+     {
+      "aliases": [
+       "ast_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e"
+      ],
+      "changes": [
+       {
+        "change": "eco_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+        "documents": [
+         {
+          "from": "A",
+          "number": "FRM-200",
+          "to": "B"
+         }
+        ],
+        "kind": "retrofit-required",
+        "number": "ECO-0042",
+        "required": true,
+        "since": "2026-11-20",
+        "state": "scheduled",
+        "title": "Thicker frame gussets"
+       },
+       {
+        "change": "eco_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "documents": [],
+        "kind": "retrofit-optional",
+        "number": "ECO-0040",
+        "required": false,
+        "since": "2026-10-02",
+        "state": "declined",
+        "title": "Quieter pump mount"
+       }
+      ],
+      "class": "product",
+      "components": [
+       {
+        "asset": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "basis": "reported",
+        "lot": "",
+        "number": "PMP-10",
+        "part": "",
+        "position": "P1",
+        "serial": "",
+        "since": "2026-03-18"
+       },
+       {
+        "asset": "",
+        "basis": "declared",
+        "lot": "",
+        "number": "MTR-7K5",
+        "part": "",
+        "position": "M1",
+        "serial": "M-998877",
+        "since": ""
+       }
+      ],
+      "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": "yes",
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
+      "documents": [
+       {
+        "basis": "verified",
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_03030303030303030303030303030303",
+        "source": "unit"
+       },
+       {
+        "basis": "declared",
+        "document": "doc_08080808080808080808080808080808",
+        "revision": "rev_09090909090909090909090909090909",
+        "source": "standard"
+       },
+       {
+        "basis": "declared",
+        "document": "doc_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+        "revision": "",
+        "source": "unit"
+       }
+      ],
+      "history": [
+       {
+        "actor": "Dana Whitfield",
+        "basis": "legacy",
+        "effective": "",
+        "n": 1,
+        "summary": "registered (serial NH-26-0001)",
+        "time": "2026-11-06T10:00:00+00:00",
+        "type": "unit.registered",
+        "voided": false
+       },
+       {
+        "actor": "Dana Whitfield",
+        "basis": "declared",
+        "effective": "",
+        "n": 2,
+        "summary": "wrong unit",
+        "time": "2026-11-06T10:01:00+00:00",
+        "type": "note",
+        "voided": true
+       }
+      ],
+      "id": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "",
+        "scheme": "serial",
+        "value": "NH-26-0001"
+       },
+       {
+        "active": true,
+        "issuer": "Acme",
+        "scheme": "tag",
+        "value": "HPU-0001"
+       },
+       {
+        "active": false,
+        "issuer": "Previous owner",
+        "scheme": "other",
+        "value": "OLD-17"
+       }
+      ],
+      "label": "NH-26-0001",
+      "location": "Pump house",
+      "milestones": {
+       "built": "2026-03-18",
+       "commissioned": ""
+      },
+      "model": "HPU-75",
+      "name": "Hydraulic power unit",
+      "notes": "Line 2",
+      "parent": null,
+      "part": "pn:hpu-75",
+      "project": "prj_01010101010101010101010101010101",
+      "site": "Milltown",
+      "source": "revisionworx",
+      "standard": {
+       "number": "HPU-75-A",
+       "title": "HPU-75 standard A"
+      },
+      "status": "in-service"
+     },
+     {
+      "aliases": [],
+      "changes": [],
+      "class": "component",
+      "components": [],
+      "customer": "",
+      "deviations": [],
+      "documents": [],
+      "history": [],
+      "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "Hydrix",
+        "scheme": "serial",
+        "value": "GP-4471"
+       }
+      ],
+      "label": "GP-4471",
+      "location": "",
+      "milestones": {},
+      "model": "PMP-10",
+      "name": "",
+      "notes": "",
+      "parent": {
+       "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+       "position": "P1"
+      },
+      "part": "",
+      "project": "",
+      "site": "",
+      "source": "revisionworx",
+      "standard": null,
+      "status": "built"
+     },
+     {
+      "aliases": [],
+      "changes": [],
+      "class": "product",
+      "components": [],
+      "customer": "",
+      "deviations": [],
+      "documents": [
+       {
+        "basis": "legacy",
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_04040404040404040404040404040404",
+        "source": "register"
+       }
+      ],
+      "history": [],
+      "id": "ast_05050505050505050505050505050505",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "",
+        "scheme": "tag",
+        "value": "HPU-0002"
+       }
+      ],
+      "label": "HPU-0002",
+      "location": "Bayside",
+      "milestones": {
+       "built": "2026-06-20"
+      },
+      "model": "HPU-75",
+      "name": "Unit 2",
+      "notes": "",
+      "parent": null,
+      "part": "pn:hpu-75",
+      "project": "prj_01010101010101010101010101010101",
+      "site": "",
+      "source": "AST-HPU-75 rev A",
+      "standard": null,
+      "status": ""
+     }
+    ],
+    "bom": [
+     {
+      "child": "pn:frm-200",
+      "find_number": "10",
+      "note": "",
+      "parent": "pn:hpu-75",
+      "provenance": "declared",
+      "quantity": "1",
+      "refdes": [],
+      "source": "doc_x@rev_y",
+      "unit": "EA"
+     }
+    ],
+    "documents": [
+     {
+      "id": "doc_02020202020202020202020202020202",
+      "latest": "rev_04040404040404040404040404040404",
+      "number": "FRM-200",
+      "path": "FRM-200.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_04040404040404040404040404040404",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_03030303030303030303030303030303",
+        "label": "A",
+        "rendition": null,
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "size": 10,
+        "state": "superseded",
+        "state_name": "Superseded"
+       },
+       {
+        "author": "am",
+        "created": "2026-06-02T09:00:00+00:00",
+        "description": "Lugs added",
+        "ext": ".pdf",
+        "id": "rev_04040404040404040404040404040404",
+        "label": "B",
+        "rendition": {
+         "media_type": "application/pdf",
+         "object": "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657",
+         "via": "content"
+        },
+        "sha256": "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657",
+        "size": 142,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "Skid frame",
+      "type": "pdf"
+     },
+     {
+      "id": "doc_08080808080808080808080808080808",
+      "latest": "rev_09090909090909090909090909090909",
+      "number": "HPU-75-GA",
+      "path": "HPU-75-GA.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_09090909090909090909090909090909",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_09090909090909090909090909090909",
+        "label": "A",
+        "rendition": null,
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "size": 12,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "General arrangement",
+      "type": "pdf"
+     },
+     {
+      "id": "doc_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+      "latest": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+      "number": "MAN-HPU-75",
+      "path": "MAN.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "label": "A",
+        "rendition": null,
+        "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "size": 12,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "Manual",
+      "type": "pdf"
+     }
+    ],
+    "format": "fieldworx.catalog",
+    "parts": [
+     {
+      "attributes": {},
+      "description": "Hydraulic power unit",
+      "documents": [],
+      "id": "pn:hpu-75",
+      "kind": "assembly",
+      "manufacturers": [],
+      "number": "HPU-75",
+      "revision": "A",
+      "status": "active",
+      "stock": null,
+      "unit": "EA",
+      "vendors": []
+     },
+     {
+      "attributes": {
+       "Material": "S355"
+      },
+      "description": "Skid frame, welded",
+      "documents": [
+       {
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_04040404040404040404040404040404",
+        "role": "drawing"
+       }
+      ],
+      "id": "pn:frm-200",
+      "kind": "assembly",
+      "manufacturers": [
+       {
+        "mpn": "IB-200",
+        "name": "Ironbridge"
+       }
+      ],
+      "number": "FRM-200",
+      "revision": "B",
+      "status": "active",
+      "stock": {
+       "as_of": "2026-11-06T10:00:00Z",
+       "bin": "C2",
+       "on_hand": "2.5",
+       "source": "OpenMeridian",
+       "unit": "EA"
+      },
+      "unit": "EA",
+      "vendors": []
+     }
+    ],
+    "projects": [
+     {
+      "customer": "Northline",
+      "id": "prj_01010101010101010101010101010101",
+      "name": "HPU-75",
+      "number": "J-2001"
+     }
+    ],
+    "templates": [
+     {
+      "document": "",
+      "revision": "",
+      "state": "uncontrolled",
+      "template": {
+       "description": "",
+       "format": "fieldworx.template",
+       "id": "ITP-TEST",
+       "revision": "B",
+       "sections": [
+        {
+         "items": [
+          {
+           "help": "",
+           "id": "1",
+           "kind": "check",
+           "photo": "none",
+           "prompt": "Guards fitted",
+           "required": true
+          },
+          {
+           "help": "",
+           "id": "2",
+           "kind": "measure",
+           "max": "0.05",
+           "min": "-0.05",
+           "nominal": "0",
+           "photo": "none",
+           "prompt": "Offset",
+           "required": true,
+           "unit": "mm"
+          },
+          {
+           "help": "",
+           "id": "3",
+           "kind": "measure",
+           "max": "",
+           "min": "100",
+           "nominal": "",
+           "photo": "none",
+           "prompt": "Insulation",
+           "required": true,
+           "unit": "MΩ"
+          }
+         ],
+         "title": "Checks"
+        },
+        {
+         "items": [
+          {
+           "help": "",
+           "id": "4",
+           "kind": "text",
+           "photo": "optional",
+           "prompt": "Remarks",
+           "required": false
+          },
+          {
+           "choices": [
+            "A",
+            "B"
+           ],
+           "help": "",
+           "id": "5",
+           "kind": "choice",
+           "photo": "none",
+           "prompt": "Frame revision",
+           "required": true
+          },
+          {
+           "help": "",
+           "id": "6",
+           "kind": "check",
+           "photo": "required",
+           "prompt": "Nameplate",
+           "required": true
+          }
+         ],
+         "title": "Records"
+        }
+       ],
+       "title": "Vector template",
+       "version": 1
+      }
+     }
+    ],
+    "version": 2
+   },
+   "name": "temporary that isn't true or false"
+  },
+  {
+   "catalog": {
+    "assets": [
+     {
+      "aliases": [
+       "ast_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e"
+      ],
+      "changes": [
+       {
+        "change": "eco_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+        "documents": [
+         {
+          "from": "A",
+          "number": "FRM-200",
+          "to": "B"
+         }
+        ],
+        "kind": "retrofit-required",
+        "number": "ECO-0042",
+        "required": true,
+        "since": "2026-11-20",
+        "state": "scheduled",
+        "title": "Thicker frame gussets"
+       },
+       {
+        "change": "eco_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "documents": [],
+        "kind": "retrofit-optional",
+        "number": "ECO-0040",
+        "required": false,
+        "since": "2026-10-02",
+        "state": "declined",
+        "title": "Quieter pump mount"
+       }
+      ],
+      "class": "product",
+      "components": [
+       {
+        "asset": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "basis": "reported",
+        "lot": "",
+        "number": "PMP-10",
+        "part": "",
+        "position": "P1",
+        "serial": "",
+        "since": "2026-03-18"
+       },
+       {
+        "asset": "",
+        "basis": "declared",
+        "lot": "",
+        "number": "MTR-7K5",
+        "part": "",
+        "position": "M1",
+        "serial": "M-998877",
+        "since": ""
+       }
+      ],
+      "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": "2027-01-01"
+       }
+      ],
+      "documents": [
+       {
+        "basis": "verified",
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_03030303030303030303030303030303",
+        "source": "unit"
+       },
+       {
+        "basis": "declared",
+        "document": "doc_08080808080808080808080808080808",
+        "revision": "rev_09090909090909090909090909090909",
+        "source": "standard"
+       },
+       {
+        "basis": "declared",
+        "document": "doc_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+        "revision": "",
+        "source": "unit"
+       }
+      ],
+      "history": [
+       {
+        "actor": "Dana Whitfield",
+        "basis": "legacy",
+        "effective": "",
+        "n": 1,
+        "summary": "registered (serial NH-26-0001)",
+        "time": "2026-11-06T10:00:00+00:00",
+        "type": "unit.registered",
+        "voided": false
+       },
+       {
+        "actor": "Dana Whitfield",
+        "basis": "declared",
+        "effective": "",
+        "n": 2,
+        "summary": "wrong unit",
+        "time": "2026-11-06T10:01:00+00:00",
+        "type": "note",
+        "voided": true
+       }
+      ],
+      "id": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "",
+        "scheme": "serial",
+        "value": "NH-26-0001"
+       },
+       {
+        "active": true,
+        "issuer": "Acme",
+        "scheme": "tag",
+        "value": "HPU-0001"
+       },
+       {
+        "active": false,
+        "issuer": "Previous owner",
+        "scheme": "other",
+        "value": "OLD-17"
+       }
+      ],
+      "label": "NH-26-0001",
+      "location": "Pump house",
+      "milestones": {
+       "built": "2026-03-18",
+       "commissioned": ""
+      },
+      "model": "HPU-75",
+      "name": "Hydraulic power unit",
+      "notes": "Line 2",
+      "parent": null,
+      "part": "pn:hpu-75",
+      "project": "prj_01010101010101010101010101010101",
+      "site": "Milltown",
+      "source": "revisionworx",
+      "standard": {
+       "number": "HPU-75-A",
+       "title": "HPU-75 standard A"
+      },
+      "status": "in-service"
+     },
+     {
+      "aliases": [],
+      "changes": [],
+      "class": "component",
+      "components": [],
+      "customer": "",
+      "deviations": [],
+      "documents": [],
+      "history": [],
+      "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "Hydrix",
+        "scheme": "serial",
+        "value": "GP-4471"
+       }
+      ],
+      "label": "GP-4471",
+      "location": "",
+      "milestones": {},
+      "model": "PMP-10",
+      "name": "",
+      "notes": "",
+      "parent": {
+       "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+       "position": "P1"
+      },
+      "part": "",
+      "project": "",
+      "site": "",
+      "source": "revisionworx",
+      "standard": null,
+      "status": "built"
+     },
+     {
+      "aliases": [],
+      "changes": [],
+      "class": "product",
+      "components": [],
+      "customer": "",
+      "deviations": [],
+      "documents": [
+       {
+        "basis": "legacy",
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_04040404040404040404040404040404",
+        "source": "register"
+       }
+      ],
+      "history": [],
+      "id": "ast_05050505050505050505050505050505",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "",
+        "scheme": "tag",
+        "value": "HPU-0002"
+       }
+      ],
+      "label": "HPU-0002",
+      "location": "Bayside",
+      "milestones": {
+       "built": "2026-06-20"
+      },
+      "model": "HPU-75",
+      "name": "Unit 2",
+      "notes": "",
+      "parent": null,
+      "part": "pn:hpu-75",
+      "project": "prj_01010101010101010101010101010101",
+      "site": "",
+      "source": "AST-HPU-75 rev A",
+      "standard": null,
+      "status": ""
+     }
+    ],
+    "bom": [
+     {
+      "child": "pn:frm-200",
+      "find_number": "10",
+      "note": "",
+      "parent": "pn:hpu-75",
+      "provenance": "declared",
+      "quantity": "1",
+      "refdes": [],
+      "source": "doc_x@rev_y",
+      "unit": "EA"
+     }
+    ],
+    "documents": [
+     {
+      "id": "doc_02020202020202020202020202020202",
+      "latest": "rev_04040404040404040404040404040404",
+      "number": "FRM-200",
+      "path": "FRM-200.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_04040404040404040404040404040404",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_03030303030303030303030303030303",
+        "label": "A",
+        "rendition": null,
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "size": 10,
+        "state": "superseded",
+        "state_name": "Superseded"
+       },
+       {
+        "author": "am",
+        "created": "2026-06-02T09:00:00+00:00",
+        "description": "Lugs added",
+        "ext": ".pdf",
+        "id": "rev_04040404040404040404040404040404",
+        "label": "B",
+        "rendition": {
+         "media_type": "application/pdf",
+         "object": "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657",
+         "via": "content"
+        },
+        "sha256": "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657",
+        "size": 142,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "Skid frame",
+      "type": "pdf"
+     },
+     {
+      "id": "doc_08080808080808080808080808080808",
+      "latest": "rev_09090909090909090909090909090909",
+      "number": "HPU-75-GA",
+      "path": "HPU-75-GA.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_09090909090909090909090909090909",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_09090909090909090909090909090909",
+        "label": "A",
+        "rendition": null,
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "size": 12,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "General arrangement",
+      "type": "pdf"
+     },
+     {
+      "id": "doc_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+      "latest": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+      "number": "MAN-HPU-75",
+      "path": "MAN.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "label": "A",
+        "rendition": null,
+        "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "size": 12,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "Manual",
+      "type": "pdf"
+     }
+    ],
+    "format": "fieldworx.catalog",
+    "parts": [
+     {
+      "attributes": {},
+      "description": "Hydraulic power unit",
+      "documents": [],
+      "id": "pn:hpu-75",
+      "kind": "assembly",
+      "manufacturers": [],
+      "number": "HPU-75",
+      "revision": "A",
+      "status": "active",
+      "stock": null,
+      "unit": "EA",
+      "vendors": []
+     },
+     {
+      "attributes": {
+       "Material": "S355"
+      },
+      "description": "Skid frame, welded",
+      "documents": [
+       {
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_04040404040404040404040404040404",
+        "role": "drawing"
+       }
+      ],
+      "id": "pn:frm-200",
+      "kind": "assembly",
+      "manufacturers": [
+       {
+        "mpn": "IB-200",
+        "name": "Ironbridge"
+       }
+      ],
+      "number": "FRM-200",
+      "revision": "B",
+      "status": "active",
+      "stock": {
+       "as_of": "2026-11-06T10:00:00Z",
+       "bin": "C2",
+       "on_hand": "2.5",
+       "source": "OpenMeridian",
+       "unit": "EA"
+      },
+      "unit": "EA",
+      "vendors": []
+     }
+    ],
+    "projects": [
+     {
+      "customer": "Northline",
+      "id": "prj_01010101010101010101010101010101",
+      "name": "HPU-75",
+      "number": "J-2001"
+     }
+    ],
+    "templates": [
+     {
+      "document": "",
+      "revision": "",
+      "state": "uncontrolled",
+      "template": {
+       "description": "",
+       "format": "fieldworx.template",
+       "id": "ITP-TEST",
+       "revision": "B",
+       "sections": [
+        {
+         "items": [
+          {
+           "help": "",
+           "id": "1",
+           "kind": "check",
+           "photo": "none",
+           "prompt": "Guards fitted",
+           "required": true
+          },
+          {
+           "help": "",
+           "id": "2",
+           "kind": "measure",
+           "max": "0.05",
+           "min": "-0.05",
+           "nominal": "0",
+           "photo": "none",
+           "prompt": "Offset",
+           "required": true,
+           "unit": "mm"
+          },
+          {
+           "help": "",
+           "id": "3",
+           "kind": "measure",
+           "max": "",
+           "min": "100",
+           "nominal": "",
+           "photo": "none",
+           "prompt": "Insulation",
+           "required": true,
+           "unit": "MΩ"
+          }
+         ],
+         "title": "Checks"
+        },
+        {
+         "items": [
+          {
+           "help": "",
+           "id": "4",
+           "kind": "text",
+           "photo": "optional",
+           "prompt": "Remarks",
+           "required": false
+          },
+          {
+           "choices": [
+            "A",
+            "B"
+           ],
+           "help": "",
+           "id": "5",
+           "kind": "choice",
+           "photo": "none",
+           "prompt": "Frame revision",
+           "required": true
+          },
+          {
+           "help": "",
+           "id": "6",
+           "kind": "check",
+           "photo": "required",
+           "prompt": "Nameplate",
+           "required": true
+          }
+         ],
+         "title": "Records"
+        }
+       ],
+       "title": "Vector template",
+       "version": 1
+      }
+     }
+    ],
+    "version": 2
+   },
+   "name": "an end date on a permanent deviation"
+  },
+  {
+   "catalog": {
+    "assets": [
+     {
+      "aliases": [
+       "ast_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e"
+      ],
+      "changes": [
+       {
+        "change": "eco_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+        "documents": [
+         {
+          "from": "A",
+          "number": "FRM-200",
+          "to": "B"
+         }
+        ],
+        "kind": "retrofit-required",
+        "number": "ECO-0042",
+        "required": true,
+        "since": "2026-11-20",
+        "state": "scheduled",
+        "title": "Thicker frame gussets"
+       },
+       {
+        "change": "eco_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "documents": [],
+        "kind": "retrofit-optional",
+        "number": "ECO-0040",
+        "required": false,
+        "since": "2026-10-02",
+        "state": "declined",
+        "title": "Quieter pump mount"
+       }
+      ],
+      "class": "product",
+      "components": [
+       {
+        "asset": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "basis": "reported",
+        "lot": "",
+        "number": "PMP-10",
+        "part": "",
+        "position": "P1",
+        "serial": "",
+        "since": "2026-03-18"
+       },
+       {
+        "asset": "",
+        "basis": "declared",
+        "lot": "",
+        "number": "MTR-7K5",
+        "part": "",
+        "position": "M1",
+        "serial": "M-998877",
+        "since": ""
+       }
+      ],
+      "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "31/03/2026"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
+      "documents": [
+       {
+        "basis": "verified",
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_03030303030303030303030303030303",
+        "source": "unit"
+       },
+       {
+        "basis": "declared",
+        "document": "doc_08080808080808080808080808080808",
+        "revision": "rev_09090909090909090909090909090909",
+        "source": "standard"
+       },
+       {
+        "basis": "declared",
+        "document": "doc_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+        "revision": "",
+        "source": "unit"
+       }
+      ],
+      "history": [
+       {
+        "actor": "Dana Whitfield",
+        "basis": "legacy",
+        "effective": "",
+        "n": 1,
+        "summary": "registered (serial NH-26-0001)",
+        "time": "2026-11-06T10:00:00+00:00",
+        "type": "unit.registered",
+        "voided": false
+       },
+       {
+        "actor": "Dana Whitfield",
+        "basis": "declared",
+        "effective": "",
+        "n": 2,
+        "summary": "wrong unit",
+        "time": "2026-11-06T10:01:00+00:00",
+        "type": "note",
+        "voided": true
+       }
+      ],
+      "id": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "",
+        "scheme": "serial",
+        "value": "NH-26-0001"
+       },
+       {
+        "active": true,
+        "issuer": "Acme",
+        "scheme": "tag",
+        "value": "HPU-0001"
+       },
+       {
+        "active": false,
+        "issuer": "Previous owner",
+        "scheme": "other",
+        "value": "OLD-17"
+       }
+      ],
+      "label": "NH-26-0001",
+      "location": "Pump house",
+      "milestones": {
+       "built": "2026-03-18",
+       "commissioned": ""
+      },
+      "model": "HPU-75",
+      "name": "Hydraulic power unit",
+      "notes": "Line 2",
+      "parent": null,
+      "part": "pn:hpu-75",
+      "project": "prj_01010101010101010101010101010101",
+      "site": "Milltown",
+      "source": "revisionworx",
+      "standard": {
+       "number": "HPU-75-A",
+       "title": "HPU-75 standard A"
+      },
+      "status": "in-service"
+     },
+     {
+      "aliases": [],
+      "changes": [],
+      "class": "component",
+      "components": [],
+      "customer": "",
+      "deviations": [],
+      "documents": [],
+      "history": [],
+      "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "Hydrix",
+        "scheme": "serial",
+        "value": "GP-4471"
+       }
+      ],
+      "label": "GP-4471",
+      "location": "",
+      "milestones": {},
+      "model": "PMP-10",
+      "name": "",
+      "notes": "",
+      "parent": {
+       "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+       "position": "P1"
+      },
+      "part": "",
+      "project": "",
+      "site": "",
+      "source": "revisionworx",
+      "standard": null,
+      "status": "built"
+     },
+     {
+      "aliases": [],
+      "changes": [],
+      "class": "product",
+      "components": [],
+      "customer": "",
+      "deviations": [],
+      "documents": [
+       {
+        "basis": "legacy",
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_04040404040404040404040404040404",
+        "source": "register"
+       }
+      ],
+      "history": [],
+      "id": "ast_05050505050505050505050505050505",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "",
+        "scheme": "tag",
+        "value": "HPU-0002"
+       }
+      ],
+      "label": "HPU-0002",
+      "location": "Bayside",
+      "milestones": {
+       "built": "2026-06-20"
+      },
+      "model": "HPU-75",
+      "name": "Unit 2",
+      "notes": "",
+      "parent": null,
+      "part": "pn:hpu-75",
+      "project": "prj_01010101010101010101010101010101",
+      "site": "",
+      "source": "AST-HPU-75 rev A",
+      "standard": null,
+      "status": ""
+     }
+    ],
+    "bom": [
+     {
+      "child": "pn:frm-200",
+      "find_number": "10",
+      "note": "",
+      "parent": "pn:hpu-75",
+      "provenance": "declared",
+      "quantity": "1",
+      "refdes": [],
+      "source": "doc_x@rev_y",
+      "unit": "EA"
+     }
+    ],
+    "documents": [
+     {
+      "id": "doc_02020202020202020202020202020202",
+      "latest": "rev_04040404040404040404040404040404",
+      "number": "FRM-200",
+      "path": "FRM-200.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_04040404040404040404040404040404",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_03030303030303030303030303030303",
+        "label": "A",
+        "rendition": null,
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "size": 10,
+        "state": "superseded",
+        "state_name": "Superseded"
+       },
+       {
+        "author": "am",
+        "created": "2026-06-02T09:00:00+00:00",
+        "description": "Lugs added",
+        "ext": ".pdf",
+        "id": "rev_04040404040404040404040404040404",
+        "label": "B",
+        "rendition": {
+         "media_type": "application/pdf",
+         "object": "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657",
+         "via": "content"
+        },
+        "sha256": "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657",
+        "size": 142,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "Skid frame",
+      "type": "pdf"
+     },
+     {
+      "id": "doc_08080808080808080808080808080808",
+      "latest": "rev_09090909090909090909090909090909",
+      "number": "HPU-75-GA",
+      "path": "HPU-75-GA.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_09090909090909090909090909090909",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_09090909090909090909090909090909",
+        "label": "A",
+        "rendition": null,
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "size": 12,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "General arrangement",
+      "type": "pdf"
+     },
+     {
+      "id": "doc_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+      "latest": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+      "number": "MAN-HPU-75",
+      "path": "MAN.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "label": "A",
+        "rendition": null,
+        "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "size": 12,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "Manual",
+      "type": "pdf"
+     }
+    ],
+    "format": "fieldworx.catalog",
+    "parts": [
+     {
+      "attributes": {},
+      "description": "Hydraulic power unit",
+      "documents": [],
+      "id": "pn:hpu-75",
+      "kind": "assembly",
+      "manufacturers": [],
+      "number": "HPU-75",
+      "revision": "A",
+      "status": "active",
+      "stock": null,
+      "unit": "EA",
+      "vendors": []
+     },
+     {
+      "attributes": {
+       "Material": "S355"
+      },
+      "description": "Skid frame, welded",
+      "documents": [
+       {
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_04040404040404040404040404040404",
+        "role": "drawing"
+       }
+      ],
+      "id": "pn:frm-200",
+      "kind": "assembly",
+      "manufacturers": [
+       {
+        "mpn": "IB-200",
+        "name": "Ironbridge"
+       }
+      ],
+      "number": "FRM-200",
+      "revision": "B",
+      "status": "active",
+      "stock": {
+       "as_of": "2026-11-06T10:00:00Z",
+       "bin": "C2",
+       "on_hand": "2.5",
+       "source": "OpenMeridian",
+       "unit": "EA"
+      },
+      "unit": "EA",
+      "vendors": []
+     }
+    ],
+    "projects": [
+     {
+      "customer": "Northline",
+      "id": "prj_01010101010101010101010101010101",
+      "name": "HPU-75",
+      "number": "J-2001"
+     }
+    ],
+    "templates": [
+     {
+      "document": "",
+      "revision": "",
+      "state": "uncontrolled",
+      "template": {
+       "description": "",
+       "format": "fieldworx.template",
+       "id": "ITP-TEST",
+       "revision": "B",
+       "sections": [
+        {
+         "items": [
+          {
+           "help": "",
+           "id": "1",
+           "kind": "check",
+           "photo": "none",
+           "prompt": "Guards fitted",
+           "required": true
+          },
+          {
+           "help": "",
+           "id": "2",
+           "kind": "measure",
+           "max": "0.05",
+           "min": "-0.05",
+           "nominal": "0",
+           "photo": "none",
+           "prompt": "Offset",
+           "required": true,
+           "unit": "mm"
+          },
+          {
+           "help": "",
+           "id": "3",
+           "kind": "measure",
+           "max": "",
+           "min": "100",
+           "nominal": "",
+           "photo": "none",
+           "prompt": "Insulation",
+           "required": true,
+           "unit": "MΩ"
+          }
+         ],
+         "title": "Checks"
+        },
+        {
+         "items": [
+          {
+           "help": "",
+           "id": "4",
+           "kind": "text",
+           "photo": "optional",
+           "prompt": "Remarks",
+           "required": false
+          },
+          {
+           "choices": [
+            "A",
+            "B"
+           ],
+           "help": "",
+           "id": "5",
+           "kind": "choice",
+           "photo": "none",
+           "prompt": "Frame revision",
+           "required": true
+          },
+          {
+           "help": "",
+           "id": "6",
+           "kind": "check",
+           "photo": "required",
+           "prompt": "Nameplate",
+           "required": true
+          }
+         ],
+         "title": "Records"
+        }
+       ],
+       "title": "Vector template",
+       "version": 1
+      }
+     }
+    ],
+    "version": 2
+   },
+   "name": "an end date that isn't a date"
+  },
+  {
+   "catalog": {
+    "assets": [
+     {
+      "aliases": [
+       "ast_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e"
+      ],
+      "changes": [
+       {
+        "change": "eco_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+        "documents": [
+         {
+          "from": "A",
+          "number": "FRM-200",
+          "to": "B"
+         }
+        ],
+        "kind": "retrofit-required",
+        "number": "ECO-0042",
+        "required": true,
+        "since": "2026-11-20",
+        "state": "scheduled",
+        "title": "Thicker frame gussets"
+       },
+       {
+        "change": "eco_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "documents": [],
+        "kind": "retrofit-optional",
+        "number": "ECO-0040",
+        "required": false,
+        "since": "2026-10-02",
+        "state": "declined",
+        "title": "Quieter pump mount"
+       }
+      ],
+      "class": "product",
+      "components": [
+       {
+        "asset": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "basis": "reported",
+        "lot": "",
+        "number": "PMP-10",
+        "part": "",
+        "position": "P1",
+        "serial": "",
+        "since": "2026-03-18"
+       },
+       {
+        "asset": "",
+        "basis": "declared",
+        "lot": "",
+        "number": "MTR-7K5",
+        "part": "",
+        "position": "M1",
+        "serial": "M-998877",
+        "since": ""
+       }
+      ],
+      "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       },
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       }
+      ],
+      "documents": [
+       {
+        "basis": "verified",
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_03030303030303030303030303030303",
+        "source": "unit"
+       },
+       {
+        "basis": "declared",
+        "document": "doc_08080808080808080808080808080808",
+        "revision": "rev_09090909090909090909090909090909",
+        "source": "standard"
+       },
+       {
+        "basis": "declared",
+        "document": "doc_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+        "revision": "",
+        "source": "unit"
+       }
+      ],
+      "history": [
+       {
+        "actor": "Dana Whitfield",
+        "basis": "legacy",
+        "effective": "",
+        "n": 1,
+        "summary": "registered (serial NH-26-0001)",
+        "time": "2026-11-06T10:00:00+00:00",
+        "type": "unit.registered",
+        "voided": false
+       },
+       {
+        "actor": "Dana Whitfield",
+        "basis": "declared",
+        "effective": "",
+        "n": 2,
+        "summary": "wrong unit",
+        "time": "2026-11-06T10:01:00+00:00",
+        "type": "note",
+        "voided": true
+       }
+      ],
+      "id": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "",
+        "scheme": "serial",
+        "value": "NH-26-0001"
+       },
+       {
+        "active": true,
+        "issuer": "Acme",
+        "scheme": "tag",
+        "value": "HPU-0001"
+       },
+       {
+        "active": false,
+        "issuer": "Previous owner",
+        "scheme": "other",
+        "value": "OLD-17"
+       }
+      ],
+      "label": "NH-26-0001",
+      "location": "Pump house",
+      "milestones": {
+       "built": "2026-03-18",
+       "commissioned": ""
+      },
+      "model": "HPU-75",
+      "name": "Hydraulic power unit",
+      "notes": "Line 2",
+      "parent": null,
+      "part": "pn:hpu-75",
+      "project": "prj_01010101010101010101010101010101",
+      "site": "Milltown",
+      "source": "revisionworx",
+      "standard": {
+       "number": "HPU-75-A",
+       "title": "HPU-75 standard A"
+      },
+      "status": "in-service"
+     },
+     {
+      "aliases": [],
+      "changes": [],
+      "class": "component",
+      "components": [],
+      "customer": "",
+      "deviations": [],
+      "documents": [],
+      "history": [],
+      "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "Hydrix",
+        "scheme": "serial",
+        "value": "GP-4471"
+       }
+      ],
+      "label": "GP-4471",
+      "location": "",
+      "milestones": {},
+      "model": "PMP-10",
+      "name": "",
+      "notes": "",
+      "parent": {
+       "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+       "position": "P1"
+      },
+      "part": "",
+      "project": "",
+      "site": "",
+      "source": "revisionworx",
+      "standard": null,
+      "status": "built"
+     },
+     {
+      "aliases": [],
+      "changes": [],
+      "class": "product",
+      "components": [],
+      "customer": "",
+      "deviations": [],
+      "documents": [
+       {
+        "basis": "legacy",
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_04040404040404040404040404040404",
+        "source": "register"
+       }
+      ],
+      "history": [],
+      "id": "ast_05050505050505050505050505050505",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "",
+        "scheme": "tag",
+        "value": "HPU-0002"
+       }
+      ],
+      "label": "HPU-0002",
+      "location": "Bayside",
+      "milestones": {
+       "built": "2026-06-20"
+      },
+      "model": "HPU-75",
+      "name": "Unit 2",
+      "notes": "",
+      "parent": null,
+      "part": "pn:hpu-75",
+      "project": "prj_01010101010101010101010101010101",
+      "site": "",
+      "source": "AST-HPU-75 rev A",
+      "standard": null,
+      "status": ""
+     }
+    ],
+    "bom": [
+     {
+      "child": "pn:frm-200",
+      "find_number": "10",
+      "note": "",
+      "parent": "pn:hpu-75",
+      "provenance": "declared",
+      "quantity": "1",
+      "refdes": [],
+      "source": "doc_x@rev_y",
+      "unit": "EA"
+     }
+    ],
+    "documents": [
+     {
+      "id": "doc_02020202020202020202020202020202",
+      "latest": "rev_04040404040404040404040404040404",
+      "number": "FRM-200",
+      "path": "FRM-200.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_04040404040404040404040404040404",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_03030303030303030303030303030303",
+        "label": "A",
+        "rendition": null,
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "size": 10,
+        "state": "superseded",
+        "state_name": "Superseded"
+       },
+       {
+        "author": "am",
+        "created": "2026-06-02T09:00:00+00:00",
+        "description": "Lugs added",
+        "ext": ".pdf",
+        "id": "rev_04040404040404040404040404040404",
+        "label": "B",
+        "rendition": {
+         "media_type": "application/pdf",
+         "object": "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657",
+         "via": "content"
+        },
+        "sha256": "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657",
+        "size": 142,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "Skid frame",
+      "type": "pdf"
+     },
+     {
+      "id": "doc_08080808080808080808080808080808",
+      "latest": "rev_09090909090909090909090909090909",
+      "number": "HPU-75-GA",
+      "path": "HPU-75-GA.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_09090909090909090909090909090909",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_09090909090909090909090909090909",
+        "label": "A",
+        "rendition": null,
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "size": 12,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "General arrangement",
+      "type": "pdf"
+     },
+     {
+      "id": "doc_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+      "latest": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+      "number": "MAN-HPU-75",
+      "path": "MAN.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "label": "A",
+        "rendition": null,
+        "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "size": 12,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "Manual",
+      "type": "pdf"
+     }
+    ],
+    "format": "fieldworx.catalog",
+    "parts": [
+     {
+      "attributes": {},
+      "description": "Hydraulic power unit",
+      "documents": [],
+      "id": "pn:hpu-75",
+      "kind": "assembly",
+      "manufacturers": [],
+      "number": "HPU-75",
+      "revision": "A",
+      "status": "active",
+      "stock": null,
+      "unit": "EA",
+      "vendors": []
+     },
+     {
+      "attributes": {
+       "Material": "S355"
+      },
+      "description": "Skid frame, welded",
+      "documents": [
+       {
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_04040404040404040404040404040404",
+        "role": "drawing"
+       }
+      ],
+      "id": "pn:frm-200",
+      "kind": "assembly",
+      "manufacturers": [
+       {
+        "mpn": "IB-200",
+        "name": "Ironbridge"
+       }
+      ],
+      "number": "FRM-200",
+      "revision": "B",
+      "status": "active",
+      "stock": {
+       "as_of": "2026-11-06T10:00:00Z",
+       "bin": "C2",
+       "on_hand": "2.5",
+       "source": "OpenMeridian",
+       "unit": "EA"
+      },
+      "unit": "EA",
+      "vendors": []
+     }
+    ],
+    "projects": [
+     {
+      "customer": "Northline",
+      "id": "prj_01010101010101010101010101010101",
+      "name": "HPU-75",
+      "number": "J-2001"
+     }
+    ],
+    "templates": [
+     {
+      "document": "",
+      "revision": "",
+      "state": "uncontrolled",
+      "template": {
+       "description": "",
+       "format": "fieldworx.template",
+       "id": "ITP-TEST",
+       "revision": "B",
+       "sections": [
+        {
+         "items": [
+          {
+           "help": "",
+           "id": "1",
+           "kind": "check",
+           "photo": "none",
+           "prompt": "Guards fitted",
+           "required": true
+          },
+          {
+           "help": "",
+           "id": "2",
+           "kind": "measure",
+           "max": "0.05",
+           "min": "-0.05",
+           "nominal": "0",
+           "photo": "none",
+           "prompt": "Offset",
+           "required": true,
+           "unit": "mm"
+          },
+          {
+           "help": "",
+           "id": "3",
+           "kind": "measure",
+           "max": "",
+           "min": "100",
+           "nominal": "",
+           "photo": "none",
+           "prompt": "Insulation",
+           "required": true,
+           "unit": "MΩ"
+          }
+         ],
+         "title": "Checks"
+        },
+        {
+         "items": [
+          {
+           "help": "",
+           "id": "4",
+           "kind": "text",
+           "photo": "optional",
+           "prompt": "Remarks",
+           "required": false
+          },
+          {
+           "choices": [
+            "A",
+            "B"
+           ],
+           "help": "",
+           "id": "5",
+           "kind": "choice",
+           "photo": "none",
+           "prompt": "Frame revision",
+           "required": true
+          },
+          {
+           "help": "",
+           "id": "6",
+           "kind": "check",
+           "photo": "required",
+           "prompt": "Nameplate",
+           "required": true
+          }
+         ],
+         "title": "Records"
+        }
+       ],
+       "title": "Vector template",
+       "version": 1
+      }
+     }
+    ],
+    "version": 2
+   },
+   "name": "a deviation twice"
+  },
+  {
+   "catalog": {
+    "assets": [
+     {
+      "aliases": [
+       "ast_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e"
+      ],
+      "changes": [
+       {
+        "change": "eco_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+        "documents": [
+         {
+          "from": "A",
+          "number": "FRM-200",
+          "to": "B"
+         }
+        ],
+        "kind": "retrofit-required",
+        "number": "ECO-0042",
+        "required": true,
+        "since": "2026-11-20",
+        "state": "scheduled",
+        "title": "Thicker frame gussets"
+       },
+       {
+        "change": "eco_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "documents": [],
+        "kind": "retrofit-optional",
+        "number": "ECO-0040",
+        "required": false,
+        "since": "2026-10-02",
+        "state": "declined",
+        "title": "Quieter pump mount"
+       }
+      ],
+      "class": "product",
+      "components": [
+       {
+        "asset": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "basis": "reported",
+        "lot": "",
+        "number": "PMP-10",
+        "part": "",
+        "position": "P1",
+        "serial": "",
+        "since": "2026-03-18"
+       },
+       {
+        "asset": "",
+        "basis": "declared",
+        "lot": "",
+        "number": "MTR-7K5",
+        "part": "",
+        "position": "M1",
+        "serial": "M-998877",
+        "since": ""
+       }
+      ],
+      "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
+      "documents": [
+       {
+        "basis": "verified",
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_03030303030303030303030303030303",
+        "source": "unit"
+       },
+       {
+        "basis": "declared",
+        "document": "doc_08080808080808080808080808080808",
+        "revision": "rev_09090909090909090909090909090909",
+        "source": "standard"
+       },
+       {
+        "basis": "declared",
+        "document": "doc_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+        "revision": "",
+        "source": "unit"
+       }
+      ],
+      "history": [
+       {
+        "actor": "Dana Whitfield",
+        "basis": "legacy",
+        "effective": "",
+        "n": 1,
+        "summary": "registered (serial NH-26-0001)",
+        "time": "2026-11-06T10:00:00+00:00",
+        "type": "unit.registered",
+        "voided": false
+       },
+       {
+        "actor": "Dana Whitfield",
+        "basis": "declared",
+        "effective": "",
+        "n": 2,
+        "summary": "wrong unit",
+        "time": "2026-11-06T10:01:00+00:00",
+        "type": "note",
+        "voided": true
+       }
+      ],
+      "id": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "",
+        "scheme": "serial",
+        "value": "NH-26-0001"
+       },
+       {
+        "active": true,
+        "issuer": "Acme",
+        "scheme": "tag",
+        "value": "HPU-0001"
+       },
+       {
+        "active": false,
+        "issuer": "Previous owner",
+        "scheme": "other",
+        "value": "OLD-17"
+       }
+      ],
+      "label": "NH-26-0001",
+      "location": "Pump house",
+      "milestones": {
+       "built": "2026-03-18",
+       "commissioned": ""
+      },
+      "model": "HPU-75",
+      "name": "Hydraulic power unit",
+      "notes": "Line 2",
+      "parent": null,
+      "part": "pn:hpu-75",
+      "project": "prj_01010101010101010101010101010101",
+      "site": "Milltown",
+      "source": "revisionworx",
+      "standard": {
+       "number": "HPU-75-A",
+       "title": "HPU-75 standard A"
+      },
+      "status": "in-service"
+     },
+     {
+      "aliases": [],
+      "changes": [],
+      "class": "component",
+      "components": [],
+      "customer": "",
+      "deviations": [],
+      "documents": [],
+      "history": [],
+      "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "Hydrix",
+        "scheme": "serial",
+        "value": "GP-4471"
+       }
+      ],
+      "label": "GP-4471",
+      "location": "",
+      "milestones": {},
+      "model": "PMP-10",
+      "name": "",
+      "notes": "",
+      "parent": {
+       "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+       "position": "P1"
+      },
+      "part": "",
+      "project": "",
+      "site": "",
+      "source": "revisionworx",
+      "standard": null,
+      "status": "built"
+     },
+     {
+      "aliases": [],
+      "changes": [],
+      "class": "product",
+      "components": [],
+      "customer": "",
+      "deviations": [],
+      "documents": [
+       {
+        "basis": "legacy",
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_04040404040404040404040404040404",
+        "source": "register"
+       }
+      ],
+      "history": [],
+      "id": "ast_05050505050505050505050505050505",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "",
+        "scheme": "tag",
+        "value": "HPU-0002"
+       }
+      ],
+      "label": "HPU-0002",
+      "location": "Bayside",
+      "milestones": {
+       "built": "2026-06-20"
+      },
+      "model": "HPU-75",
+      "name": "Unit 2",
+      "notes": "",
+      "parent": null,
+      "part": "pn:hpu-75",
+      "project": "prj_01010101010101010101010101010101",
+      "site": "",
+      "source": "AST-HPU-75 rev A",
+      "standard": null,
+      "status": ""
+     }
+    ],
+    "bom": [
+     {
+      "child": "pn:frm-200",
+      "find_number": "10",
+      "note": "",
+      "parent": "pn:hpu-75",
+      "provenance": "declared",
+      "quantity": "1",
+      "refdes": [],
+      "source": "doc_x@rev_y",
+      "unit": "EA"
+     }
+    ],
+    "documents": [
+     {
+      "id": "doc_02020202020202020202020202020202",
+      "latest": "rev_04040404040404040404040404040404",
+      "number": "FRM-200",
+      "path": "FRM-200.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_04040404040404040404040404040404",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_03030303030303030303030303030303",
+        "label": "A",
+        "rendition": null,
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "size": 10,
+        "state": "superseded",
+        "state_name": "Superseded"
+       },
+       {
+        "author": "am",
+        "created": "2026-06-02T09:00:00+00:00",
+        "description": "Lugs added",
+        "ext": ".pdf",
+        "id": "rev_04040404040404040404040404040404",
+        "label": "B",
+        "rendition": {
+         "media_type": "application/pdf",
+         "object": "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657",
+         "via": "content"
+        },
+        "sha256": "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657",
+        "size": 142,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "Skid frame",
+      "type": "pdf"
+     },
+     {
+      "id": "doc_08080808080808080808080808080808",
+      "latest": "rev_09090909090909090909090909090909",
+      "number": "HPU-75-GA",
+      "path": "HPU-75-GA.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_09090909090909090909090909090909",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_09090909090909090909090909090909",
+        "label": "A",
+        "rendition": null,
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "size": 12,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "General arrangement",
+      "type": "pdf"
+     },
+     {
+      "id": "doc_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+      "latest": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+      "number": "MAN-HPU-75",
+      "path": "MAN.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "label": "A",
+        "rendition": null,
+        "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "size": 12,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "Manual",
+      "type": "pdf"
+     }
+    ],
+    "format": "fieldworx.catalog",
+    "parts": [
+     {
+      "attributes": {},
+      "description": "Hydraulic power unit",
+      "documents": [],
+      "id": "pn:hpu-75",
+      "kind": "assembly",
+      "manufacturers": [],
+      "number": "HPU-75",
+      "revision": "A",
+      "status": "active",
+      "stock": null,
+      "unit": "EA",
+      "vendors": []
+     },
+     {
+      "attributes": {
+       "Material": "S355"
+      },
+      "description": "Skid frame, welded",
+      "documents": [
+       {
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_04040404040404040404040404040404",
+        "role": "drawing"
+       }
+      ],
+      "id": "pn:frm-200",
+      "kind": "assembly",
+      "manufacturers": [
+       {
+        "mpn": "IB-200",
+        "name": "Ironbridge"
+       }
+      ],
+      "number": "FRM-200",
+      "revision": "B",
+      "status": "active",
+      "stock": {
+       "as_of": "2026-11-06T10:00:00Z",
+       "bin": "C2",
+       "on_hand": "2.5",
+       "source": "OpenMeridian",
+       "unit": "EA"
+      },
+      "unit": "EA",
+      "vendors": []
+     }
+    ],
+    "projects": [
+     {
+      "customer": "Northline",
+      "id": "prj_01010101010101010101010101010101",
+      "name": "HPU-75",
+      "number": "J-2001"
+     }
+    ],
+    "templates": [
+     {
+      "document": "",
+      "revision": "",
+      "state": "uncontrolled",
+      "template": {
+       "description": "",
+       "format": "fieldworx.template",
+       "id": "ITP-TEST",
+       "revision": "B",
+       "sections": [
+        {
+         "items": [
+          {
+           "help": "",
+           "id": "1",
+           "kind": "check",
+           "photo": "none",
+           "prompt": "Guards fitted",
+           "required": true
+          },
+          {
+           "help": "",
+           "id": "2",
+           "kind": "measure",
+           "max": "0.05",
+           "min": "-0.05",
+           "nominal": "0",
+           "photo": "none",
+           "prompt": "Offset",
+           "required": true,
+           "unit": "mm"
+          },
+          {
+           "help": "",
+           "id": "3",
+           "kind": "measure",
+           "max": "",
+           "min": "100",
+           "nominal": "",
+           "photo": "none",
+           "prompt": "Insulation",
+           "required": true,
+           "unit": "MΩ"
+          }
+         ],
+         "title": "Checks"
+        },
+        {
+         "items": [
+          {
+           "help": "",
+           "id": "4",
+           "kind": "text",
+           "photo": "optional",
+           "prompt": "Remarks",
+           "required": false
+          },
+          {
+           "choices": [
+            "A",
+            "B"
+           ],
+           "help": "",
+           "id": "5",
+           "kind": "choice",
+           "photo": "none",
+           "prompt": "Frame revision",
+           "required": true
+          },
+          {
+           "help": "",
+           "id": "6",
+           "kind": "check",
+           "photo": "required",
+           "prompt": "Nameplate",
+           "required": true
+          }
+         ],
+         "title": "Records"
+        }
+       ],
+       "title": "Vector template",
+       "version": 1
+      }
+     }
+    ],
+    "version": 2
+   },
+   "name": "a deviation without its id"
+  },
+  {
+   "catalog": {
+    "assets": [
+     {
+      "aliases": [
+       "ast_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e"
+      ],
+      "changes": [
+       {
+        "change": "eco_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+        "documents": [
+         {
+          "from": "A",
+          "number": "FRM-200",
+          "to": "B"
+         }
+        ],
+        "kind": "retrofit-required",
+        "number": "ECO-0042",
+        "required": true,
+        "since": "2026-11-20",
+        "state": "scheduled",
+        "title": "Thicker frame gussets"
+       },
+       {
+        "change": "eco_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "documents": [],
+        "kind": "retrofit-optional",
+        "number": "ECO-0040",
+        "required": false,
+        "since": "2026-10-02",
+        "state": "declined",
+        "title": "Quieter pump mount"
+       }
+      ],
+      "class": "product",
+      "components": [
+       {
+        "asset": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "basis": "reported",
+        "lot": "",
+        "number": "PMP-10",
+        "part": "",
+        "position": "P1",
+        "serial": "",
+        "since": "2026-03-18"
+       },
+       {
+        "asset": "",
+        "basis": "declared",
+        "lot": "",
+        "number": "MTR-7K5",
+        "part": "",
+        "position": "M1",
+        "serial": "M-998877",
+        "since": ""
+       }
+      ],
+      "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "label": "B",
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
+      "documents": [
+       {
+        "basis": "verified",
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_03030303030303030303030303030303",
+        "source": "unit"
+       },
+       {
+        "basis": "declared",
+        "document": "doc_08080808080808080808080808080808",
+        "revision": "rev_09090909090909090909090909090909",
+        "source": "standard"
+       },
+       {
+        "basis": "declared",
+        "document": "doc_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+        "revision": "",
+        "source": "unit"
+       }
+      ],
+      "history": [
+       {
+        "actor": "Dana Whitfield",
+        "basis": "legacy",
+        "effective": "",
+        "n": 1,
+        "summary": "registered (serial NH-26-0001)",
+        "time": "2026-11-06T10:00:00+00:00",
+        "type": "unit.registered",
+        "voided": false
+       },
+       {
+        "actor": "Dana Whitfield",
+        "basis": "declared",
+        "effective": "",
+        "n": 2,
+        "summary": "wrong unit",
+        "time": "2026-11-06T10:01:00+00:00",
+        "type": "note",
+        "voided": true
+       }
+      ],
+      "id": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "",
+        "scheme": "serial",
+        "value": "NH-26-0001"
+       },
+       {
+        "active": true,
+        "issuer": "Acme",
+        "scheme": "tag",
+        "value": "HPU-0001"
+       },
+       {
+        "active": false,
+        "issuer": "Previous owner",
+        "scheme": "other",
+        "value": "OLD-17"
+       }
+      ],
+      "label": "NH-26-0001",
+      "location": "Pump house",
+      "milestones": {
+       "built": "2026-03-18",
+       "commissioned": ""
+      },
+      "model": "HPU-75",
+      "name": "Hydraulic power unit",
+      "notes": "Line 2",
+      "parent": null,
+      "part": "pn:hpu-75",
+      "project": "prj_01010101010101010101010101010101",
+      "site": "Milltown",
+      "source": "revisionworx",
+      "standard": {
+       "number": "HPU-75-A",
+       "title": "HPU-75 standard A"
+      },
+      "status": "in-service"
+     },
+     {
+      "aliases": [],
+      "changes": [],
+      "class": "component",
+      "components": [],
+      "customer": "",
+      "deviations": [],
+      "documents": [],
+      "history": [],
+      "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "Hydrix",
+        "scheme": "serial",
+        "value": "GP-4471"
+       }
+      ],
+      "label": "GP-4471",
+      "location": "",
+      "milestones": {},
+      "model": "PMP-10",
+      "name": "",
+      "notes": "",
+      "parent": {
+       "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+       "position": "P1"
+      },
+      "part": "",
+      "project": "",
+      "site": "",
+      "source": "revisionworx",
+      "standard": null,
+      "status": "built"
+     },
+     {
+      "aliases": [],
+      "changes": [],
+      "class": "product",
+      "components": [],
+      "customer": "",
+      "deviations": [],
+      "documents": [
+       {
+        "basis": "legacy",
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_04040404040404040404040404040404",
+        "source": "register"
+       }
+      ],
+      "history": [],
+      "id": "ast_05050505050505050505050505050505",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "",
+        "scheme": "tag",
+        "value": "HPU-0002"
+       }
+      ],
+      "label": "HPU-0002",
+      "location": "Bayside",
+      "milestones": {
+       "built": "2026-06-20"
+      },
+      "model": "HPU-75",
+      "name": "Unit 2",
+      "notes": "",
+      "parent": null,
+      "part": "pn:hpu-75",
+      "project": "prj_01010101010101010101010101010101",
+      "site": "",
+      "source": "AST-HPU-75 rev A",
+      "standard": null,
+      "status": ""
+     }
+    ],
+    "bom": [
+     {
+      "child": "pn:frm-200",
+      "find_number": "10",
+      "note": "",
+      "parent": "pn:hpu-75",
+      "provenance": "declared",
+      "quantity": "1",
+      "refdes": [],
+      "source": "doc_x@rev_y",
+      "unit": "EA"
+     }
+    ],
+    "documents": [
+     {
+      "id": "doc_02020202020202020202020202020202",
+      "latest": "rev_04040404040404040404040404040404",
+      "number": "FRM-200",
+      "path": "FRM-200.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_04040404040404040404040404040404",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_03030303030303030303030303030303",
+        "label": "A",
+        "rendition": null,
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "size": 10,
+        "state": "superseded",
+        "state_name": "Superseded"
+       },
+       {
+        "author": "am",
+        "created": "2026-06-02T09:00:00+00:00",
+        "description": "Lugs added",
+        "ext": ".pdf",
+        "id": "rev_04040404040404040404040404040404",
+        "label": "B",
+        "rendition": {
+         "media_type": "application/pdf",
+         "object": "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657",
+         "via": "content"
+        },
+        "sha256": "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657",
+        "size": 142,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "Skid frame",
+      "type": "pdf"
+     },
+     {
+      "id": "doc_08080808080808080808080808080808",
+      "latest": "rev_09090909090909090909090909090909",
+      "number": "HPU-75-GA",
+      "path": "HPU-75-GA.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_09090909090909090909090909090909",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_09090909090909090909090909090909",
+        "label": "A",
+        "rendition": null,
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "size": 12,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "General arrangement",
+      "type": "pdf"
+     },
+     {
+      "id": "doc_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+      "latest": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+      "number": "MAN-HPU-75",
+      "path": "MAN.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "label": "A",
+        "rendition": null,
+        "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "size": 12,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "Manual",
+      "type": "pdf"
+     }
+    ],
+    "format": "fieldworx.catalog",
+    "parts": [
+     {
+      "attributes": {},
+      "description": "Hydraulic power unit",
+      "documents": [],
+      "id": "pn:hpu-75",
+      "kind": "assembly",
+      "manufacturers": [],
+      "number": "HPU-75",
+      "revision": "A",
+      "status": "active",
+      "stock": null,
+      "unit": "EA",
+      "vendors": []
+     },
+     {
+      "attributes": {
+       "Material": "S355"
+      },
+      "description": "Skid frame, welded",
+      "documents": [
+       {
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_04040404040404040404040404040404",
+        "role": "drawing"
+       }
+      ],
+      "id": "pn:frm-200",
+      "kind": "assembly",
+      "manufacturers": [
+       {
+        "mpn": "IB-200",
+        "name": "Ironbridge"
+       }
+      ],
+      "number": "FRM-200",
+      "revision": "B",
+      "status": "active",
+      "stock": {
+       "as_of": "2026-11-06T10:00:00Z",
+       "bin": "C2",
+       "on_hand": "2.5",
+       "source": "OpenMeridian",
+       "unit": "EA"
+      },
+      "unit": "EA",
+      "vendors": []
+     }
+    ],
+    "projects": [
+     {
+      "customer": "Northline",
+      "id": "prj_01010101010101010101010101010101",
+      "name": "HPU-75",
+      "number": "J-2001"
+     }
+    ],
+    "templates": [
+     {
+      "document": "",
+      "revision": "",
+      "state": "uncontrolled",
+      "template": {
+       "description": "",
+       "format": "fieldworx.template",
+       "id": "ITP-TEST",
+       "revision": "B",
+       "sections": [
+        {
+         "items": [
+          {
+           "help": "",
+           "id": "1",
+           "kind": "check",
+           "photo": "none",
+           "prompt": "Guards fitted",
+           "required": true
+          },
+          {
+           "help": "",
+           "id": "2",
+           "kind": "measure",
+           "max": "0.05",
+           "min": "-0.05",
+           "nominal": "0",
+           "photo": "none",
+           "prompt": "Offset",
+           "required": true,
+           "unit": "mm"
+          },
+          {
+           "help": "",
+           "id": "3",
+           "kind": "measure",
+           "max": "",
+           "min": "100",
+           "nominal": "",
+           "photo": "none",
+           "prompt": "Insulation",
+           "required": true,
+           "unit": "MΩ"
+          }
+         ],
+         "title": "Checks"
+        },
+        {
+         "items": [
+          {
+           "help": "",
+           "id": "4",
+           "kind": "text",
+           "photo": "optional",
+           "prompt": "Remarks",
+           "required": false
+          },
+          {
+           "choices": [
+            "A",
+            "B"
+           ],
+           "help": "",
+           "id": "5",
+           "kind": "choice",
+           "photo": "none",
+           "prompt": "Frame revision",
+           "required": true
+          },
+          {
+           "help": "",
+           "id": "6",
+           "kind": "check",
+           "photo": "required",
+           "prompt": "Nameplate",
+           "required": true
+          }
+         ],
+         "title": "Records"
+        }
+       ],
+       "title": "Vector template",
+       "version": 1
+      }
+     }
+    ],
+    "version": 2
+   },
+   "name": "a deviation document with an unknown key"
+  },
+  {
+   "catalog": {
+    "assets": [
+     {
+      "aliases": [
+       "ast_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e"
+      ],
+      "changes": [
+       {
+        "change": "eco_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+        "documents": [
+         {
+          "from": "A",
+          "number": "FRM-200",
+          "to": "B"
+         }
+        ],
+        "kind": "retrofit-required",
+        "number": "ECO-0042",
+        "required": true,
+        "since": "2026-11-20",
+        "state": "scheduled",
+        "title": "Thicker frame gussets"
+       },
+       {
+        "change": "eco_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "documents": [],
+        "kind": "retrofit-optional",
+        "number": "ECO-0040",
+        "required": false,
+        "since": "2026-10-02",
+        "state": "declined",
+        "title": "Quieter pump mount"
+       }
+      ],
+      "class": "product",
+      "components": [
+       {
+        "asset": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "basis": "reported",
+        "lot": "",
+        "number": "PMP-10",
+        "part": "",
+        "position": "P1",
+        "serial": "",
+        "since": "2026-03-18"
+       },
+       {
+        "asset": "",
+        "basis": "declared",
+        "lot": "",
+        "number": "MTR-7K5",
+        "part": "",
+        "position": "M1",
+        "serial": "M-998877",
+        "since": ""
+       }
+      ],
+      "customer": "Acme Manufacturing",
+      "deviations": [
+       {
+        "deviation": "udv_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "documents": [
+         {
+          "number": "BOM-75",
+          "revision": "B"
+         }
+        ],
+        "kind": "deviation",
+        "number": "DEV-0007",
+        "since": "2026-02-02",
+        "state": "in-effect",
+        "temporary": true,
+        "title": "PMP-11 for PMP-10 at P1",
+        "until": "2026-03-31"
+       },
+       {
+        "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+        "deviation": "udv_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "documents": [],
+        "kind": "concession",
+        "number": "CON-0002",
+        "since": "2026-03-20",
+        "state": "in-effect",
+        "temporary": false,
+        "title": "Weld undercut W4",
+        "until": ""
+       }
+      ],
+      "documents": [
+       {
+        "basis": "verified",
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_03030303030303030303030303030303",
+        "source": "unit"
+       },
+       {
+        "basis": "declared",
+        "document": "doc_08080808080808080808080808080808",
+        "revision": "rev_09090909090909090909090909090909",
+        "source": "standard"
+       },
+       {
+        "basis": "declared",
+        "document": "doc_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+        "revision": "",
+        "source": "unit"
+       }
+      ],
+      "history": [
+       {
+        "actor": "Dana Whitfield",
+        "basis": "legacy",
+        "effective": "",
+        "n": 1,
+        "summary": "registered (serial NH-26-0001)",
+        "time": "2026-11-06T10:00:00+00:00",
+        "type": "unit.registered",
+        "voided": false
+       },
+       {
+        "actor": "Dana Whitfield",
+        "basis": "declared",
+        "effective": "",
+        "n": 2,
+        "summary": "wrong unit",
+        "time": "2026-11-06T10:01:00+00:00",
+        "type": "note",
+        "voided": true
+       }
+      ],
+      "id": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "",
+        "scheme": "serial",
+        "value": "NH-26-0001"
+       },
+       {
+        "active": true,
+        "issuer": "Acme",
+        "scheme": "tag",
+        "value": "HPU-0001"
+       },
+       {
+        "active": false,
+        "issuer": "Previous owner",
+        "scheme": "other",
+        "value": "OLD-17"
+       }
+      ],
+      "label": "NH-26-0001",
+      "location": "Pump house",
+      "milestones": {
+       "built": "2026-03-18",
+       "commissioned": ""
+      },
+      "model": "HPU-75",
+      "name": "Hydraulic power unit",
+      "notes": "Line 2",
+      "parent": null,
+      "part": "pn:hpu-75",
+      "project": "prj_01010101010101010101010101010101",
+      "site": "Milltown",
+      "source": "revisionworx",
+      "standard": {
+       "number": "HPU-75-A",
+       "title": "HPU-75 standard A"
+      },
+      "status": "in-service"
+     },
+     {
+      "aliases": [],
+      "changes": [],
+      "class": "component",
+      "components": [],
+      "customer": "",
+      "deviations": [],
+      "documents": [],
+      "history": [],
+      "id": "unt_0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "Hydrix",
+        "scheme": "serial",
+        "value": "GP-4471"
+       }
+      ],
+      "label": "GP-4471",
+      "location": "",
+      "milestones": {},
+      "model": "PMP-10",
+      "name": "",
+      "notes": "",
+      "parent": {
+       "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+       "position": "P1"
+      },
+      "part": "",
+      "project": "",
+      "site": "",
+      "source": "revisionworx",
+      "standard": null,
+      "status": "built"
+     },
+     {
+      "aliases": [],
+      "changes": [],
+      "class": "product",
+      "components": [],
+      "customer": "",
+      "deviations": [],
+      "documents": [
+       {
+        "basis": "legacy",
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_04040404040404040404040404040404",
+        "source": "register"
+       }
+      ],
+      "history": [],
+      "id": "ast_05050505050505050505050505050505",
+      "identifiers": [
+       {
+        "active": true,
+        "issuer": "",
+        "scheme": "tag",
+        "value": "HPU-0002"
+       }
+      ],
+      "label": "HPU-0002",
+      "location": "Bayside",
+      "milestones": {
+       "built": "2026-06-20"
+      },
+      "model": "HPU-75",
+      "name": "Unit 2",
+      "notes": "",
+      "parent": null,
+      "part": "pn:hpu-75",
+      "project": "prj_01010101010101010101010101010101",
+      "site": "",
+      "source": "AST-HPU-75 rev A",
+      "standard": null,
+      "status": ""
+     }
+    ],
+    "bom": [
+     {
+      "child": "pn:frm-200",
+      "find_number": "10",
+      "note": "",
+      "parent": "pn:hpu-75",
+      "provenance": "declared",
+      "quantity": "1",
+      "refdes": [],
+      "source": "doc_x@rev_y",
+      "unit": "EA"
+     }
+    ],
+    "documents": [
+     {
+      "id": "doc_02020202020202020202020202020202",
+      "latest": "rev_04040404040404040404040404040404",
+      "number": "FRM-200",
+      "path": "FRM-200.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_04040404040404040404040404040404",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_03030303030303030303030303030303",
+        "label": "A",
+        "rendition": null,
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "size": 10,
+        "state": "superseded",
+        "state_name": "Superseded"
+       },
+       {
+        "author": "am",
+        "created": "2026-06-02T09:00:00+00:00",
+        "description": "Lugs added",
+        "ext": ".pdf",
+        "id": "rev_04040404040404040404040404040404",
+        "label": "B",
+        "rendition": {
+         "media_type": "application/pdf",
+         "object": "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657",
+         "via": "content"
+        },
+        "sha256": "93e31154c364805a3ef8c904bc257f5ef77600c31b67d392704cd6e1e9cd0657",
+        "size": 142,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "Skid frame",
+      "type": "pdf"
+     },
+     {
+      "id": "doc_08080808080808080808080808080808",
+      "latest": "rev_09090909090909090909090909090909",
+      "number": "HPU-75-GA",
+      "path": "HPU-75-GA.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_09090909090909090909090909090909",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_09090909090909090909090909090909",
+        "label": "A",
+        "rendition": null,
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "size": 12,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "General arrangement",
+      "type": "pdf"
+     },
+     {
+      "id": "doc_0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+      "latest": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+      "number": "MAN-HPU-75",
+      "path": "MAN.pdf",
+      "project": "prj_01010101010101010101010101010101",
+      "released": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+      "revisions": [
+       {
+        "author": "am",
+        "created": "2026-02-10T09:00:00+00:00",
+        "description": "First issue",
+        "ext": ".pdf",
+        "id": "rev_0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+        "label": "A",
+        "rendition": null,
+        "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "size": 12,
+        "state": "released",
+        "state_name": "Released"
+       }
+      ],
+      "title": "Manual",
+      "type": "pdf"
+     }
+    ],
+    "format": "fieldworx.catalog",
+    "parts": [
+     {
+      "attributes": {},
+      "description": "Hydraulic power unit",
+      "documents": [],
+      "id": "pn:hpu-75",
+      "kind": "assembly",
+      "manufacturers": [],
+      "number": "HPU-75",
+      "revision": "A",
+      "status": "active",
+      "stock": null,
+      "unit": "EA",
+      "vendors": []
+     },
+     {
+      "attributes": {
+       "Material": "S355"
+      },
+      "description": "Skid frame, welded",
+      "documents": [
+       {
+        "document": "doc_02020202020202020202020202020202",
+        "revision": "rev_04040404040404040404040404040404",
+        "role": "drawing"
+       }
+      ],
+      "id": "pn:frm-200",
+      "kind": "assembly",
+      "manufacturers": [
+       {
+        "mpn": "IB-200",
+        "name": "Ironbridge"
+       }
+      ],
+      "number": "FRM-200",
+      "revision": "B",
+      "status": "active",
+      "stock": {
+       "as_of": "2026-11-06T10:00:00Z",
+       "bin": "C2",
+       "on_hand": "2.5",
+       "source": "OpenMeridian",
+       "unit": "EA"
+      },
+      "unit": "EA",
+      "vendors": []
+     }
+    ],
+    "projects": [
+     {
+      "customer": "Northline",
+      "id": "prj_01010101010101010101010101010101",
+      "name": "HPU-75",
+      "number": "J-2001"
+     }
+    ],
+    "templates": [
+     {
+      "document": "",
+      "revision": "",
+      "state": "uncontrolled",
+      "template": {
+       "description": "",
+       "format": "fieldworx.template",
+       "id": "ITP-TEST",
+       "revision": "B",
+       "sections": [
+        {
+         "items": [
+          {
+           "help": "",
+           "id": "1",
+           "kind": "check",
+           "photo": "none",
+           "prompt": "Guards fitted",
+           "required": true
+          },
+          {
+           "help": "",
+           "id": "2",
+           "kind": "measure",
+           "max": "0.05",
+           "min": "-0.05",
+           "nominal": "0",
+           "photo": "none",
+           "prompt": "Offset",
+           "required": true,
+           "unit": "mm"
+          },
+          {
+           "help": "",
+           "id": "3",
+           "kind": "measure",
+           "max": "",
+           "min": "100",
+           "nominal": "",
+           "photo": "none",
+           "prompt": "Insulation",
+           "required": true,
+           "unit": "MΩ"
+          }
+         ],
+         "title": "Checks"
+        },
+        {
+         "items": [
+          {
+           "help": "",
+           "id": "4",
+           "kind": "text",
+           "photo": "optional",
+           "prompt": "Remarks",
+           "required": false
+          },
+          {
+           "choices": [
+            "A",
+            "B"
+           ],
+           "help": "",
+           "id": "5",
+           "kind": "choice",
+           "photo": "none",
+           "prompt": "Frame revision",
+           "required": true
+          },
+          {
+           "help": "",
+           "id": "6",
+           "kind": "check",
+           "photo": "required",
+           "prompt": "Nameplate",
+           "required": true
+          }
+         ],
+         "title": "Records"
+        }
+       ],
+       "title": "Vector template",
+       "version": 1
+      }
+     }
+    ],
+    "version": 2
+   },
+   "name": "a deviation without its departure key"
   }
  ]
 }

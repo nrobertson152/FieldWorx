@@ -469,6 +469,9 @@ class AssetScreen extends StatelessWidget {
         if (!d.applies && c.documents[d.documentId] != null) c.documents[d.documentId]!,
     ];
     final history = m.inspectionsFor(a.id, also: a.aliases);
+    final today = _today();
+    final pastEnd = [for (final d in a.deviations) if (d.overdue(today)) d];
+    final allowed = a.deviationsInEffect;
     final outOfDate =
         asBuilt.where((x) => x.$2.document.released != null && x.$2.document.released!.id != x.$2.id).length;
     final details = <Widget>[
@@ -504,6 +507,10 @@ class AssetScreen extends StatelessWidget {
               StatusChip(
                   '${a.outstandingChanges.length} change${a.outstandingChanges.length == 1 ? '' : 's'} outstanding',
                   tone: Tone.warn),
+            if (pastEnd.isNotEmpty)
+              StatusChip('${pastEnd.length} deviation${pastEnd.length == 1 ? '' : 's'} past end date', tone: Tone.warn)
+            else if (allowed.isNotEmpty)
+              StatusChip('${allowed.length} deviation${allowed.length == 1 ? '' : 's'} in effect', tone: Tone.info),
           ]),
           if (details.isNotEmpty) ...[
             const SizedBox(height: 10),
@@ -579,6 +586,36 @@ class AssetScreen extends StatelessWidget {
                   style: TextStyle(color: context.fx.muted, fontSize: 13)),
             ),
           ],
+          if (a.deviations.isNotEmpty) ...[
+            SectionHeader('Deviations and concessions (${a.deviations.length})'),
+            RowsCard(children: [
+              for (final d in a.deviations)
+                EntityRow(
+                  icon: d.overdue(today) ? 'warning' : 'note',
+                  title: '${d.number} ${d.title}'.trim(),
+                  subtitle: [
+                    d.departure,
+                    for (final (doc, rev) in d.documents) 'from $doc rev $rev',
+                  ].where((s) => s.isNotEmpty).join(' · '),
+                  chips: [
+                    StatusChip(d.kind),
+                    StatusChip(d.state.replaceAll('-', ' '), tone: d.inEffect ? Tone.info : Tone.neutral),
+                    if (d.inEffect)
+                      StatusChip(d.temporary ? (d.until.isEmpty ? 'temporary' : 'until ${d.until}') : 'permanent',
+                          tone: d.overdue(today) ? Tone.warn : Tone.neutral),
+                    if (d.overdue(today)) const StatusChip('past its end date', tone: Tone.warn),
+                    if (!d.inEffect && d.since.isNotEmpty) StatusChip('since ${d.since}'),
+                  ],
+                ),
+            ]),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+              child: Text(
+                  'Approved departures from the drawings for this unit. Where one is in effect, the unit may differ as it '
+                  'says: that isn’t a fault to put right. They are settled in RevisionWorx.',
+                  style: TextStyle(color: context.fx.muted, fontSize: 13)),
+            ),
+          ],
           if (a.parentId.isNotEmpty) ...[
             const SectionHeader('Fitted in'),
             RowsCard(children: [
@@ -650,6 +687,12 @@ class AssetScreen extends StatelessWidget {
 }
 
 String _capitalised(String s) => s.isEmpty ? s : '${s[0].toUpperCase()}${s.substring(1)}';
+
+/// Today on this phone, as `YYYY-MM-DD`: a temporary deviation is past its end date after it.
+String _today() {
+  final n = DateTime.now();
+  return '${n.year.toString().padLeft(4, '0')}-${n.month.toString().padLeft(2, '0')}-${n.day.toString().padLeft(2, '0')}';
+}
 
 const Map<String, String> _changeKinds = {
   'production': 'new units only',
