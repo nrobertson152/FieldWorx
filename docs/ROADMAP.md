@@ -21,7 +21,8 @@ The directive's first scope: **QR scanning, engineering document access, part lo
 - Inspections from controlled templates: checks, exact measurements against limits, text, choices, photos,
   notes; complete, reopen, void; conflicts between phones shown and settled.
 - "Is this print current?": a revision label, `FWX:R:<document>@<revision>`, says whether a print is the released
-  revision and which one to work to if not.
+  revision and which one to work to if not. DraftWorx and OpenSchematix print it on drawings of a controlled revision
+  (DraftWorx #13, OpenSchematix #106), with `fwx_label.py` copied unchanged.
 - Label sheets: `fieldworx-bridge labels` prints QR labels for units, parts, documents, revisions and projects on A4
   or US Letter label sheets or a label printer (the layouts are proposals for the Director).
 - Files as the transport: packages in, field logs out, phone to phone; `fieldworx-bridge` packs, imports,
@@ -41,11 +42,9 @@ The directive's first scope: **QR scanning, engineering document access, part lo
    ECR number comes back to the phone in the next package.
 4. **Redlines:** markup on a snapshot of a drawing page or a photo, attached to a nonconformance or proposed
    change. The drawing itself is never touched.
-5. **Revision codes on drawings:** DraftWorx and OpenSchematix print `FWX:R:` codes in their title blocks, with
-   `fwx_label.py`.
-6. **Opening files from other apps:** a `.fieldworx` or `.fieldlog` tapped in e-mail or a file manager opens
+5. **Opening files from other apps:** a `.fieldworx` or `.fieldlog` tapped in e-mail or a file manager opens
    in FieldWorx.
-7. **Hardware scanners:** keyboard-wedge input without focusing the code field; Zebra DataWedge intents.
+6. **Hardware scanners:** keyboard-wedge input without focusing the code field; Zebra DataWedge intents.
 
 ## Then: work in the field
 

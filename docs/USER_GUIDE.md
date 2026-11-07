@@ -26,7 +26,8 @@ Point the camera at a label. FieldWorx understands:
 - its own labels: `FWX:A:unt_…` (a unit in RevisionWorx's unit register, by its permanent id), `FWX:A:<tag>`
   (a unit by its tag), `FWX:P:<part>`, `FWX:D:<document>`, `FWX:J:<project>`, and `FWX:R:<document>@<revision>` on a
   print, which opens the document and says whether that print is the released revision: if it is superseded, which
-  revision to work to; if the phone doesn't have it, that it may be newer than the phone's packages;
+  revision to work to; if the phone doesn't have it, that it may be newer than the phone's packages. DraftWorx and
+  OpenSchematix put that code on prints of a revision RevisionWorx controls, above the title block;
 - a unit's serial plate, asset tag or an old code it used to carry, a part number, a maker's part number, a
   supplier's code, a document or project number;
 - a reference designator from the BOM, typed as on the schematic: `K1`, `V2`.
