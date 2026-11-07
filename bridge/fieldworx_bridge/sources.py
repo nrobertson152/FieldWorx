@@ -231,12 +231,16 @@ def parse_assets_csv(text: str) -> list[dict]:
 
 # ------------------------------------------------------------------------------------------------------ OpenMeridian
 MERIDIAN_APP_ID = 0x4F4D4552
+# The company file formats read here (OpenMeridian's docs/COMPANY_FILE.md). Format 2 added serial numbers for units made
+# (a column on items and on stock_moves, and a table of units built); nothing read here changed, and on hand is still
+# the sum of the stock ledger. A format not listed is refused, not guessed at.
+MERIDIAN_FORMATS = (1, 2)
 
 
 def read_meridian(path: Path) -> tuple[dict[str, dict], str]:
     """Items of an OpenMeridian company file, by casefolded number: number, description, unit, bin, on_hand (a
-    decimal string: the sum of its stock ledger). Read-only; refuses a file it doesn't recognise. Returns (items,
-    company name)."""
+    decimal string: the sum of its stock ledger). Read-only; refuses a file it doesn't recognise or a format it doesn't
+    know. Returns (items, company name)."""
     uri = Path(path).resolve().as_uri() + "?mode=ro"
     try:
         conn = sqlite3.connect(uri, uri=True, timeout=10)
@@ -248,8 +252,9 @@ def read_meridian(path: Path) -> tuple[dict[str, dict], str]:
         version = conn.execute("PRAGMA user_version").fetchone()[0]
         if app_id != MERIDIAN_APP_ID:
             raise SourceError(f"{path} is not an OpenMeridian company file")
-        if version != 1:
-            raise SourceError(f"{path} is OpenMeridian format {version}; this bridge reads format 1")
+        if version not in MERIDIAN_FORMATS:
+            raise SourceError(f"{path} is OpenMeridian format {version}; this bridge reads formats "
+                              f"{' and '.join(map(str, MERIDIAN_FORMATS))}. Update FieldWorx's bridge.")
         name_row = conn.execute("SELECT value FROM settings WHERE key = 'company_name'").fetchone()
         rows = conn.execute(
             "SELECT i.number, i.description, i.unit, i.bin, i.active, COALESCE(SUM(m.qty), 0) "
