@@ -158,7 +158,7 @@ Useful options:
 | Option | Does |
 |---|---|
 | `--project P` | a project id, number or name; repeat for several (default: every active project) |
-| `--meridian FILE.meridian` | add stock on hand from an OpenMeridian company file (opened read-only) |
+| `--meridian FILE.meridian` | add stock on hand from an OpenMeridian company file (opened read-only; formats 1 and 2, and a newer one is refused) |
 | `--unreleased` | include the latest revisions that aren't released yet, marked *not released* |
 | `--templates DIR` | add inspection templates that aren't in RevisionWorx (marked *uncontrolled*) |
 | `--assets FILE.fwassets.csv` | add a unit register that isn't in RevisionWorx (uncontrolled) |

@@ -28,6 +28,8 @@ The first field release: QR scanning, engineering document access, part lookup a
   inspection templates and reduction, catalog and search, label resolution, the on-device store, and `fxtool`.
 - **Bridge** (`fieldworx-bridge`, Python standard library): `pack` from RevisionWorx through `revisionworx link`
   with OpenMeridian stock and DraftWorx PDFs; `import`, `status`, `report` and `verify`; the write-once hub.
+  OpenMeridian company files of format 1 and 2 (serial numbers for units made) are read the same way, read-only; a
+  format it doesn't know is refused with a message.
 - **Protocol 1** ([docs/PROTOCOL.md](docs/PROTOCOL.md)) with shared vectors both implementations reproduce.
 - **Units from RevisionWorx's unit register** (catalog version 2; version 1 still opens):
   - The bridge packs a workspace's units through `revisionworx link units` when RevisionWorx has a unit register:
