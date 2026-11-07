@@ -215,6 +215,35 @@ record per inspection, with its photos, that prints well.
 
 `fieldworx-bridge verify FILE` checks any package or field log without changing anything.
 
+### Findings: what was found or changed on a unit
+
+A finding is something someone in the field saw or did to a unit: a part replaced, what is actually fitted at a
+position, an engineering change carried out, or a note. The phone records it; it never changes the unit's record.
+Someone in the office decides what goes into RevisionWorx's unit register:
+
+```sh
+fieldworx-bridge findings -w "D:/Engineering/Workspace"
+fieldworx-bridge accept fnd_3f9a2c17 -w "D:/Engineering/Workspace" --dry-run
+fieldworx-bridge accept fnd_3f9a2c17 -w "D:/Engineering/Workspace"
+```
+
+`findings` lists every finding in the hub with what it would record: *to accept* (and what), *needs a decision*,
+*already in the register*, *accepted* (with the event number in the unit's history) or *voided*. `accept` records one,
+named by its id or the start of it:
+
+- a replacement or a find becomes what is fitted at that position (a replacement takes out what the register has
+  there), a change becomes the change carried out, a note a note;
+- it is recorded as *reported*, with the field record as its evidence and who reported it when; `--basis verified` if
+  you saw it yourself. In a team workspace it is in the name of whoever is logged in to RevisionWorx;
+- a finding the register contradicts (the phone says PMP-10 serial 111 came out, the register has serial 999 there) is
+  not recorded until you decide: `--as fit` records what the phone says is fitted now, `--as note` keeps it as a note and
+  leaves the configuration alone;
+- accepting the same finding again records nothing, and nothing is recorded if the unit changed in RevisionWorx while
+  you were deciding: run it again to look afresh.
+
+RevisionWorx needs its `unit-records` feature (1.0.0). Findings about a unit that is only an asset register row are listed
+but can't be accepted until the register is imported (`revisionworx unit import`).
+
 ## Trying it with the demo
 
 The app has a built-in demo: Northline Hydraulics' HPU-75 hydraulic power unit (project J-2001), with two units

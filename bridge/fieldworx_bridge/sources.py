@@ -7,7 +7,8 @@
 * OpenMeridian: the ``.meridian`` company file as docs/COMPANY_FILE.md describes it, opened read-only.
 * DraftWorx: ``draftworx pdf`` (docs/COMMAND_LINE.md there) for drawings it can print.
 
-Nothing here writes to any of them.
+Nothing here writes to any of them. The bridge's one write is accepting a finding into RevisionWorx's unit register,
+through ``revisionworx link`` (accept.py), when someone in the office asks.
 """
 from __future__ import annotations
 

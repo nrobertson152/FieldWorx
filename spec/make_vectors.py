@@ -20,13 +20,15 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "bridge"))
 
 from fieldworx_bridge import events as E  # noqa: E402
-from fieldworx_bridge import fxjson, inspections  # noqa: E402
+from fieldworx_bridge import findings, fxjson, inspections  # noqa: E402
 
 OUT = HERE / "vectors"
 DEV_A = "dev_" + "a1" * 16
 DEV_B = "dev_" + "b2" * 16
 DEV_C = "dev_" + "c3" * 16
 INS = "ins_" + "0f" * 16
+FND = "fnd_" + "0e" * 16
+UNIT = "unt_" + "0c" * 16
 
 
 def t(n: int) -> str:
@@ -208,6 +210,123 @@ def inspection_scenarios() -> list[dict]:
     m2 = a.make("inspection.answer", answer("3", {"measured": "100.000"}), [m], t(2))
     add("limits are inclusive", [s, m, m2], "-0.05 against min -0.05 and 100.000 against min 100 both pass")
     return scenarios
+
+
+def finding(what: str, **k) -> dict:
+    base = {"asset": UNIT, "what": what, "position": "", "removed": None, "fitted": None, "disposition": "",
+            "change": "", "on": "", "text": "", "package": "pkg_" + "22" * 16}
+    return {**base, **k}
+
+
+def pump(number="", serial="", lot=""):
+    return {"number": number, "serial": serial, "lot": lot}
+
+
+def finding_vectors() -> dict:
+    """Findings (PROTOCOL section 11): reduced states, and record bodies both implementations accept or refuse."""
+    scenarios = []
+
+    def add(name: str, evs: list[E.Event], note: str):
+        log = E.FieldLog()
+        log.import_events(evs)
+        state = findings.reduce(log, FND)
+        log2 = E.FieldLog()
+        log2.import_events(list(reversed(evs)))
+        assert fxjson.encode(findings.reduce(log2, FND)) == fxjson.encode(state), name
+        scenarios.append({"name": name, "note": note, "entity": FND, "events": [e.raw.decode("utf-8") for e in evs],
+                          "state": state})
+
+    replaced = finding("replaced", position="P1", removed=pump("PMP-10", "111"), fitted=pump("PMP-11", "222"),
+                       disposition="repair", on="2026-11-03", text="Seal leaking; sent for repair.")
+    a, b = Device(DEV_A, "Alex Morgan"), Device(DEV_B, "Sam Ortiz")
+    r = a.make("finding.record", replaced, [], t(0), entity=FND)
+    ph = a.make("finding.attach", {"object": "ab" * 32, "size": 2048, "media_type": "image/jpeg",
+                                   "caption": "new pump's plate"}, [r], t(1), entity=FND)
+    add("a replacement with a photo", [r, ph], "P1's pump replaced: what came out, what went in, where the old one went")
+
+    a = Device(DEV_A, "Alex Morgan")
+    r = a.make("finding.record", finding("found", position="V3", fitted=pump("VLV-20", "", "L-2026-07")), [], t(0),
+               entity=FND)
+    add("what is fitted at a position", [r], "the as-built: a valve of lot L-2026-07 at V3")
+
+    a = Device(DEV_A, "Alex Morgan")
+    r = a.make("finding.record", finding("change", change="ECO-0042", on="2026-11-02"), [], t(0), entity=FND)
+    add("an engineering change carried out", [r], "ECO-0042 done on the unit on 2 November")
+
+    a = Device(DEV_A, "Alex Morgan")
+    r = a.make("finding.record", finding("note", text="Guard on P1 missing.\nCustomer told."), [], t(0), entity=FND)
+    add("a note", [r], "multi-line text")
+
+    a, b = Device(DEV_A, "Alex Morgan"), Device(DEV_B, "Sam Ortiz")
+    r = a.make("finding.record", finding("note", text="Frame cracked at weld 3"), [], t(0), entity=FND)
+    v = a.make("finding.void", {"reason": "wrong unit"}, [r], t(1), entity=FND)
+    ph = b.make("finding.attach", {"object": "cd" * 32, "size": 99, "media_type": "image/jpeg", "caption": ""}, [r],
+                t(2), entity=FND)
+    v2 = b.make("finding.void", {"reason": "duplicate of another finding"}, [ph], t(3), entity=FND)
+    add("voided on two phones", [r, v, ph, v2], "both voids count and agree; the photo added meanwhile is kept")
+
+    a = Device(DEV_A, "Alex Morgan")
+    r = a.make("finding.record", finding("note", text="Oil dark"), [], t(0), entity=FND)
+    bad1 = a.make("finding.attach", {"object": "not-a-hash", "size": 1, "media_type": "image/jpeg", "caption": ""},
+                  [r], t(1), entity=FND)
+    bad2 = a.make("finding.void", {"reason": "  "}, [bad1], t(2), entity=FND)
+    newer = a.make("finding.signature", {"svg": "..."}, [bad2], t(3), entity=FND)
+    add("malformed and newer records are reported, not used", [r, bad1, bad2, newer],
+        "a photo without a SHA-256, a void without a reason, a record type from a newer version")
+
+    a = Device(DEV_A, "Alex Morgan")
+    ph = a.make("finding.attach", {"object": "ef" * 32, "size": 5, "media_type": "image/jpeg", "caption": ""}, [], t(0),
+                entity=FND)
+    add("no record", [ph], "a photo with nothing it belongs to")
+
+    a, b = Device(DEV_A, "Alex Morgan"), Device(DEV_B, "Sam Ortiz")
+    r1 = a.make("finding.record", finding("note", text="one"), [], t(0), entity=FND)
+    r2 = b.make("finding.record", finding("note", text="two"), [], t(1), entity=FND)
+    add("two records", [r1, r2], "one finding, one record: two is invalid")
+
+    a = Device(DEV_A, "Alex Morgan")
+    r = a.make("finding.record", finding("replaced", position="P1", removed=pump(), fitted=pump("PMP-11")), [], t(0),
+               entity=FND)
+    add("an unusable record", [r], "a replacement without a disposition")
+
+    good = [replaced, finding("replaced", position="P1", removed=pump(), fitted=pump(serial="222"),
+                              disposition="unknown"),
+            finding("found", position="Ø-Ventil 3", fitted=pump("VLV-20")), finding("change", change="ECO-0042"),
+            finding("note", text="x" * 4000), finding("note", text="ok", asset="ast_" + "05" * 16, on="2026-02-28")]
+    bad = []
+    for name, body in [
+        ("no asset", finding("note", text="x", asset="")),
+        ("an asset id of another kind", finding("note", text="x", asset="prt_" + "01" * 16)),
+        ("an unknown what", finding("fixed", text="x")),
+        ("a note without text", finding("note", text="  ")),
+        ("text too long", finding("note", text="x" * 4001)),
+        ("a control character", finding("note", text="bell\x07")),
+        ("a replacement without a position", {**replaced, "position": ""}),
+        ("a replacement without what came out", {**replaced, "removed": None}),
+        ("a replacement without what went in", {**replaced, "fitted": None}),
+        ("fitted without a number or serial", {**replaced, "fitted": pump(lot="L1")}),
+        ("an unknown disposition", {**replaced, "disposition": "lost"}),
+        ("a find with a disposition", finding("found", position="V3", fitted=pump("VLV-20"), disposition="stock")),
+        ("a find with something removed", finding("found", position="V3", fitted=pump("VLV-20"), removed=pump())),
+        ("a note with a position", finding("note", text="x", position="P1")),
+        ("a change without a number", finding("change")),
+        ("a note with a change number", finding("note", text="x", change="ECO-1")),
+        ("a date that isn't one", finding("note", text="x", on="3 Nov")),
+        ("a date in other digits", finding("note", text="x", on="\u0662\u0660\u0662\u0666-\u0661\u0661-\u0660\u0663")),
+        ("a note of only spaces, tabs and newlines", finding("note", text=" \t\n ")),
+        ("a part with an extra field", {**replaced, "fitted": {**pump("PMP-11"), "qty": "1"}}),
+        ("a missing field", {k: v for k, v in replaced.items() if k != "package"}),
+        ("an extra field", {**replaced, "photos": []}),
+    ]:
+        try:
+            findings.check_record(body)
+        except findings.FindingError:
+            bad.append({"name": name, "body": body})
+            continue
+        raise AssertionError(f"{name} was accepted")
+    for body in good:
+        findings.check_record(body)
+    return {"scenarios": scenarios, "good": good, "bad": bad}
 
 
 def fieldlog_scenarios() -> list[dict]:
@@ -523,6 +642,7 @@ def write_all(check: bool, force_archives: bool = False) -> int:
         "fxjson.json": fxjson_vectors(), "digests.json": digest_vectors(), "envelopes.json": envelope_vectors(),
         "fieldlog.json": fieldlog_scenarios(), "inspections.json": inspection_scenarios(),
         "templates.json": template_vectors(), "decimals.json": decimal_vectors(), "catalogs.json": catalog_vectors(),
+        "findings.json": finding_vectors(),
         "archives.json": write_archives(force_archives) if not check else _archives_summary(),
     }
     stale = []

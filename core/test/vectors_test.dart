@@ -112,6 +112,30 @@ void main() {
     }
   });
 
+  group('findings', () {
+    final d = load('findings.json')! as Map<String, Object?>;
+    for (final c in (d['scenarios']! as List).cast<Map<String, Object?>>()) {
+      test(c['name']! as String, () {
+        final evs = [for (final r in (c['events']! as List).cast<String>()) Event.fromBytes(utf8.encode(r))];
+        final log = FieldLog()..importEvents(evs);
+        final state = reduceFinding(log, c['entity']! as String);
+        expect(fx.encodeText(state), equals(fx.encodeText(c['state'])));
+        final reversed = FieldLog()..importEvents(evs.reversed);
+        expect(fx.encodeText(reduceFinding(reversed, c['entity']! as String)), equals(fx.encodeText(state)));
+        expect(findingEntities(log), equals(c['name'] == 'no record' ? <String>[] : [c['entity']]),
+            reason: 'a finding is listed once it has a record, even an unusable one');
+      });
+    }
+    test('record bodies', () {
+      for (final b in d['good']! as List) {
+        checkFindingRecord(b);
+      }
+      for (final b in (d['bad']! as List).cast<Map<String, Object?>>()) {
+        expect(() => checkFindingRecord(b['body']), throwsA(isA<FindingError>()), reason: b['name'] as String);
+      }
+    });
+  });
+
   test('templates', () {
     final d = load('templates.json')! as Map<String, Object?>;
     for (final t in d['good']! as List) {

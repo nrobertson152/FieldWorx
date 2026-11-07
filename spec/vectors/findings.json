@@ -1,0 +1,816 @@
+{
+ "bad": [
+  {
+   "body": {
+    "asset": "",
+    "change": "",
+    "disposition": "",
+    "fitted": null,
+    "on": "",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "",
+    "removed": null,
+    "text": "x",
+    "what": "note"
+   },
+   "name": "no asset"
+  },
+  {
+   "body": {
+    "asset": "prt_01010101010101010101010101010101",
+    "change": "",
+    "disposition": "",
+    "fitted": null,
+    "on": "",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "",
+    "removed": null,
+    "text": "x",
+    "what": "note"
+   },
+   "name": "an asset id of another kind"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "",
+    "disposition": "",
+    "fitted": null,
+    "on": "",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "",
+    "removed": null,
+    "text": "x",
+    "what": "fixed"
+   },
+   "name": "an unknown what"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "",
+    "disposition": "",
+    "fitted": null,
+    "on": "",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "",
+    "removed": null,
+    "text": "  ",
+    "what": "note"
+   },
+   "name": "a note without text"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "",
+    "disposition": "",
+    "fitted": null,
+    "on": "",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "",
+    "removed": null,
+    "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "what": "note"
+   },
+   "name": "text too long"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "",
+    "disposition": "",
+    "fitted": null,
+    "on": "",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "",
+    "removed": null,
+    "text": "bell\u0007",
+    "what": "note"
+   },
+   "name": "a control character"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "",
+    "disposition": "repair",
+    "fitted": {
+     "lot": "",
+     "number": "PMP-11",
+     "serial": "222"
+    },
+    "on": "2026-11-03",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "",
+    "removed": {
+     "lot": "",
+     "number": "PMP-10",
+     "serial": "111"
+    },
+    "text": "Seal leaking; sent for repair.",
+    "what": "replaced"
+   },
+   "name": "a replacement without a position"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "",
+    "disposition": "repair",
+    "fitted": {
+     "lot": "",
+     "number": "PMP-11",
+     "serial": "222"
+    },
+    "on": "2026-11-03",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "P1",
+    "removed": null,
+    "text": "Seal leaking; sent for repair.",
+    "what": "replaced"
+   },
+   "name": "a replacement without what came out"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "",
+    "disposition": "repair",
+    "fitted": null,
+    "on": "2026-11-03",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "P1",
+    "removed": {
+     "lot": "",
+     "number": "PMP-10",
+     "serial": "111"
+    },
+    "text": "Seal leaking; sent for repair.",
+    "what": "replaced"
+   },
+   "name": "a replacement without what went in"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "",
+    "disposition": "repair",
+    "fitted": {
+     "lot": "L1",
+     "number": "",
+     "serial": ""
+    },
+    "on": "2026-11-03",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "P1",
+    "removed": {
+     "lot": "",
+     "number": "PMP-10",
+     "serial": "111"
+    },
+    "text": "Seal leaking; sent for repair.",
+    "what": "replaced"
+   },
+   "name": "fitted without a number or serial"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "",
+    "disposition": "lost",
+    "fitted": {
+     "lot": "",
+     "number": "PMP-11",
+     "serial": "222"
+    },
+    "on": "2026-11-03",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "P1",
+    "removed": {
+     "lot": "",
+     "number": "PMP-10",
+     "serial": "111"
+    },
+    "text": "Seal leaking; sent for repair.",
+    "what": "replaced"
+   },
+   "name": "an unknown disposition"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "",
+    "disposition": "stock",
+    "fitted": {
+     "lot": "",
+     "number": "VLV-20",
+     "serial": ""
+    },
+    "on": "",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "V3",
+    "removed": null,
+    "text": "",
+    "what": "found"
+   },
+   "name": "a find with a disposition"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "",
+    "disposition": "",
+    "fitted": {
+     "lot": "",
+     "number": "VLV-20",
+     "serial": ""
+    },
+    "on": "",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "V3",
+    "removed": {
+     "lot": "",
+     "number": "",
+     "serial": ""
+    },
+    "text": "",
+    "what": "found"
+   },
+   "name": "a find with something removed"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "",
+    "disposition": "",
+    "fitted": null,
+    "on": "",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "P1",
+    "removed": null,
+    "text": "x",
+    "what": "note"
+   },
+   "name": "a note with a position"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "",
+    "disposition": "",
+    "fitted": null,
+    "on": "",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "",
+    "removed": null,
+    "text": "",
+    "what": "change"
+   },
+   "name": "a change without a number"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "ECO-1",
+    "disposition": "",
+    "fitted": null,
+    "on": "",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "",
+    "removed": null,
+    "text": "x",
+    "what": "note"
+   },
+   "name": "a note with a change number"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "",
+    "disposition": "",
+    "fitted": null,
+    "on": "3 Nov",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "",
+    "removed": null,
+    "text": "x",
+    "what": "note"
+   },
+   "name": "a date that isn't one"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "",
+    "disposition": "",
+    "fitted": null,
+    "on": "٢٠٢٦-١١-٠٣",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "",
+    "removed": null,
+    "text": "x",
+    "what": "note"
+   },
+   "name": "a date in other digits"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "",
+    "disposition": "",
+    "fitted": null,
+    "on": "",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "",
+    "removed": null,
+    "text": " \t\n ",
+    "what": "note"
+   },
+   "name": "a note of only spaces, tabs and newlines"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "",
+    "disposition": "repair",
+    "fitted": {
+     "lot": "",
+     "number": "PMP-11",
+     "qty": "1",
+     "serial": ""
+    },
+    "on": "2026-11-03",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "P1",
+    "removed": {
+     "lot": "",
+     "number": "PMP-10",
+     "serial": "111"
+    },
+    "text": "Seal leaking; sent for repair.",
+    "what": "replaced"
+   },
+   "name": "a part with an extra field"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "",
+    "disposition": "repair",
+    "fitted": {
+     "lot": "",
+     "number": "PMP-11",
+     "serial": "222"
+    },
+    "on": "2026-11-03",
+    "position": "P1",
+    "removed": {
+     "lot": "",
+     "number": "PMP-10",
+     "serial": "111"
+    },
+    "text": "Seal leaking; sent for repair.",
+    "what": "replaced"
+   },
+   "name": "a missing field"
+  },
+  {
+   "body": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "change": "",
+    "disposition": "repair",
+    "fitted": {
+     "lot": "",
+     "number": "PMP-11",
+     "serial": "222"
+    },
+    "on": "2026-11-03",
+    "package": "pkg_22222222222222222222222222222222",
+    "photos": [],
+    "position": "P1",
+    "removed": {
+     "lot": "",
+     "number": "PMP-10",
+     "serial": "111"
+    },
+    "text": "Seal leaking; sent for repair.",
+    "what": "replaced"
+   },
+   "name": "an extra field"
+  }
+ ],
+ "good": [
+  {
+   "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+   "change": "",
+   "disposition": "repair",
+   "fitted": {
+    "lot": "",
+    "number": "PMP-11",
+    "serial": "222"
+   },
+   "on": "2026-11-03",
+   "package": "pkg_22222222222222222222222222222222",
+   "position": "P1",
+   "removed": {
+    "lot": "",
+    "number": "PMP-10",
+    "serial": "111"
+   },
+   "text": "Seal leaking; sent for repair.",
+   "what": "replaced"
+  },
+  {
+   "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+   "change": "",
+   "disposition": "unknown",
+   "fitted": {
+    "lot": "",
+    "number": "",
+    "serial": "222"
+   },
+   "on": "",
+   "package": "pkg_22222222222222222222222222222222",
+   "position": "P1",
+   "removed": {
+    "lot": "",
+    "number": "",
+    "serial": ""
+   },
+   "text": "",
+   "what": "replaced"
+  },
+  {
+   "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+   "change": "",
+   "disposition": "",
+   "fitted": {
+    "lot": "",
+    "number": "VLV-20",
+    "serial": ""
+   },
+   "on": "",
+   "package": "pkg_22222222222222222222222222222222",
+   "position": "Ø-Ventil 3",
+   "removed": null,
+   "text": "",
+   "what": "found"
+  },
+  {
+   "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+   "change": "ECO-0042",
+   "disposition": "",
+   "fitted": null,
+   "on": "",
+   "package": "pkg_22222222222222222222222222222222",
+   "position": "",
+   "removed": null,
+   "text": "",
+   "what": "change"
+  },
+  {
+   "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+   "change": "",
+   "disposition": "",
+   "fitted": null,
+   "on": "",
+   "package": "pkg_22222222222222222222222222222222",
+   "position": "",
+   "removed": null,
+   "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "what": "note"
+  },
+  {
+   "asset": "ast_05050505050505050505050505050505",
+   "change": "",
+   "disposition": "",
+   "fitted": null,
+   "on": "2026-02-28",
+   "package": "pkg_22222222222222222222222222222222",
+   "position": "",
+   "removed": null,
+   "text": "ok",
+   "what": "note"
+  }
+ ],
+ "scenarios": [
+  {
+   "entity": "fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+   "events": [
+    "{\"actor\":\"Alex Morgan\",\"body\":{\"asset\":\"unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c\",\"change\":\"\",\"disposition\":\"repair\",\"fitted\":{\"lot\":\"\",\"number\":\"PMP-11\",\"serial\":\"222\"},\"on\":\"2026-11-03\",\"package\":\"pkg_22222222222222222222222222222222\",\"position\":\"P1\",\"removed\":{\"lot\":\"\",\"number\":\"PMP-10\",\"serial\":\"111\"},\"text\":\"Seal leaking; sent for repair.\",\"what\":\"replaced\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"finding.record\",\"v\":1}",
+    "{\"actor\":\"Alex Morgan\",\"body\":{\"caption\":\"new pump's plate\",\"media_type\":\"image/jpeg\",\"object\":\"abababababababababababababababababababababababababababababababab\",\"size\":2048},\"deps\":[\"0002e5c26283c7143497c10d76a5ca8b24416d03229ec3b8fe0bb0c8ad4b243f\"],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e\",\"prev\":\"0002e5c26283c7143497c10d76a5ca8b24416d03229ec3b8fe0bb0c8ad4b243f\",\"seq\":2,\"time\":\"2026-11-06T10:00:01.000Z\",\"type\":\"finding.attach\",\"v\":1}"
+   ],
+   "name": "a replacement with a photo",
+   "note": "P1's pump replaced: what came out, what went in, where the old one went",
+   "state": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "attachments": [
+     {
+      "actor": "Alex Morgan",
+      "caption": "new pump's plate",
+      "device": "dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "event": "184d8c4ee5f5fed65155c6a3f81c69a58ef261e802d3ad8f9f30208dcb853cf5",
+      "media_type": "image/jpeg",
+      "object": "abababababababababababababababababababababababababababababababab",
+      "size": 2048,
+      "time": "2026-11-06T10:00:01.000Z"
+     }
+    ],
+    "change": "",
+    "disposition": "repair",
+    "entity": "fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+    "fitted": {
+     "lot": "",
+     "number": "PMP-11",
+     "serial": "222"
+    },
+    "heads": [
+     "184d8c4ee5f5fed65155c6a3f81c69a58ef261e802d3ad8f9f30208dcb853cf5"
+    ],
+    "on": "2026-11-03",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "P1",
+    "problems": [],
+    "recorded": {
+     "actor": "Alex Morgan",
+     "device": "dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "event": "0002e5c26283c7143497c10d76a5ca8b24416d03229ec3b8fe0bb0c8ad4b243f",
+     "time": "2026-11-06T10:00:00.000Z"
+    },
+    "removed": {
+     "lot": "",
+     "number": "PMP-10",
+     "serial": "111"
+    },
+    "status": "recorded",
+    "text": "Seal leaking; sent for repair.",
+    "valid": true,
+    "voids": [],
+    "what": "replaced"
+   }
+  },
+  {
+   "entity": "fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+   "events": [
+    "{\"actor\":\"Alex Morgan\",\"body\":{\"asset\":\"unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c\",\"change\":\"\",\"disposition\":\"\",\"fitted\":{\"lot\":\"L-2026-07\",\"number\":\"VLV-20\",\"serial\":\"\"},\"on\":\"\",\"package\":\"pkg_22222222222222222222222222222222\",\"position\":\"V3\",\"removed\":null,\"text\":\"\",\"what\":\"found\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"finding.record\",\"v\":1}"
+   ],
+   "name": "what is fitted at a position",
+   "note": "the as-built: a valve of lot L-2026-07 at V3",
+   "state": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "attachments": [],
+    "change": "",
+    "disposition": "",
+    "entity": "fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+    "fitted": {
+     "lot": "L-2026-07",
+     "number": "VLV-20",
+     "serial": ""
+    },
+    "heads": [
+     "4b994ca11691827fc0dd3d3a9ab67f6e51e0038d525ded2ece0ba567e9e52bb4"
+    ],
+    "on": "",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "V3",
+    "problems": [],
+    "recorded": {
+     "actor": "Alex Morgan",
+     "device": "dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "event": "4b994ca11691827fc0dd3d3a9ab67f6e51e0038d525ded2ece0ba567e9e52bb4",
+     "time": "2026-11-06T10:00:00.000Z"
+    },
+    "removed": null,
+    "status": "recorded",
+    "text": "",
+    "valid": true,
+    "voids": [],
+    "what": "found"
+   }
+  },
+  {
+   "entity": "fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+   "events": [
+    "{\"actor\":\"Alex Morgan\",\"body\":{\"asset\":\"unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c\",\"change\":\"ECO-0042\",\"disposition\":\"\",\"fitted\":null,\"on\":\"2026-11-02\",\"package\":\"pkg_22222222222222222222222222222222\",\"position\":\"\",\"removed\":null,\"text\":\"\",\"what\":\"change\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"finding.record\",\"v\":1}"
+   ],
+   "name": "an engineering change carried out",
+   "note": "ECO-0042 done on the unit on 2 November",
+   "state": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "attachments": [],
+    "change": "ECO-0042",
+    "disposition": "",
+    "entity": "fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+    "fitted": null,
+    "heads": [
+     "12908484ac771487b2321e20e87a8034ef5c62d920b7f01a4f462e14cb9504b8"
+    ],
+    "on": "2026-11-02",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "",
+    "problems": [],
+    "recorded": {
+     "actor": "Alex Morgan",
+     "device": "dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "event": "12908484ac771487b2321e20e87a8034ef5c62d920b7f01a4f462e14cb9504b8",
+     "time": "2026-11-06T10:00:00.000Z"
+    },
+    "removed": null,
+    "status": "recorded",
+    "text": "",
+    "valid": true,
+    "voids": [],
+    "what": "change"
+   }
+  },
+  {
+   "entity": "fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+   "events": [
+    "{\"actor\":\"Alex Morgan\",\"body\":{\"asset\":\"unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c\",\"change\":\"\",\"disposition\":\"\",\"fitted\":null,\"on\":\"\",\"package\":\"pkg_22222222222222222222222222222222\",\"position\":\"\",\"removed\":null,\"text\":\"Guard on P1 missing.\\nCustomer told.\",\"what\":\"note\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"finding.record\",\"v\":1}"
+   ],
+   "name": "a note",
+   "note": "multi-line text",
+   "state": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "attachments": [],
+    "change": "",
+    "disposition": "",
+    "entity": "fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+    "fitted": null,
+    "heads": [
+     "ed946026939ac5d84ae3c19ec2ed0eae05263d323a8a507326cb341e701634a7"
+    ],
+    "on": "",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "",
+    "problems": [],
+    "recorded": {
+     "actor": "Alex Morgan",
+     "device": "dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "event": "ed946026939ac5d84ae3c19ec2ed0eae05263d323a8a507326cb341e701634a7",
+     "time": "2026-11-06T10:00:00.000Z"
+    },
+    "removed": null,
+    "status": "recorded",
+    "text": "Guard on P1 missing.\nCustomer told.",
+    "valid": true,
+    "voids": [],
+    "what": "note"
+   }
+  },
+  {
+   "entity": "fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+   "events": [
+    "{\"actor\":\"Alex Morgan\",\"body\":{\"asset\":\"unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c\",\"change\":\"\",\"disposition\":\"\",\"fitted\":null,\"on\":\"\",\"package\":\"pkg_22222222222222222222222222222222\",\"position\":\"\",\"removed\":null,\"text\":\"Frame cracked at weld 3\",\"what\":\"note\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"finding.record\",\"v\":1}",
+    "{\"actor\":\"Alex Morgan\",\"body\":{\"reason\":\"wrong unit\"},\"deps\":[\"ec6402b4daa512f4f193dc183abb5e417b69781e0b3e0ae823b2e5ffb3740735\"],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e\",\"prev\":\"ec6402b4daa512f4f193dc183abb5e417b69781e0b3e0ae823b2e5ffb3740735\",\"seq\":2,\"time\":\"2026-11-06T10:00:01.000Z\",\"type\":\"finding.void\",\"v\":1}",
+    "{\"actor\":\"Sam Ortiz\",\"body\":{\"caption\":\"\",\"media_type\":\"image/jpeg\",\"object\":\"cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd\",\"size\":99},\"deps\":[\"ec6402b4daa512f4f193dc183abb5e417b69781e0b3e0ae823b2e5ffb3740735\"],\"device\":\"dev_b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2\",\"entity\":\"fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:02.000Z\",\"type\":\"finding.attach\",\"v\":1}",
+    "{\"actor\":\"Sam Ortiz\",\"body\":{\"reason\":\"duplicate of another finding\"},\"deps\":[\"de7abe33f74920407d7e1067c5021e728f74508c036cc39cfb141814cc3b9f9e\"],\"device\":\"dev_b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2\",\"entity\":\"fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e\",\"prev\":\"de7abe33f74920407d7e1067c5021e728f74508c036cc39cfb141814cc3b9f9e\",\"seq\":2,\"time\":\"2026-11-06T10:00:03.000Z\",\"type\":\"finding.void\",\"v\":1}"
+   ],
+   "name": "voided on two phones",
+   "note": "both voids count and agree; the photo added meanwhile is kept",
+   "state": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "attachments": [
+     {
+      "actor": "Sam Ortiz",
+      "caption": "",
+      "device": "dev_b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+      "event": "de7abe33f74920407d7e1067c5021e728f74508c036cc39cfb141814cc3b9f9e",
+      "media_type": "image/jpeg",
+      "object": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+      "size": 99,
+      "time": "2026-11-06T10:00:02.000Z"
+     }
+    ],
+    "change": "",
+    "disposition": "",
+    "entity": "fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+    "fitted": null,
+    "heads": [
+     "c3e39793cc1928e0da94e9230d1d5ddaa92017282bbf6b2de3b60676492edec8",
+     "e160afa91a15afd07be9eef7373cdcd3dcbe5b2165787029fefce7202e2131d5"
+    ],
+    "on": "",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "",
+    "problems": [],
+    "recorded": {
+     "actor": "Alex Morgan",
+     "device": "dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "event": "ec6402b4daa512f4f193dc183abb5e417b69781e0b3e0ae823b2e5ffb3740735",
+     "time": "2026-11-06T10:00:00.000Z"
+    },
+    "removed": null,
+    "status": "voided",
+    "text": "Frame cracked at weld 3",
+    "valid": true,
+    "voids": [
+     {
+      "actor": "Alex Morgan",
+      "device": "dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "event": "c3e39793cc1928e0da94e9230d1d5ddaa92017282bbf6b2de3b60676492edec8",
+      "reason": "wrong unit",
+      "time": "2026-11-06T10:00:01.000Z"
+     },
+     {
+      "actor": "Sam Ortiz",
+      "device": "dev_b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+      "event": "e160afa91a15afd07be9eef7373cdcd3dcbe5b2165787029fefce7202e2131d5",
+      "reason": "duplicate of another finding",
+      "time": "2026-11-06T10:00:03.000Z"
+     }
+    ],
+    "what": "note"
+   }
+  },
+  {
+   "entity": "fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+   "events": [
+    "{\"actor\":\"Alex Morgan\",\"body\":{\"asset\":\"unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c\",\"change\":\"\",\"disposition\":\"\",\"fitted\":null,\"on\":\"\",\"package\":\"pkg_22222222222222222222222222222222\",\"position\":\"\",\"removed\":null,\"text\":\"Oil dark\",\"what\":\"note\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"finding.record\",\"v\":1}",
+    "{\"actor\":\"Alex Morgan\",\"body\":{\"caption\":\"\",\"media_type\":\"image/jpeg\",\"object\":\"not-a-hash\",\"size\":1},\"deps\":[\"808ab3886c3cb5fcdb08b6e1e708f16028483cbb87a24ba6413bbf267674ac51\"],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e\",\"prev\":\"808ab3886c3cb5fcdb08b6e1e708f16028483cbb87a24ba6413bbf267674ac51\",\"seq\":2,\"time\":\"2026-11-06T10:00:01.000Z\",\"type\":\"finding.attach\",\"v\":1}",
+    "{\"actor\":\"Alex Morgan\",\"body\":{\"reason\":\"  \"},\"deps\":[\"e60b93208e4ae302b1fb41f90830cde99c51d4c61e761d8c4fa42e7a83ed44e1\"],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e\",\"prev\":\"e60b93208e4ae302b1fb41f90830cde99c51d4c61e761d8c4fa42e7a83ed44e1\",\"seq\":3,\"time\":\"2026-11-06T10:00:02.000Z\",\"type\":\"finding.void\",\"v\":1}",
+    "{\"actor\":\"Alex Morgan\",\"body\":{\"svg\":\"...\"},\"deps\":[\"05ba2304a749106d3ca6a8a319cfc96fe61e9789a5bc0e05421f2aaacf003919\"],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e\",\"prev\":\"05ba2304a749106d3ca6a8a319cfc96fe61e9789a5bc0e05421f2aaacf003919\",\"seq\":4,\"time\":\"2026-11-06T10:00:03.000Z\",\"type\":\"finding.signature\",\"v\":1}"
+   ],
+   "name": "malformed and newer records are reported, not used",
+   "note": "a photo without a SHA-256, a void without a reason, a record type from a newer version",
+   "state": {
+    "asset": "unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+    "attachments": [],
+    "change": "",
+    "disposition": "",
+    "entity": "fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+    "fitted": null,
+    "heads": [
+     "51f83666a124446175ce5da1672f861f403aa0f780b81dbf414fafe3b1b501a6"
+    ],
+    "on": "",
+    "package": "pkg_22222222222222222222222222222222",
+    "position": "",
+    "problems": [
+     "void record 05ba2304a749 is malformed and was ignored",
+     "record 51f83666a124 is of a kind this version doesn't know (finding.signature); update FieldWorx",
+     "photo record e60b93208e4a is malformed and was ignored"
+    ],
+    "recorded": {
+     "actor": "Alex Morgan",
+     "device": "dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "event": "808ab3886c3cb5fcdb08b6e1e708f16028483cbb87a24ba6413bbf267674ac51",
+     "time": "2026-11-06T10:00:00.000Z"
+    },
+    "removed": null,
+    "status": "recorded",
+    "text": "Oil dark",
+    "valid": true,
+    "voids": [],
+    "what": "note"
+   }
+  },
+  {
+   "entity": "fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+   "events": [
+    "{\"actor\":\"Alex Morgan\",\"body\":{\"caption\":\"\",\"media_type\":\"image/jpeg\",\"object\":\"efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef\",\"size\":5},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"finding.attach\",\"v\":1}"
+   ],
+   "name": "no record",
+   "note": "a photo with nothing it belongs to",
+   "state": {
+    "entity": "fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+    "problems": [
+     "no finding record"
+    ],
+    "valid": false
+   }
+  },
+  {
+   "entity": "fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+   "events": [
+    "{\"actor\":\"Alex Morgan\",\"body\":{\"asset\":\"unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c\",\"change\":\"\",\"disposition\":\"\",\"fitted\":null,\"on\":\"\",\"package\":\"pkg_22222222222222222222222222222222\",\"position\":\"\",\"removed\":null,\"text\":\"one\",\"what\":\"note\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"finding.record\",\"v\":1}",
+    "{\"actor\":\"Sam Ortiz\",\"body\":{\"asset\":\"unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c\",\"change\":\"\",\"disposition\":\"\",\"fitted\":null,\"on\":\"\",\"package\":\"pkg_22222222222222222222222222222222\",\"position\":\"\",\"removed\":null,\"text\":\"two\",\"what\":\"note\"},\"deps\":[],\"device\":\"dev_b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2\",\"entity\":\"fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:01.000Z\",\"type\":\"finding.record\",\"v\":1}"
+   ],
+   "name": "two records",
+   "note": "one finding, one record: two is invalid",
+   "state": {
+    "entity": "fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+    "problems": [
+     "more than one finding record"
+    ],
+    "valid": false
+   }
+  },
+  {
+   "entity": "fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+   "events": [
+    "{\"actor\":\"Alex Morgan\",\"body\":{\"asset\":\"unt_0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c\",\"change\":\"\",\"disposition\":\"\",\"fitted\":{\"lot\":\"\",\"number\":\"PMP-11\",\"serial\":\"\"},\"on\":\"\",\"package\":\"pkg_22222222222222222222222222222222\",\"position\":\"P1\",\"removed\":{\"lot\":\"\",\"number\":\"\",\"serial\":\"\"},\"text\":\"\",\"what\":\"replaced\"},\"deps\":[],\"device\":\"dev_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"entity\":\"fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e\",\"prev\":\"\",\"seq\":1,\"time\":\"2026-11-06T10:00:00.000Z\",\"type\":\"finding.record\",\"v\":1}"
+   ],
+   "name": "an unusable record",
+   "note": "a replacement without a disposition",
+   "state": {
+    "entity": "fnd_0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+    "problems": [
+     "finding record unusable: disposition is one of scrapped, returned, repair, stock, reused, unknown"
+    ],
+    "valid": false
+   }
+  }
+ ]
+}

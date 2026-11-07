@@ -7,6 +7,8 @@
     fieldworx-bridge status -w WORKSPACE                                        what the hub holds
     fieldworx-bridge verify FILE                                                check a package or field log
     fieldworx-bridge labels hpu.fieldworx [--parts ...] -o labels.pdf          QR labels to print
+    fieldworx-bridge findings -w WORKSPACE                                      what phones found or changed on units
+    fieldworx-bridge accept fnd_… -w WORKSPACE [--as fit|note]                  accept one into RevisionWorx
 
 The hub (field records) lives in WORKSPACE/.fieldworx unless --hub says otherwise. Exit codes: 0 done, 1 problems
 found (verify, status), 2 refused (nothing was changed).
@@ -18,7 +20,8 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-from . import __version__, archive, catalog as cat_mod, events as ev_mod, inspections, labels, report, safefile, sources
+from . import __version__, accept as acc, archive, catalog as cat_mod, events as ev_mod, inspections, labels, report
+from . import safefile, sources
 from .hub import Hub, HubError
 from .packbuilder import PackOptions, build_package
 
@@ -152,6 +155,44 @@ def cmd_labels(a) -> int:
     return 0
 
 
+def cmd_findings(a) -> int:
+    rows = acc.review(_hub_path(a), a.workspace, a.revisionworx)
+    if not rows:
+        print("no findings in the hub")
+        return 0
+    label = {"": "", "pending": "to accept", "conflict": "needs a decision", "nothing": "already in the register",
+             "accepted": "accepted", "voided": "voided", "damaged": "damaged", "no-unit": "no such unit"}
+    for r in rows:
+        s = r.state
+        who = s.get("recorded") or {}
+        unit = (r.unit or {}).get("label") or s.get("asset", "")
+        when = s.get("on") or who.get("time", "")[:10]
+        print(f"{r.entity}  {unit}  {acc.summary(s)}" + (f"  ({who.get('actor', '')}, {when})" if who else ""))
+        if r.status:
+            print(f"    {label[r.status]}: {r.detail}" if r.detail else f"    {label[r.status]}")
+    counts = Counter(r.status for r in rows)
+    print(", ".join(f"{n} {label[k] or 'listed'}" for k, n in sorted(counts.items())))
+    return 0
+
+
+def cmd_accept(a) -> int:
+    out = acc.accept(_hub_path(a), a.workspace, a.finding, as_=a.as_ or "", basis=a.basis, dry_run=a.dry_run,
+                     executable=a.revisionworx)
+    unit = out["unit"]["label"]
+    events = ", ".join(str(n) for n in out["events"])
+    if out["result"] == "nothing":
+        print(f"nothing to record: {out['why']}")
+    elif out["result"] == "would-record":
+        print(f"would record on {unit}: {out['why']} (nothing was written)")
+    elif out["result"] == "already-recorded":
+        print(f"already accepted: {unit}, event {events}" if events else f"already accepted: {unit}")
+    else:
+        print(f"accepted into {unit}'s history as event {events}: {out['why']}")
+        if out.get("warning"):
+            print(f"  note: {out['warning']}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="fieldworx-bridge", description=__doc__.split("\n\n")[0])
     p.add_argument("--version", action="version", version=f"fieldworx-bridge {__version__}")
@@ -192,6 +233,29 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("-o", "--output", required=True, help="folder to write into")
     s.set_defaults(fn=cmd_report)
 
+    s = sub.add_parser("findings", help="what phones found or changed on units, and where each stands in RevisionWorx")
+    s.add_argument("-w", "--workspace", help="RevisionWorx workspace: say whether each is accepted, and what accepting "
+                                             "would record")
+    s.add_argument("--hub")
+    s.add_argument("--revisionworx", help="the revisionworx program (default: REVISIONWORX_CLI or PATH)")
+    s.set_defaults(fn=cmd_findings)
+
+    s = sub.add_parser("accept", help="accept a finding into RevisionWorx's unit register",
+                       description="Records one finding in RevisionWorx, as reported, with the field record as its "
+                                   "evidence: a replacement or a find as what is fitted, a change as carried out, a "
+                                   "note as a note. A finding the register contradicts is recorded only as you say.")
+    s.add_argument("finding", help="its id (fnd_…) or the start of it")
+    s.add_argument("-w", "--workspace", required=True, help="the RevisionWorx workspace")
+    s.add_argument("--hub")
+    s.add_argument("--as", dest="as_", choices=("fit", "note"),
+                   help="fit: record what the phone says is fitted, replacing what the register has; note: keep it as a "
+                        "note, leaving the configuration alone")
+    s.add_argument("--basis", choices=("reported", "verified"), default="reported",
+                   help="verified when someone in the office has seen it (default: reported)")
+    s.add_argument("--dry-run", action="store_true", help="say what would be recorded, and record nothing")
+    s.add_argument("--revisionworx", help="the revisionworx program (default: REVISIONWORX_CLI or PATH)")
+    s.set_defaults(fn=cmd_accept)
+
     s = sub.add_parser("verify", help="check a package or field log without changing anything")
     s.add_argument("file")
     s.set_defaults(fn=cmd_verify)
@@ -220,7 +284,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         return a.fn(a)
     except (sources.SourceError, HubError, archive.ArchiveError, ev_mod.EventError, cat_mod.CatalogError,
-            inspections.TemplateError, labels.LabelError, safefile.AlreadyExists, OSError) as exc:
+            inspections.TemplateError, labels.LabelError, acc.AcceptError, safefile.AlreadyExists, OSError) as exc:
         msg = f"{exc} already exists (use --overwrite)" if isinstance(exc, safefile.AlreadyExists) else str(exc)
         print(f"error: {msg}", file=sys.stderr)
         return 2
