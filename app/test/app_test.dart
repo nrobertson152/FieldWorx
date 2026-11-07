@@ -404,5 +404,22 @@ void main() {
           until: () => m.userName == 'R. Field');
       expect(m.userName, 'R. Field');
     });
+
+    testWidgets('this phone: its fingerprint, to enrol it, is the one of the key its records are signed with',
+        (tester) async {
+      phone(tester, height: 1600);
+      final (m, _) = await openPhone(tester);
+      await showApp(tester, m);
+      await tester.tap(navTab('Library'));
+      await tester.pumpAndSettle();
+      final fp = m.store.fingerprint;
+      expect(fp, keyFingerprint(m.store.signingKey.publicHex));
+      expect(fp, matches(RegExp(r'^[0-9A-F]{4}(-[0-9A-F]{4}){3}$')));
+      await tapOn(tester, find.text('Fingerprint $fp'));
+      await tester.pumpAndSettle();
+      expect(find.text(fp), findsWidgets);
+      expect(find.text(m.store.deviceId), findsOneWidget);
+      expect(find.textContaining('accepted as verified in your name'), findsOneWidget);
+    });
   });
 }

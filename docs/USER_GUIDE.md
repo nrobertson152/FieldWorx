@@ -139,8 +139,11 @@ Another phone's records can be brought onto this one with **Library → Import a
   of the same projects replaces the older one; an older one is refused. **Remove** takes its drawings and parts off
   the phone; field records stay.
 - **Field records:** how many, how many made here, how many unsent.
+- **This phone:** your name, and the phone's **fingerprint**: four groups of four letters and digits that the
+  office checks when it enrols the phone to your account (below), so that what you record is accepted as verified in
+  your name. Tell the office if the phone is lost.
 - **Theme:** the family's six themes; High Contrast reads best in sunlight.
-- **About:** version, this phone's device id, open-source licences.
+- **About:** version, this phone's device id and fingerprint, open-source licences.
 
 ## In the office
 
@@ -253,6 +256,9 @@ named by its id or the start of it:
   there), a change becomes the change carried out, a note a note;
 - it is recorded as *reported*, with the field record as its evidence and who reported it when; `--basis verified` if
   you saw it yourself. In a team workspace it is in the name of whoever is logged in to RevisionWorx;
+- a finding signed on a phone enrolled to someone's account (below) is recorded as *verified* in that person's name:
+  RevisionWorx checks the phone's signature itself, and records nothing if it doesn't hold or the phone has been
+  revoked. `--basis reported` records it as reported instead;
 - a finding the register contradicts (the phone says PMP-10 serial 111 came out, the register has serial 999 there) is
   not recorded until you decide: `--as fit` records what the phone says is fitted now, `--as note` keeps it as a note and
   leaves the configuration alone;
@@ -261,6 +267,29 @@ named by its id or the start of it:
 
 RevisionWorx needs its `unit-records` feature (1.0.0). Findings about a unit that is only an asset register row are listed
 but can't be accepted until the register is imported (`revisionworx unit import`).
+
+### Enrolling phones
+
+Every phone signs the records it makes with its own key. In a RevisionWorx workspace set up for a team, an
+administrator can enrol a phone to the person who carries it; from then on, what they record on it is accepted as
+*verified* in their name rather than *reported*:
+
+1. On the phone, **Library → This phone** shows its fingerprint: four groups of four letters and digits.
+2. Bring a field log from that phone (any; it carries the phone's key).
+3. Logged in to RevisionWorx as an administrator, type the fingerprint **from the phone's screen**:
+
+```sh
+fieldworx-bridge enrol FieldWorx-4c4c4c-20261107.fieldlog -w "D:/Engineering/Workspace" --account riley \
+  --fingerprint 3F2A-91C0-77B1-04DE --name "Riley's phone"
+```
+
+If the fingerprint isn't the one of the phone that wrote the field log, nothing is enrolled: you have another phone's
+field log. `findings` then says, for each signed finding, whose phone signed it and whether accepting records it as
+verified. A lost or stolen phone is revoked in RevisionWorx (`revisionworx user device revoke riley dev_… --reason
+"lost"`): its records are accepted as reported from then on, and what was accepted before stays. Enrol a phone before
+handing it to someone: the key is the phone's, so what it signed before belongs to the account too. A phone handed to
+someone else is reset (reinstall FieldWorx), and enrolled again as a new phone. Needs RevisionWorx's `field-signatures`
+feature.
 
 ## Trying it with the demo
 

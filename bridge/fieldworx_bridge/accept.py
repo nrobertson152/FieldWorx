@@ -6,18 +6,23 @@ This is the one place the bridge writes to another program, and only when someon
 docs/INTEGRATION.md), never to RevisionWorx's files, so each fact is one journal entry in the name of whoever is logged
 in to RevisionWorx, with the field record as its evidence. A finding the register contradicts isn't recorded until a
 person decides how.
+
+A finding signed on a phone enrolled to someone's account (PROTOCOL.md section 12.5) is accepted as *verified* in their
+name: the bridge passes the record's signature, and RevisionWorx checks it against the phone enrolled to the account
+before it records anything. Anything else is accepted as *reported*, as before.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from . import findings
+from . import events as E, findings
 from .hub import Hub
 from .rwx_client import RwxError
 from .sources import RevisionWorxSource, SourceError
 
 FEATURE = "unit-records"
+SIGNATURES = "field-signatures"
 
 
 class AcceptError(Exception):
@@ -33,6 +38,9 @@ class Row:
     unit: dict | None = None
     events: list[int] = field(default_factory=list)
     plan: dict | None = None
+    signed: bool = False        # its record is signed (version 2)
+    phone: dict | None = None   # the signing phone's enrolment in RevisionWorx (``link devices``), if it has one
+    signer: dict | None = None  # the same, when its signatures count now: accepting records the finding as verified
 
     @property
     def entity(self) -> str:
@@ -107,6 +115,41 @@ def look_up(state: dict, src: RevisionWorxSource | None, units: dict | None = No
     return Row(state, status, plan["why"], unit, plan=plan)
 
 
+def signed_record(log, state: dict) -> E.Event | None:
+    """The finding's record event, if it is signed."""
+    rec = (state.get("recorded") or {}).get("event")
+    ev = log.events.get(rec) if rec else None
+    return ev if ev is not None and ev.version == 2 else None
+
+
+def phones(src: RevisionWorxSource | None) -> dict[str, dict]:
+    """Device id -> its enrolment in RevisionWorx (``link devices``; for a phone enrolled twice, the one whose signatures
+    count, if any). Empty when RevisionWorx can't say (no team workspace, or a RevisionWorx without the feature): then
+    nothing is accepted as verified on a phone's say-so."""
+    if src is None or not src.has(SIGNATURES):
+        return {}
+    try:
+        rows = src.rwx.devices()
+    except RwxError:
+        return {}
+    out: dict[str, dict] = {}
+    for r in rows:
+        if r["device"] not in out or r.get("active"):
+            out[r["device"]] = r
+    return out
+
+
+def _phone(ev: E.Event | None, enrolled: dict[str, dict]) -> dict | None:
+    """The enrolment of the phone that signed ``ev``, if it is enrolled with the key ``ev`` carries."""
+    row = enrolled.get(ev.device) if ev is not None else None
+    return row if row is not None and row.get("key") == ev.key else None
+
+
+def _signer(ev: E.Event | None, enrolled: dict[str, dict]) -> dict | None:
+    row = _phone(ev, enrolled)
+    return row if row is not None and row.get("active") else None
+
+
 def _events(ns: list[int]) -> str:
     return ("event " if len(ns) == 1 else "events ") + ", ".join(str(n) for n in ns)
 
@@ -118,7 +161,14 @@ def review(hub_dir: Path, workspace: str | Path | None = None, executable: str |
     states.sort(key=lambda s: ((s.get("recorded") or {}).get("time", ""), s["entity"]))
     src = _source(workspace, executable) if workspace is not None else None
     units: dict = {}
-    return [look_up(s, src, units) for s in states]
+    enrolled = phones(src)
+    rows = []
+    for s in states:
+        row = look_up(s, src, units)
+        ev = signed_record(log, s)
+        row.signed, row.phone, row.signer = ev is not None, _phone(ev, enrolled), _signer(ev, enrolled)
+        rows.append(row)
+    return rows
 
 
 def resolve(log, ref: str) -> str:
@@ -136,15 +186,20 @@ def resolve(log, ref: str) -> str:
     return hits[0]
 
 
-def accept(hub_dir: Path, workspace: str | Path, ref: str, *, as_: str = "", basis: str = "reported",
+def accept(hub_dir: Path, workspace: str | Path, ref: str, *, as_: str = "", basis: str | None = None,
            dry_run: bool = False, executable: str | None = None) -> dict:
     """Accept one finding into RevisionWorx. Returns ``{"result": "recorded" | "already-recorded" | "nothing" |
-    "would-record", "unit", "events", "why", "plan"}``; raises AcceptError when nothing can be recorded, saying why.
+    "would-record", "unit", "events", "why", "plan", "basis", "signed_by"}``; raises AcceptError when nothing can be
+    recorded, saying why.
 
     The write is one RevisionWorx entry, with the finding's record as evidence, the txid derived from it (so a retry
     writes nothing twice, and a finding is accepted at most once) and the unit's event count as read (so a fact
-    recorded meanwhile is never overwritten by a decision made without it)."""
-    if basis not in ("reported", "verified"):
+    recorded meanwhile is never overwritten by a decision made without it).
+
+    ``basis``: without one, a finding signed on a phone enrolled to someone's account is accepted as verified in their
+    name (``signed_by``), with its signature for RevisionWorx to check, and anything else as reported. ``"reported"``
+    always reports; ``"verified"`` without a signature that counts means someone in the office saw it."""
+    if basis not in (None, "reported", "verified"):
         raise AcceptError("a finding's basis is reported, or verified when someone in the office saw it")
     log = Hub.open(hub_dir).load()
     state = findings.reduce(log, resolve(log, ref))
@@ -164,11 +219,17 @@ def accept(hub_dir: Path, workspace: str | Path, ref: str, *, as_: str = "", bas
     if plan["action"] == "conflict":
         raise AcceptError(f"nothing was recorded: {plan['why']}. A person decides: if the phone is right, accept it "
                           "with --as fit; to keep it on record without changing the configuration, --as note")
+    signer = None if basis == "reported" else _signer(signed_record(log, state), phones(src))
+    use = "verified" if signer is not None else (basis or "reported")
     if dry_run:
-        return {"result": "would-record", "unit": unit, "events": [], "why": plan["why"], "plan": plan}
+        return {"result": "would-record", "unit": unit, "events": [], "why": plan["why"], "plan": plan, "basis": use,
+                "signed_by": signer}
     who = state["recorded"]
-    common = {"if_events": unit["events"]["count"], "effective": state["on"] or who["time"][:10], "basis": basis,
+    common = {"if_events": unit["events"]["count"], "effective": state["on"] or who["time"][:10], "basis": use,
               "evidence": [findings.evidence(state)]}
+    if signer is not None:
+        ev = signed_record(log, state)
+        common["field_signature"] = f"{ev.device}:{ev.id}:{ev.sig}"
     txid = findings.accept_txid(who["event"])
     try:
         if plan["action"] == "fit":
@@ -186,6 +247,9 @@ def accept(hub_dir: Path, workspace: str | Path, ref: str, *, as_: str = "", bas
         if exc.kind == "txid-used":
             raise AcceptError(f"nothing was recorded: RevisionWorx has already used this finding's txid for something "
                               f"else ({exc})") from None
+        if exc.kind == "signature":
+            raise AcceptError(f"nothing was recorded: RevisionWorx didn't accept the phone's signature ({exc}). To "
+                              "record it as reported instead, accept it with --basis reported") from None
         raise AcceptError(f"nothing was recorded: RevisionWorx: {exc}") from None
     return {"result": answer["result"], "unit": answer.get("unit") or unit, "events": answer.get("events") or [],
-            "why": plan["why"], "plan": plan, "warning": answer.get("warning", "")}
+            "why": plan["why"], "plan": plan, "warning": answer.get("warning", ""), "basis": use, "signed_by": signer}

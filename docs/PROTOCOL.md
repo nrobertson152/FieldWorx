@@ -447,8 +447,9 @@ Vectors: `findings.json`.
 
 Every phone signs the records it makes with its own Ed25519 key; an administrator of a RevisionWorx team workspace
 enrols the phone to a person's account; a signed finding from an enrolled phone is accepted as *verified* in that
-person's name (ARCHITECTURE.md ADR-015). Sections 12.1 to 12.3 are built, in the Python reference and the Dart core;
-enrolment and accepting signed findings (12.4, 12.5) are being built in the bridge and the app.
+person's name (ARCHITECTURE.md ADR-015). Sections 12.1 to 12.3 are built in the Python reference and the Dart core,
+12.4 and 12.5 in the bridge (`fieldworx-bridge enrol`, `accept`) and the app (Library, *This phone*); the iOS backup
+exclusion is being built.
 
 ### 12.1 The key
 
@@ -512,8 +513,10 @@ that changes hands is reset, and starts again as a new device.
 
 ### 12.5 Accepting signed findings
 
-For a finding whose record event is version 2, `fieldworx-bridge accept` passes `--field-signature DEVICE:EVENT:SIG`,
-`--basis verified` and its usual `--evidence fieldworx-event:EVENT` to the `revisionworx link` command it runs.
+For a finding whose record event is version 2 and whose phone RevisionWorx lists (`link devices`) as enrolled with
+that key and counting now, `fieldworx-bridge accept` passes `--field-signature DEVICE:EVENT:SIG`, `--basis verified`
+and its usual `--evidence fieldworx-event:EVENT` to the `revisionworx link` command it runs (unless told `--basis
+reported`).
 RevisionWorx checks that DEVICE is enrolled to exactly one account, isn't revoked, its account is active, and SIG holds
 over EVENT with the enrolled key; it then records the fact with basis `verified` and two more evidence items:
 `field-signature` (ref `DEVICE:EVENT`, label SIG) and `field-signer` (ref the account, label the phone's name).

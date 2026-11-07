@@ -9,6 +9,8 @@
     fieldworx-bridge labels hpu.fieldworx [--parts ...] -o labels.pdf          QR labels to print
     fieldworx-bridge findings -w WORKSPACE                                      what phones found or changed on units
     fieldworx-bridge accept fnd_… -w WORKSPACE [--as fit|note]                  accept one into RevisionWorx
+    fieldworx-bridge enrol phone.fieldlog -w WORKSPACE --account NAME --fingerprint XXXX-XXXX-XXXX-XXXX
+                                                                                enrol a phone to someone's account
 
 The hub (field records) lives in WORKSPACE/.fieldworx unless --hub says otherwise. Exit codes: 0 done, 1 problems
 found (verify, status), 2 refused (nothing was changed).
@@ -20,8 +22,8 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-from . import __version__, accept as acc, archive, catalog as cat_mod, events as ev_mod, inspections, labels, report
-from . import safefile, sources
+from . import __version__, accept as acc, archive, catalog as cat_mod, enrol as enrol_mod, events as ev_mod, inspections
+from . import labels, report, safefile, sources
 from .hub import Hub, HubError
 from .packbuilder import PackOptions, build_package
 
@@ -168,6 +170,15 @@ def cmd_findings(a) -> int:
         unit = (r.unit or {}).get("label") or s.get("asset", "")
         when = s.get("on") or who.get("time", "")[:10]
         print(f"{r.entity}  {unit}  {acc.summary(s)}" + (f"  ({who.get('actor', '')}, {when})" if who else ""))
+        if r.signed and a.workspace:
+            phone = r.phone and (r.phone.get("name") or r.phone["device"])
+            if r.signer:
+                print(f"    signed on {phone}, enrolled to {r.signer['account']}: accepting records it as verified")
+            elif r.phone:
+                why = f"revoked: {r.phone.get('reason')}" if r.phone.get("revoked") else r.phone.get("problem", "")
+                print(f"    signed on {phone}, whose signatures don't count now ({why}): accepting records it as reported")
+            else:
+                print("    signed on a phone that isn't enrolled to anyone: accepting records it as reported")
         if r.status:
             print(f"    {label[r.status]}: {r.detail}" if r.detail else f"    {label[r.status]}")
     counts = Counter(r.status for r in rows)
@@ -180,16 +191,35 @@ def cmd_accept(a) -> int:
                      executable=a.revisionworx)
     unit = out["unit"]["label"]
     events = ", ".join(str(n) for n in out["events"])
+    signer = out.get("signed_by")
+    how = (f", verified: signed on {signer.get('name') or signer['device']}, enrolled to {signer['account']}" if signer
+           else f", {out['basis']}" if out.get("basis") else "")
     if out["result"] == "nothing":
         print(f"nothing to record: {out['why']}")
     elif out["result"] == "would-record":
-        print(f"would record on {unit}: {out['why']} (nothing was written)")
+        print(f"would record on {unit}: {out['why']}{how} (nothing was written)")
     elif out["result"] == "already-recorded":
         print(f"already accepted: {unit}, event {events}" if events else f"already accepted: {unit}")
     else:
-        print(f"accepted into {unit}'s history as event {events}: {out['why']}")
+        print(f"accepted into {unit}'s history as event {events}: {out['why']}{how}")
         if out.get("warning"):
             print(f"  note: {out['warning']}")
+    return 0
+
+
+def cmd_enrol(a) -> int:
+    out = enrol_mod.enrol(Path(a.fieldlog), a.workspace, a.account, a.fingerprint, name=a.name or "",
+                          executable=a.revisionworx)
+    d = out.get("device") or {}
+    phone = d.get("name") or d.get("device", "the phone")
+    if out["result"] == "already-enrolled":
+        print(f"{phone} ({d.get('device', '')}, {d.get('fingerprint', '')}) was already enrolled to "
+              f"{d.get('account', a.account)}")
+    else:
+        print(f"enrolled {phone} ({d.get('device', '')}, {d.get('fingerprint', '')}) to {d.get('account', a.account)}: "
+              "findings signed on it can be accepted as verified in their name")
+    if out.get("warning"):
+        print(f"  note: {out['warning']}")
     return 0
 
 
@@ -250,11 +280,26 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--as", dest="as_", choices=("fit", "note"),
                    help="fit: record what the phone says is fitted, replacing what the register has; note: keep it as a "
                         "note, leaving the configuration alone")
-    s.add_argument("--basis", choices=("reported", "verified"), default="reported",
-                   help="verified when someone in the office has seen it (default: reported)")
+    s.add_argument("--basis", choices=("reported", "verified"), default=None,
+                   help="reported, or verified when someone in the office has seen it. Without it, a finding signed on "
+                        "a phone enrolled to someone's account is accepted as verified in their name, and anything "
+                        "else as reported")
     s.add_argument("--dry-run", action="store_true", help="say what would be recorded, and record nothing")
     s.add_argument("--revisionworx", help="the revisionworx program (default: REVISIONWORX_CLI or PATH)")
     s.set_defaults(fn=cmd_accept)
+
+    s = sub.add_parser("enrol", help="enrol a phone to someone's RevisionWorx account (an administrator's job)",
+                       description="Enrols the phone that wrote FIELDLOG to ACCOUNT in a RevisionWorx workspace set up "
+                                   "for a team, as the administrator logged in to RevisionWorx on this computer. Type "
+                                   "the fingerprint from the phone's own screen (Library, This phone): if it isn't the "
+                                   "field log's phone's, nothing is enrolled.")
+    s.add_argument("fieldlog", help="a field log the phone wrote")
+    s.add_argument("-w", "--workspace", required=True, help="the RevisionWorx workspace")
+    s.add_argument("--account", required=True, help="whose phone it is: their RevisionWorx user name")
+    s.add_argument("--fingerprint", required=True, help="as the phone shows it, such as 3F2A-91C0-77B1-04DE")
+    s.add_argument("--name", help="what to call the phone, such as \"Riley's phone\"")
+    s.add_argument("--revisionworx", help="the revisionworx program (default: REVISIONWORX_CLI or PATH)")
+    s.set_defaults(fn=cmd_enrol)
 
     s = sub.add_parser("verify", help="check a package or field log without changing anything")
     s.add_argument("file")
@@ -284,7 +329,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         return a.fn(a)
     except (sources.SourceError, HubError, archive.ArchiveError, ev_mod.EventError, cat_mod.CatalogError,
-            inspections.TemplateError, labels.LabelError, acc.AcceptError, safefile.AlreadyExists, OSError) as exc:
+            inspections.TemplateError, labels.LabelError, acc.AcceptError, enrol_mod.EnrolError, safefile.AlreadyExists,
+            OSError) as exc:
         msg = f"{exc} already exists (use --overwrite)" if isinstance(exc, safefile.AlreadyExists) else str(exc)
         print(f"error: {msg}", file=sys.stderr)
         return 2

@@ -37,6 +37,11 @@ The first field release: QR scanning, engineering document access, part lookup a
   device with two keys, or an unsigned record after a signed one; each new record is checked once, when it arrives.
   Field logs name the phone's key. Records made before keys stay readable, unsigned. Ed25519 and SHA-512 in pure Dart and
   pure Python, held to RFC 8032's vectors and the family's (`signatures.json`).
+- **Phones enrolled to RevisionWorx accounts:** `fieldworx-bridge enrol FIELDLOG -w WORKSPACE --account NAME
+  --fingerprint …` enrols the phone that wrote a field log, once the fingerprint typed from the phone's screen matches
+  (RevisionWorx's `field-signatures` feature, in a workspace set up for a team). `accept` then records a finding signed on
+  an enrolled phone as *verified* in its owner's name, and RevisionWorx checks the signature itself; `findings` says whose
+  phone signed each finding. On the phone, Library → *This phone* shows the fingerprint to compare.
 - **Units from RevisionWorx's unit register** (catalog version 2; version 1 still opens):
   - The bridge packs a workspace's units through `revisionworx link units` when RevisionWorx has a unit register:
     the chosen projects' units, every unit fitted in them, and every revision they name. A unit's earlier `ast_`

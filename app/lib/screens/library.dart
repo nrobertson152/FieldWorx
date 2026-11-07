@@ -124,6 +124,12 @@ class LibraryTab extends StatelessWidget {
             onTap: () => editName(context),
           ),
           EntityRow(
+            icon: 'lock',
+            title: 'Fingerprint ${m.store.fingerprint}',
+            subtitle: 'The office checks it to enrol this phone to your account',
+            onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const PhoneKeyScreen())),
+          ),
+          EntityRow(
             icon: 'theme',
             title: 'Theme',
             subtitle: fxThemes[m.theme]?.label ?? 'Modern Light',
@@ -274,6 +280,40 @@ class ThemeScreen extends StatelessWidget {
   }
 }
 
+/// The phone's fingerprint, large enough to read out or show, for an administrator enrolling it (PROTOCOL.md 12.4).
+class PhoneKeyScreen extends StatelessWidget {
+  const PhoneKeyScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final m = AppScope.of(context);
+    final fx = context.fx;
+    return Scaffold(
+      appBar: AppBar(title: const Text('This phone')),
+      body: PageList(children: [
+        StatusBlock(
+            icon: 'lock',
+            kind: 'Fingerprint',
+            title: m.store.fingerprint,
+            subtitle: 'Show this screen, or read all four groups out, to whoever enrols the phone'),
+        const SizedBox(height: 12),
+        Text(
+          'This phone signs every record it makes with its own key, which never leaves it. An administrator in the '
+          'office can enrol the phone to your account in RevisionWorx: they type this fingerprint, and if it is the one '
+          'of the phone whose field log they have, what you record here is accepted as verified in your name.\n\n'
+          'If the phone is lost or passes to someone else, tell the office, so they can revoke it.',
+          style: TextStyle(color: fx.text, fontSize: 15, height: 1.45),
+        ),
+        const SectionHeader('Details'),
+        RowsCard(children: [
+          KeyValueRow('Fingerprint', m.store.fingerprint),
+          KeyValueRow('Device id', m.store.deviceId),
+        ]),
+      ]),
+    );
+  }
+}
+
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
@@ -296,6 +336,7 @@ class AboutScreen extends StatelessWidget {
         const SectionHeader('This phone'),
         RowsCard(children: [
           KeyValueRow('Device id', m.store.deviceId),
+          KeyValueRow('Fingerprint', m.store.fingerprint),
           KeyValueRow('Records', '${m.store.log.length}'),
         ]),
         const SizedBox(height: 12),

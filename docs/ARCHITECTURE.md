@@ -393,7 +393,7 @@ as read (`--if-events`), so a fact recorded meanwhile is never overwritten by a 
 **Not done.** A phone doesn't yet see that a finding was accepted: packages would need to carry the evidence, a new
 asset version. Photos stay in the hub; RevisionWorx holds the reference to the field record, not the photo.
 
-### ADR-015: Device keys, enrolled to workspace accounts (Director's decision, 2026-11-07) — signed records built; enrolment and acceptance being built
+### ADR-015: Device keys, enrolled to workspace accounts (Director's decision, 2026-11-07) — built; the iOS backup exclusion being built
 
 **Decision.** Before 1.0.0, every phone signs the field records it makes with its own Ed25519 key (RFC 8032), and an
 administrator of a RevisionWorx team workspace enrols the phone to the person's account. A finding signed by an
