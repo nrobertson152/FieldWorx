@@ -227,7 +227,9 @@ asset as the version 2 asset section 6.4 derives from it, so an old package keep
   among its revisions, or `""`).
 - **revision**: `id, label, state, state_name, sha256, size, created, author, description, ext, rendition`, as
   RevisionWorx reports them; `rendition` is `null` or `{object, media_type, via}` naming a phone-viewable object in
-  the package (`via` says how it was made: `content`, `draftworx pdf 1.2.0`, …).
+  the package (`via` says how it was made: `content`, `pdf attached in RevisionWorx (Inventor 2025 export)` when
+  engineering attached the PDF of exactly that revision (RevisionWorx ADR-026), `draftworx pdf 1.2.0`, …). A revision is
+  never shown with another revision's PDF.
 
 All revisions' metadata is included; content only for those the package needs (ARCHITECTURE.md 5.1).
 

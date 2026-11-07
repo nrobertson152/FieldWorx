@@ -157,7 +157,9 @@ file in RevisionWorx doesn't match the hash RevisionWorx recorded for it, the bu
 
 ### What to publish in RevisionWorx for the phones
 
-- **Drawings as PDFs** (or DraftWorx/DXF drawings, printed to PDF automatically when DraftWorx is installed).
+- **Drawings as PDFs** (or DraftWorx/DXF drawings, printed to PDF automatically when DraftWorx is installed). For an
+  Inventor, SolidWorks or other CAD drawing, attach its PDF export to the revision: `revisionworx doc pdf FRM-200@B
+  "FRM-200 rev B.pdf"`. The phone shows it for that revision only.
 - **BOMs** as RevisionWorx reads them, and **parts lists** in RevisionWorx's parts CSV.
 - **Inspection templates** named `*.fwtemplate.csv`: one row per item with the columns `section, id, kind, prompt,
   unit, nominal, min, max, required, photo, choices, help`. `kind` is `check`, `measure`, `text` or `choice`;

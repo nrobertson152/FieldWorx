@@ -160,8 +160,9 @@ class RevisionWorx:
         return self._run("document", ref, *(["--project", project] if project else []))["document"]
 
     def fetch(self, ref: str, to_dir: str, revision: Optional[str] = None, released: bool = False,
-              project: Optional[str] = None) -> Dict[str, Any]:
-        """Copy one revision to ``to_dir`` for reading. Returns {"path", "revision": {...}, ...}."""
+              project: Optional[str] = None, pdf: bool = False) -> Dict[str, Any]:
+        """Copy one revision to ``to_dir`` for reading. Returns {"path", "revision": {...}, ...}. ``pdf``: the PDF attached
+        to that revision instead (RevisionWorx's ``pdf-derivatives`` feature); a revision without one is ``not-found``."""
         args = ["fetch", ref, "--to", os.path.abspath(to_dir)]
         if revision:
             args += ["--revision", revision]
@@ -169,6 +170,8 @@ class RevisionWorx:
             args.append("--released")
         if project:
             args += ["--project", project]
+        if pdf:
+            args.append("--pdf")
         return self._run(*args)
 
     def publish(self, file: str, project: Optional[str] = None, document: Optional[str] = None, number: str = "",
