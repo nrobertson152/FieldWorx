@@ -39,7 +39,7 @@ jobs:
       - name: Install the bridge, RevisionWorx and OpenMeridian
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pytest "$REVISIONWORX" "$OPENMERIDIAN" -e bridge
+          python -m pip install "$REVISIONWORX" "$OPENMERIDIAN" -e "bridge[dev]"
       - name: Tests (including packs built through RevisionWorx's command line)
         run: python -m pytest bridge -q -ra
       - name: Protocol vectors are up to date

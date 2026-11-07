@@ -24,7 +24,9 @@ tampered package is refused and nothing changes. **Try the demo** adds the built
 Point the camera at a label. FieldWorx understands:
 
 - its own labels: `FWX:A:unt_…` (a unit in RevisionWorx's unit register, by its permanent id), `FWX:A:<tag>`
-  (a unit by its tag), `FWX:P:<part>`, `FWX:D:<document>`, `FWX:J:<project>`;
+  (a unit by its tag), `FWX:P:<part>`, `FWX:D:<document>`, `FWX:J:<project>`, and `FWX:R:<document>@<revision>` on a
+  print, which opens the document and says whether that print is the released revision: if it is superseded, which
+  revision to work to; if the phone doesn't have it, that it may be newer than the phone's packages;
 - a unit's serial plate, asset tag or an old code it used to carry, a part number, a maker's part number, a
   supplier's code, a document or project number;
 - a reference designator from the BOM, typed as on the schematic: `K1`, `V2`.
@@ -170,10 +172,31 @@ file in RevisionWorx doesn't match the hash RevisionWorx recorded for it, the bu
 
 ### Labels
 
-Print QR codes holding `FWX:A:unt_…` (the unit's permanent id, from `revisionworx unit show`) on units in the unit
-register, or `FWX:A:<tag>` on others, `FWX:P:<part number>` on parts and bins, `FWX:D:<document number>` on
-drawings. A unit's permanent label never has to change: a new tag, a new owner or a rebuild don't affect it. Plain part numbers and serial plates work too. Labels never hold web addresses, so they keep working
-offline and for good. Any phone with FieldWorx shows the label for a unit, part or document from its page.
+```sh
+fieldworx-bridge labels hpu.fieldworx -o units.pdf                            # a label for each unit and asset
+fieldworx-bridge labels hpu.fieldworx --parts --layout letter-30 -o bins.pdf  # parts, on US Letter sheets
+fieldworx-bridge labels hpu.fieldworx --revisions --only FRM-200 -o print.pdf # the released revision's, for its prints
+fieldworx-bridge labels hpu.fieldworx --only NH-26-0001 --copies 2 --skip 5 -o two.pdf
+```
+
+`labels` lays out FieldWorx labels for what a package holds, as a PDF: a QR code, what it is, its number, a description
+and the code written out for typing. Units in RevisionWorx's unit register get their permanent label, `FWX:A:unt_…`,
+which never has to change: a new tag, a new owner or a rebuild don't affect it. Assets from an asset register get
+`FWX:A:<tag>`, parts `FWX:P:<part number>`, documents `FWX:D:<number>`, revisions `FWX:R:<number>@<revision>` (each
+document's released revision, unless `--only` names another), projects `FWX:J:<number>`. Nothing that changes is
+printed: the phone says whether a revision is still the released one when its label is scanned.
+
+- `--only` picks by any name a thing answers to (a tag, a serial, a unit id, a part, document or project number,
+  `DOCUMENT@REVISION`), in the order given; a name that matches nothing stops the command, so a sheet never leaves a
+  label out quietly.
+- `--layout`: `a4-24` (A4, 24 labels of 70 x 37 mm, the default), `letter-30` (US Letter, 30 labels of 2-5/8 x 1 in)
+  or `roll-50x25` (a label printer, one 50 x 25 mm label per page). `--skip N` starts after positions already used on a
+  sheet; `--copies N` repeats each label.
+- Print at **actual size (100%)**, not *fit to page*. Print a test sheet on plain paper and hold it against a sheet of
+  labels to the light before using the labels.
+
+Plain part numbers and serial plates work too. Labels never hold web addresses, so they keep working offline and for
+good. Any phone with FieldWorx shows the label for a unit, part or document from its page.
 
 ### Collecting field logs
 

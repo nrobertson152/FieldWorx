@@ -282,6 +282,16 @@ void main() {
       expect(resolve(c, 'PNL').matches, isEmpty);
       expect(c.search('PNL').length, greaterThanOrEqualTo(2));
     });
+    test('a label of a kind this version doesn’t read matches nothing, and says so', () {
+      expect(resolve(c, 'PNL-1').matches.single.kind, equals(ResultKind.part));
+      for (final raw in ['FWX:L:PNL-1', 'FWX:W:PNL-1', 'FWX:T:PNL-1', 'FWX:location:PNL-1']) {
+        final r = resolve(c, raw);
+        expect(r.matches, isEmpty, reason: '$raw: the code is a part number, but the label isn’t a part label');
+        expect(r.problem, contains('doesn’t read'), reason: raw);
+        expect(r.typed, isNull);
+      }
+      expect(() => labelFor(ResultKind.template, 'x'), throwsArgumentError, reason: 'templates have no label');
+    });
   });
 
   test('catalog checks refuse dangling references', () {
