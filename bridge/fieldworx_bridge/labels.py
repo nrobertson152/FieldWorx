@@ -21,6 +21,7 @@ MM = 72 / 25.4                       # points per millimetre
 LEVEL = "Q"                          # a quarter of a label's QR code can be dirty or scratched and it still reads
 EDGE = 1.0                           # mm of white between a label's edge and its QR code's quiet zone
 PAD = 3.0                            # mm of white around the text: keeps it clear of an edge the printer can't reach
+SMALL_LEVEL = "M"                    # the 25 x 12 mm label: fewer modules, so each is big enough for a phone to read
 
 
 class LabelError(ValueError):
@@ -37,14 +38,20 @@ class Layout:
     rows: int
     first: tuple[float, float]       # the first label's top-left corner, in mm from the page's top-left corner
     pitch: tuple[float, float]       # mm from one label's top-left corner to the next one's, across and down
+    small: bool = False              # a label too small for more than its code, its kind and its number
 
     @property
     def per_page(self) -> int:
         return self.columns * self.rows
 
+    @property
+    def level(self) -> str:
+        """The QR code's error correction level on this label."""
+        return SMALL_LEVEL if self.small else LEVEL
 
-# Proposed sheets; which ones the family supports is the Director's decision (a gate for phase 3). Each is a common stock:
-# the geometry is the label maker's published one, so a test print on plain paper lines up with the sheet.
+
+# The stock the family supports (the Director's decision, 2026-11-07). Each is a common stock: the geometry is the label
+# maker's published one, so a test print on plain paper lines up with the sheet. Another is one more entry here.
 LAYOUTS = {lay.name: lay for lay in (
     Layout("a4-24", "A4, 24 labels of 70 x 37 mm (3 across, 8 down)", (210.0, 297.0), (70.0, 37.0), 3, 8, (0.0, 0.5),
            (70.0, 37.0)),
@@ -52,6 +59,8 @@ LAYOUTS = {lay.name: lay for lay in (
            (4.7625, 12.7), (69.85, 25.4)),
     Layout("roll-50x25", "label printer, one 50 x 25 mm label per page", (50.0, 25.0), (50.0, 25.0), 1, 1, (0.0, 0.0),
            (50.0, 25.0)),
+    Layout("roll-25x12", "label printer, one 25 x 12 mm label per page, for components and bins: the code, its kind and "
+           "its number", (25.0, 12.0), (25.0, 12.0), 1, 1, (0.0, 0.0), (25.0, 12.0), small=True),
 )}
 DEFAULT_LAYOUT = "a4-24"
 
@@ -304,15 +313,18 @@ class _Type:
 
 _LARGE = _Type(6.5, (11, 10, 9, 8), (7.5, 7, 6.5), 3, (6, 5.5, 5))
 _SMALL = _Type(5.5, (9, 8.5, 8, 7.5, 7), (6.5, 6), 2, (5.5, 5, 4.5))
+_TINY = _Type(5, (7.5, 7, 6.5, 6, 5.5, 5), (), 0, ())
+TINY_EDGE = 0.5                      # mm: on the smallest label every half millimetre goes to the code
 
 
-def _draw_label(lab: Label, x: float, top: float, w: float, h: float, page_h: float) -> list[str]:
+def _draw_label(lab: Label, x: float, top: float, w: float, h: float, page_h: float, layout: Layout) -> list[str]:
     """PDF operators for one label whose top-left corner is ``x``, ``top`` mm from the page's top-left corner."""
     ops: list[str] = []
-    m = encode(lab.text, LEVEL)
-    side = min(h - 2 * EDGE, w * 0.55)              # the QR code with its quiet zone of 4 modules
+    m = encode(lab.text, layout.level)
+    edge, pad = (TINY_EDGE, 1.0) if layout.small else (EDGE, PAD)
+    side = min(h - 2 * edge, w * 0.55)              # the QR code with its quiet zone of 4 modules
     unit = side * MM / (len(m) + 8)
-    qx = (x + EDGE) * MM + 4 * unit
+    qx = (x + edge) * MM + 4 * unit
     qtop = page_h - (top + (h - side) / 2) * MM - 4 * unit
 
     def edge_y(r: int) -> float:                     # rows share edges exactly, so no seams show between them
@@ -332,11 +344,11 @@ def _draw_label(lab: Label, x: float, top: float, w: float, h: float, page_h: fl
             ops.append(f"{_n(x0)} {_n(y0)} {_n(x1 - x0)} {_n(y1 - y0)} re")
     ops.append("f")
 
-    t = _LARGE if h >= 30 else _SMALL
-    tx = (x + EDGE + side) * MM
-    room = (x + w - PAD) * MM - tx
-    ceiling = page_h - (top + PAD) * MM
-    floor = page_h - (top + h - PAD) * MM
+    t = _TINY if layout.small else _LARGE if h >= 30 else _SMALL
+    tx = (x + edge + side) * MM
+    room = (x + w - pad) * MM - tx
+    ceiling = page_h - (top + pad) * MM
+    floor = page_h - (top + h - pad) * MM
 
     def text(font: str, size: float, line: str, baseline: float) -> None:
         ops.append(f"BT /{font} {_n(size)} Tf 1 0 0 1 {_n(tx)} {_n(baseline)} Tm {_pdf_string(printable(line))} Tj ET")
@@ -349,6 +361,8 @@ def _draw_label(lab: Label, x: float, top: float, w: float, h: float, page_h: fl
     for line in title_lines:
         y -= title_size * 1.15
         text("F2", title_size, line, y)
+    if layout.small:                                # the code, its kind and its number: nothing else fits
+        return ops
     code_lines: list[str] = []
     code_size = t.code[-1]
     if _norm(lab.code) != _norm(title):             # the code written out, for typing when a camera can't read it
@@ -388,7 +402,7 @@ def sheet(labels: list[Label], layout: Layout, *, skip: int = 0, title: str = "F
         row, col = divmod(k, layout.columns)
         x = layout.first[0] + col * layout.pitch[0]
         top = layout.first[1] + row * layout.pitch[1]
-        pages[p].extend(_draw_label(lab, x, top, layout.label[0], layout.label[1], page_h))
+        pages[p].extend(_draw_label(lab, x, top, layout.label[0], layout.label[1], page_h, layout))
     return _pdf([("\n".join(ops) + "\n").encode("ascii") for ops in pages], (page_w, page_h), title, producer), len(pages)
 
 

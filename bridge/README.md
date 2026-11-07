@@ -27,7 +27,7 @@ fieldworx-bridge status  [-w WORKSPACE | --hub DIR]
 fieldworx-bridge report  [-w WORKSPACE | --hub DIR] -o FOLDER
 fieldworx-bridge verify  FILE
 fieldworx-bridge labels  PACKAGE -o OUT.pdf [--assets] [--parts] [--documents] [--revisions] [--projects]
-                         [--only CODE ...] [--layout a4-24|letter-30|roll-50x25] [--skip N] [--copies N] [--overwrite]
+                         [--only CODE ...] [--layout a4-24|letter-30|roll-50x25|roll-25x12] [--skip N] [--copies N] [--overwrite]
 ```
 
 - **pack** builds a package: the chosen projects' documents (every revision's details; the released revision's

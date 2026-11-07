@@ -192,8 +192,9 @@ printed: the phone says whether a revision is still the released one when its la
 - `--only` picks by any name a thing answers to (a tag, a serial, a unit id, a part, document or project number,
   `DOCUMENT@REVISION`), in the order given; a name that matches nothing stops the command, so a sheet never leaves a
   label out quietly.
-- `--layout`: `a4-24` (A4, 24 labels of 70 x 37 mm, the default), `letter-30` (US Letter, 30 labels of 2-5/8 x 1 in)
-  or `roll-50x25` (a label printer, one 50 x 25 mm label per page). `--skip N` starts after positions already used on a
+- `--layout`: `a4-24` (A4, 24 labels of 70 x 37 mm, the default), `letter-30` (US Letter, 30 labels of 2-5/8 x 1 in),
+  `roll-50x25` (a label printer, one 50 x 25 mm label per page) or `roll-25x12` (25 x 12 mm, for components and bins:
+  just the code, its kind and its number). `--skip N` starts after positions already used on a
   sheet; `--copies N` repeats each label.
 - Print at **actual size (100%)**, not *fit to page*. Print a test sheet on plain paper and hold it against a sheet of
   labels to the light before using the labels.

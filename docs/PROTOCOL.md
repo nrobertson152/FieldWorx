@@ -326,7 +326,9 @@ the packages. A revision label without a number or a revision matches nothing an
 and matches nothing, even when the code alone would match something.
 
 **Printing.** FieldWorx labels are QR Code model 2 (ISO/IEC 18004), the text in UTF-8 in byte mode without an ECI header,
-at error correction level Q, with a quiet zone of at least 4 modules. The reference encoder is one standard-library file,
+at error correction level Q (M on labels 12 mm high, where Q's extra modules would be too small to read), with a quiet
+zone of at least 4 modules. A unit's code, `FWX:A:unt_` and its 32 hex digits, is fixed: printed labels must keep
+resolving for the life of the machine. The reference encoder is one standard-library file,
 `bridge/fieldworx_bridge/fwx_label.py`, which other programs copy unchanged to print FieldWorx codes. The words printed
 beside a code are what it is, its number and a description, and the code itself for typing; never anything that changes
 (a revision's state, a unit's status, owner or site).

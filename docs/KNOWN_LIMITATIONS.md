@@ -52,8 +52,10 @@ What FieldWorx doesn't do yet, or hasn't been shown to do. Planned work is in [R
 
 - **Hardware scanners** (rugged phones' scan keys) work when they type into the code field on the Scan tab, which
   has to have focus. Intent-based scanners (Zebra DataWedge) aren't supported yet.
-- **Label sheets come in three layouts** (A4 70 x 37 mm, US Letter 2-5/8 x 1 in, a 50 x 25 mm label printer), proposed
-  for the Director to confirm. Other stock needs a new layout in `labels.py`.
+- **Labels come in four layouts**, the ones the family supports: A4 70 x 37 mm, US Letter 2-5/8 x 1 in, and 50 x 25 mm and
+  25 x 12 mm label printers. Other stock needs a new layout in `labels.py`.
+- **The 25 x 12 mm label** has room only for the code, its kind and its number. Its code is at level M, not Q, so that
+  each module stays big enough for a phone (about 0.3 mm). It reads with less of it dirty or torn than a larger label.
 - **Label text uses the fonts every PDF reader has**, which cover Western European letters. Other letters print as "?"
   beside the code; the QR code always holds the exact text.
 - **Codes print up to QR version 10** (151 bytes at level Q). A longer number is refused with a message, not shrunk.
