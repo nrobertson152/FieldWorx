@@ -17,6 +17,8 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import zipfile
+import zlib
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -132,12 +134,20 @@ class Hub:
         final.parent.mkdir(parents=True, exist_ok=True)
         tmp = safefile.temp_name(final)
         h = hashlib.sha256()
-        with arc.open_object(sha) as src, open(tmp, "xb") as dst:
-            while chunk := src.read(1 << 20):
-                h.update(chunk)
-                dst.write(chunk)
-            dst.flush()
-            os.fsync(dst.fileno())
+        try:
+            with arc.open_object(sha) as src, open(tmp, "xb") as dst:
+                while chunk := src.read(1 << 20):
+                    h.update(chunk)
+                    dst.write(chunk)
+                dst.flush()
+                os.fsync(dst.fileno())
+        except (zipfile.BadZipFile, zlib.error, EOFError, archive.ArchiveError) as exc:
+            tmp.unlink(missing_ok=True)             # the file went bad after it was checked: nothing of it is kept
+            raise HubError(f"file {sha[:12]} couldn't be read from the archive ({exc}); no field records were "
+                           "imported") from None
+        except BaseException:
+            tmp.unlink(missing_ok=True)
+            raise
         if h.hexdigest() != sha:
             tmp.unlink()
             raise HubError(f"file {sha[:12]} changed while it was imported")

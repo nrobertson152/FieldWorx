@@ -167,3 +167,52 @@ def test_the_changes_that_reach_a_unit_travel_with_it(changed, tmp_path):
         ga = next(d for d in arc.catalog["documents"] if d["number"] == "HPU-75-GA")
         row = next(d for d in assets["NH-26-0001"]["documents"] if d["document"] == ga["id"])
         assert row["revision"] == ga["revisions"][-1]["id"] and row["basis"] == "reported"
+
+
+@pytest.fixture(scope="module")
+def deviated(tmp_path_factory):
+    """A fresh demo whose asset register is in the unit register, then a temporary deviation on both units (a substitute
+    pump, past its end date) and a permanent concession on HPU-0002, the first cleared on HPU-0001. All through
+    RevisionWorx's own command line."""
+    if not have_unit_register("unit-deviations"):
+        pytest.skip("this RevisionWorx doesn't record deviations (link version doesn't list 'unit-deviations')")
+    import build_demo
+    out = tmp_path_factory.mktemp("deviations") / "demo"
+    assert build_demo.main([str(out)]) == 0
+    ws = out / "workspace"
+    local = out / ".local"
+    env = dict(os.environ, XDG_CACHE_HOME=str(local / "cache"), XDG_STATE_HOME=str(local / "state"),
+               XDG_CONFIG_HOME=str(local / "config"), LOCALAPPDATA=str(local / "appdata"))
+
+    def rwx(*args):
+        proc = subprocess.run(find_command() + ["-w", str(ws), *args], capture_output=True, text=True, env=env)
+        assert proc.returncode in (0, 1), proc.stderr
+        return proc.stdout
+
+    rwx("unit", "import", str(out / "source" / "AST-HPU-75 Units built.fwassets.csv"))
+    rwx("unit", "deviation", "new", "--kind", "deviation", "--title", "PMP-11 for PMP-10 at P1",
+        "--departure", "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for", "--reason", "PMP-10 out of stock",
+        "--unit", "HPU-0001", "--unit", "HPU-0002", "--doc", "HPU-75-GA@A", "--temporary", "--until", "2026-01-31")
+    rwx("unit", "deviation", "new", "--kind", "concession", "--title", "Weld undercut W4",
+        "--departure", "W4 undercut 0.6 mm (0.5 allowed)", "--reason", "load test passed", "--unit", "HPU-0002")
+    rwx("unit", "deviation", "clear", "HPU-0001", "DEV-0001", "--reason", "PMP-10 fitted")
+    return out
+
+
+def test_the_deviations_that_cover_a_unit_travel_with_it(deviated, tmp_path):
+    out = tmp_path / "deviations.fieldworx"
+    assert cli.main(["pack", "-w", str(deviated / "workspace"), "--project", "J-2001", "-o", str(out)]) == 0
+    with archive.read(out) as arc:
+        cat_mod.check_catalog(arc.catalog)
+        assets = {a["label"]: a for a in arc.catalog["assets"]}
+        first, second = assets["NH-26-0001"]["deviations"], assets["NH-26-0002"]["deviations"]
+        assert [(d["number"], d["kind"], d["state"], d["temporary"], d["until"]) for d in first] == [
+            ("DEV-0001", "deviation", "cleared", True, "2026-01-31")]
+        assert first[0]["documents"] == [{"number": "HPU-75-GA", "revision": "A"}]
+        assert first[0]["departure"] == "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for"
+        assert first[0]["deviation"].startswith("udv_") and not cat_mod.deviation_overdue(first[0], "2026-11-07")
+        # in effect first, the one past its end date before the permanent one
+        assert [(d["number"], d["state"], d["temporary"]) for d in second] == [
+            ("DEV-0001", "in-effect", True), ("CON-0001", "in-effect", False)]
+        assert cat_mod.deviation_overdue(second[0], "2026-11-07") and not cat_mod.deviation_overdue(second[1], "2099-01-01")
+        assert second[1]["until"] == "" and second[1]["documents"] == []

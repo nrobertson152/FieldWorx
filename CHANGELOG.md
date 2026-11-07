@@ -41,6 +41,8 @@ The first field release: QR scanning, engineering document access, part lookup a
     where the unit is fitted, and its history with voided entries marked.
   - Engineering changes that reach a unit (RevisionWorx's `unit-changes` feature): each retrofit, modification or drawing
     correction, the drawings it moves, and where it stands on the unit; outstanding required changes are counted at the top.
+  - Deviations and concessions that cover a unit (RevisionWorx's `unit-deviations` feature): what may differ from the
+    drawings and why it is allowed, in effect, cleared or not used; a temporary one past its end date is flagged at the top.
   - Labels: `FWX:A:unt_…` opens a unit by its permanent id (an earlier `ast_` id too, and never a tag that looks the
     same); a unit's *Show label* gives its permanent label. Former codes still find a unit, marked *former*.
   - Shared vectors for catalogs (`catalogs.json`) and a sample package of units (`units.fieldworx`).

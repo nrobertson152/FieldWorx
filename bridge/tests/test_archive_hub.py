@@ -235,3 +235,50 @@ def test_concurrent_edits_show_as_conflicts_in_the_register(tmp_path):
             hub.import_archive(arc)
     csv_text = report.register_csv(hub.load())
     assert ",conflict," in csv_text and ",1," in csv_text
+
+
+def _deflated_start(path, name):
+    """Where member ``name``'s compressed data starts in the ZIP file (after its local header)."""
+    import struct
+    with zipfile.ZipFile(path) as z:
+        info = z.getinfo(name)
+        assert info.compress_type == zipfile.ZIP_DEFLATED
+    raw = path.read_bytes()
+    sig, *_rest = struct.unpack_from("<IHHHHHIIIHH", raw, info.header_offset)
+    assert sig == 0x04034B50
+    name_len, extra_len = struct.unpack_from("<HH", raw, info.header_offset + 26)
+    return info.header_offset + 30 + name_len + extra_len
+
+
+@pytest.mark.parametrize("member", ["manifest.json", "event"])
+def test_compressed_data_that_doesnt_decompress_is_refused_not_a_crash(tmp_path, member):
+    """A deflate stream whose first block has the reserved type can't be decompressed at all: the archive is refused as
+    damaged, with a message, rather than the reader failing with zlib's own error."""
+    p = Phone(DEV)
+    an_inspection(p, photo=False)
+    path = tmp_path / "bad.fieldlog"
+    write_log(path, p, objects=())
+    name = member if member != "event" else f"events/{p.events[0].id}"
+    raw = bytearray(path.read_bytes())
+    raw[_deflated_start(path, name)] = 0xFF               # BFINAL 1, BTYPE 11: reserved, "invalid block type"
+    path.write_bytes(bytes(raw))
+    with pytest.raises(archive.ArchiveError, match="damaged"):
+        archive.read(path)
+
+
+def test_a_file_that_goes_bad_after_it_was_checked_imports_nothing(tmp_path, monkeypatch):
+    import zlib
+    p = Phone(DEV)
+    an_inspection(p)
+    write_log(tmp_path / "a.fieldlog", p)
+    hub = Hub(tmp_path / "hub")
+    with archive.read(tmp_path / "a.fieldlog") as arc:
+        class Broken(io.BytesIO):
+            def read(self, *a):
+                raise zlib.error("Error -3 while decompressing data: invalid block type")
+
+        monkeypatch.setattr(arc, "open_object", lambda sha: Broken())
+        with pytest.raises(HubError, match="couldn't be read from the archive.*no field records were imported"):
+            hub.import_archive(arc)
+    assert hub.load().events == {}, "no record of it"
+    assert not [f for f in (tmp_path / "hub").rglob("*") if f.is_file() and ".tmp" in f.name], "no half-written file"

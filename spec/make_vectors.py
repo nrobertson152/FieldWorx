@@ -541,20 +541,27 @@ def sample_catalog_v2() -> dict:
                      {"change": "eco_" + "0b" * 16, "number": "ECO-0040", "title": "Quieter pump mount",
                       "kind": "retrofit-optional", "required": False, "state": "declined", "since": "2026-10-02",
                       "documents": []}],
+         "deviations": [{"deviation": "udv_" + "0d" * 16, "number": "DEV-0007", "kind": "deviation",
+                         "title": "PMP-11 for PMP-10 at P1", "departure": "P1 is a PMP-11 pump, not the PMP-10 the BOM calls for",
+                         "temporary": True, "until": "2026-03-31", "state": "in-effect", "since": "2026-02-02",
+                         "documents": [{"number": "BOM-75", "revision": "B"}]},
+                        {"deviation": "udv_" + "0e" * 16, "number": "CON-0002", "kind": "concession",
+                         "title": "Weld undercut W4", "departure": "W4 undercut 0.6 mm (0.5 allowed)\nLoad test passed",
+                         "temporary": False, "until": "", "state": "in-effect", "since": "2026-03-20", "documents": []}],
          "notes": "Line 2", "source": "revisionworx"},
         {"id": pump, "aliases": [], "label": "GP-4471", "class": "component", "name": "", "model": "PMP-10",
          "part": "", "project": "", "customer": "", "site": "", "location": "", "status": "built",
          "identifiers": [{"scheme": "serial", "issuer": "Hydrix", "value": "GP-4471", "active": True}],
          "parent": {"asset": hpu, "position": "P1"}, "standard": None, "documents": [], "components": [],
-         "milestones": {}, "history": [], "changes": [], "notes": "", "source": "revisionworx"},
+         "milestones": {}, "history": [], "changes": [], "deviations": [], "notes": "", "source": "revisionworx"},
         {"id": row, "aliases": [], "label": "HPU-0002", "class": "product", "name": "Unit 2", "model": "HPU-75",
          "part": "pn:hpu-75", "project": "prj_" + "01" * 16, "customer": "", "site": "", "location": "Bayside",
          "status": "", "identifiers": [{"scheme": "tag", "issuer": "", "value": "HPU-0002", "active": True}],
          "parent": None, "standard": None,
          "documents": [{"document": "doc_" + "02" * 16, "revision": "rev_" + "04" * 16, "source": "register",
                         "basis": "legacy"}],
-         "components": [], "milestones": {"built": "2026-06-20"}, "history": [], "changes": [], "notes": "",
-         "source": "AST-HPU-75 rev A"}]
+         "components": [], "milestones": {"built": "2026-06-20"}, "history": [], "changes": [], "deviations": [],
+         "notes": "", "source": "AST-HPU-75 rev A"}]
     cat_mod.check_catalog(c)
     return c
 
@@ -603,6 +610,16 @@ def catalog_vectors() -> dict:
         bad("a change twice", lambda c: a(c, 0)["changes"].append(dict(a(c, 0)["changes"][0]))),
         bad("a change without its id", lambda c: a(c, 0)["changes"][1].update(change="")),
         bad("a change document with an unknown key", lambda c: a(c, 0)["changes"][0]["documents"][0].update(rev="B")),
+        bad("an unknown deviation state", lambda c: a(c, 0)["deviations"][0].update(state="open")),
+        bad("an unknown deviation kind", lambda c: a(c, 0)["deviations"][0].update(kind="waiver")),
+        bad("temporary that isn't true or false", lambda c: a(c, 0)["deviations"][0].update(temporary="yes")),
+        bad("an end date on a permanent deviation", lambda c: a(c, 0)["deviations"][1].update(until="2027-01-01")),
+        bad("an end date that isn't a date", lambda c: a(c, 0)["deviations"][0].update(until="31/03/2026")),
+        bad("a deviation twice", lambda c: a(c, 0)["deviations"].append(dict(a(c, 0)["deviations"][0]))),
+        bad("a deviation without its id", lambda c: a(c, 0)["deviations"][1].update(deviation="")),
+        bad("a deviation document with an unknown key",
+            lambda c: a(c, 0)["deviations"][0]["documents"][0].update(label="B")),
+        bad("a deviation without its departure key", lambda c: a(c, 0)["deviations"][0].pop("departure")),
     ]
     return {"accept": accept, "refuse": refuse}
 

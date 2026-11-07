@@ -21,7 +21,8 @@ RE_ASSET_ID = re.compile(r"(unt|ast)_[0-9a-f]{32}\Z")
 RE_ALIAS = re.compile(r"ast_[0-9a-f]{32}\Z")
 ASSET_V1 = {"id", "tag", "serial", "name", "part", "project", "location", "built", "notes", "as_built"}
 ASSET_V2 = {"id", "aliases", "label", "class", "name", "model", "part", "project", "customer", "site", "location", "status",
-            "identifiers", "parent", "standard", "documents", "components", "milestones", "history", "changes", "notes",
+            "identifiers", "parent", "standard", "documents", "components", "milestones", "history", "changes", "deviations",
+            "notes",
             "source"}
 CLASSES = ("product", "component", "instrument", "tool")
 STATUSES = ("", "planned", "in-build", "built", "in-service", "out-of-service", "retired", "scrapped")
@@ -33,6 +34,9 @@ CHANGE_KINDS = ("", "production", "retrofit-required", "retrofit-optional", "uni
 CHANGE_STATES = ("pending", "offered", "accepted", "scheduled", "deferred", "declined", "installed", "verified",
                  "not-applicable", "reversed")
 CHANGE_DONE = ("verified", "not-applicable")
+DEVIATION_KINDS = ("deviation", "concession")
+DEVIATION_STATES = ("in-effect", "cleared", "not-used")
+RE_DATE = re.compile(r"\d{4}-\d{2}-\d{2}\Z")
 RE_QTY = re.compile(r"(0|[1-9]\d{0,14})(\.\d{1,9})?\Z")
 TOP_KEYS = {"format", "version", "projects", "documents", "parts", "bom", "assets", "templates"}
 
@@ -306,6 +310,29 @@ def _check_assets_v2(assets: list, unique, projects: set, docs: set, parts: set,
                 _keys(row, {"number", "from", "to"}, "change document")
                 for k in ("number", "from", "to"):
                     _s(row[k], f"change document {k}", 64)
+        seen_devs: set[str] = set()
+        for dv in _list(a["deviations"], f"{what} deviations", 200):
+            _keys(dv, {"deviation", "number", "kind", "title", "departure", "temporary", "until", "state", "since",
+                       "documents"}, "deviation")
+            did = _s(dv["deviation"], "deviation id", 64)
+            if not did or did in seen_devs:
+                raise CatalogError(f"{what}: each deviation is given once, with its id")
+            seen_devs.add(did)
+            _s(dv["number"], "deviation number", 64)
+            _choice(dv["kind"], DEVIATION_KINDS, "deviation kind")
+            _s(dv["title"], "deviation title", 200)
+            _s(dv["departure"], "deviation departure", 4000)
+            if _bool(dv["temporary"], "deviation temporary"):
+                if _s(dv["until"], "deviation until", 32) and not RE_DATE.match(dv["until"]):
+                    raise CatalogError(f"{what}: a deviation's end date is YYYY-MM-DD, or empty")
+            elif dv["until"] != "":
+                raise CatalogError(f"{what}: only a temporary deviation has an end date")
+            _choice(dv["state"], DEVIATION_STATES, "deviation state")
+            _s(dv["since"], "deviation since", 32)
+            for row in _list(dv["documents"], "deviation documents", 100):
+                _keys(row, {"number", "revision"}, "deviation document")
+                for k in ("number", "revision"):
+                    _s(row[k], f"deviation document {k}", 64)
     for a in assets:
         for ref in [c["asset"] for c in a["components"] if c["asset"]] + ([a["parent"]["asset"]] if a["parent"] else []):
             if ref not in ids:
@@ -331,6 +358,7 @@ def asset_view(a: dict, version: int, revision_document: dict[str, str]) -> dict
             "documents": [{"document": revision_document[r], "revision": r, "source": "register", "basis": "legacy"}
                           for r in a["as_built"]],
             "components": [], "milestones": {"built": a["built"]} if a["built"] else {}, "history": [], "changes": [],
+            "deviations": [],
             "notes": a["notes"], "source": ""}
 
 
@@ -343,3 +371,8 @@ def assets_view(c: dict) -> list[dict]:
 def empty() -> dict:
     return {"format": FORMAT, "version": VERSION, "projects": [], "documents": [], "parts": [], "bom": [],
             "assets": [], "templates": []}
+
+
+def deviation_overdue(d: dict, today: str) -> bool:
+    """A temporary departure still in effect after its end date (``today`` is ``YYYY-MM-DD``): PROTOCOL.md section 6.4."""
+    return d["temporary"] and d["state"] == "in-effect" and d["until"] != "" and d["until"] < today

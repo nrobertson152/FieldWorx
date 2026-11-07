@@ -230,7 +230,7 @@ class PackBuilder:
                 "documents": [{"document": rev_doc[r], "revision": r, "source": "register", "basis": "legacy"}
                               for r in row["_as_built_ids"]],
                 "components": [], "milestones": {"built": row["built"][:32]} if row["built"] else {}, "history": [],
-                "changes": [],
+                "changes": [], "deviations": [],
                 "notes": row["notes"][:4000], "source": src[:200]})
             held.add(aid)
         seen_assets: set[str] = set()
@@ -301,6 +301,21 @@ class PackBuilder:
                                        "to": str(d.get("to_label", ""))[:64]} for d in (c.get("documents") or [])[:100]]})
         return out
 
+    @staticmethod
+    def _unit_deviations(u: dict) -> list[dict]:
+        """The deviations and concessions RevisionWorx says cover a unit (its ``unit-deviations`` feature), as PROTOCOL.md
+        section 6.4 keeps them: what the phone needs to know the unit may differ from its drawings, and why."""
+        out = []
+        for d in (u.get("deviations") or [])[:200]:
+            temporary = bool(d["temporary"])
+            out.append({"deviation": str(d["deviation"])[:64], "number": str(d["number"])[:64], "kind": d["kind"],
+                        "title": str(d.get("title", ""))[:200], "departure": str(d.get("departure", ""))[:4000],
+                        "temporary": temporary, "until": str(d.get("until", ""))[:32] if temporary else "",
+                        "state": d["state"], "since": str(d.get("since", ""))[:32],
+                        "documents": [{"number": str(r.get("number", ""))[:64], "revision": str(r.get("label", ""))[:64]}
+                                      for r in (d.get("documents") or [])[:100]]})
+        return out
+
     def _unit_asset(self, u: dict, units: list[dict], part_by_num: dict, project_ids: set, rev_doc: dict) -> dict:
         """One unit of RevisionWorx's register as a version 2 catalog asset (docs/PROTOCOL.md section 6.4)."""
         included = {x["id"] for x in units}
@@ -343,7 +358,8 @@ class PackBuilder:
                 "standard": {"number": std["number"][:64], "title": std["title"][:200]} if std else None,
                 "documents": docs, "components": comps,
                 "milestones": {k: v["date"][:32] for k, v in u["milestones"].items() if k in cat_mod.MILESTONES},
-                "history": history, "changes": self._unit_changes(u), "notes": u["notes"][:4000], "source": "revisionworx"}
+                "history": history, "changes": self._unit_changes(u), "deviations": self._unit_deviations(u),
+                "notes": u["notes"][:4000], "source": "revisionworx"}
 
     def _attached_pdfs(self, full: dict) -> None:
         for r in full.get("history", []):

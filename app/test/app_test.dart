@@ -149,7 +149,10 @@ void main() {
 
       s.scan('FWX:A:$hpu');
       await waitFor(tester, find.text('UNIT'));
-      for (final chip in ['HPU-0001', 'in service', 'built 2026-03-18', '1 drawing revised since', '1 change outstanding']) {
+      for (final chip in [
+        'HPU-0001', 'in service', 'built 2026-03-18', '1 drawing revised since', '1 change outstanding', //
+        '1 deviation past end date',
+      ]) {
         expect(find.text(chip), findsOneWidget, reason: chip);
       }
       expect(find.text('Build standard'), findsOneWidget);
@@ -158,6 +161,13 @@ void main() {
       await reveal(tester, row(['MAN-HPU-75', 'doesn’t apply to this unit']));
       await reveal(tester, row(['ECO-0042', 'Thicker frame gussets · FRM-200 rev A → B', 'scheduled', 'retrofit required']));
       await reveal(tester, row(['ECO-0040', 'declined', 'retrofit optional']));
+      await reveal(tester, find.text('DEVIATIONS AND CONCESSIONS (2)'));
+      await reveal(tester, row([
+        'DEV-0007 PMP-11 for PMP-10 at P1',
+        'P1 is a PMP-11 pump, not the PMP-10 the BOM calls for · from BOM-75 rev B',
+        'deviation', 'in effect', 'until 2026-03-31', 'past its end date', //
+      ]));
+      await reveal(tester, row(['CON-0002 Weld undercut W4', 'concession', 'in effect', 'permanent']));
       await reveal(tester, row(['M1 · MTR-7K5', 'S/N M-998877']));
       await reveal(tester, row(['wrong unit', 'voided']));
 

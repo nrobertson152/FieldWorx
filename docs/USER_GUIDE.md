@@ -54,6 +54,10 @@ A unit from RevisionWorx's **unit register** (its page says *Unit*) shows more:
 - **Engineering changes**: each change engineering has decided reaches the unit (a retrofit, a modification, a drawing
   correction), with the drawings it moves and where it stands on this unit (*pending*, *scheduled*, *installed*, *verified*...).
   A required change not yet verified counts as outstanding, and the top of the page says how many there are;
+- **Deviations and concessions**: approved departures from the drawings for this unit: a substitute part allowed while the
+  right one is out of stock (a *deviation*, often temporary, until a date), or a difference accepted after it was built (a
+  *concession*). Where one is *in effect*, the unit may differ as it says, and that isn't a fault to put right. A temporary one
+  past its end date is flagged, and the top of the page says so;
 - **Record**: its history from the unit register, newest first. A correction shows as *voided*, never erased.
 
 The phone shows the unit as it was when the package was made. Changes to a unit are made in RevisionWorx.
