@@ -401,7 +401,7 @@ class _InspectionScreenState extends State<InspectionScreen> {
         ],
         if (atts.any((a) => a['item'] == '')) ...[
           const SectionHeader('Photos'),
-          _PhotoStrip(photos: [for (final a in atts) if (a['item'] == '') a]),
+          PhotoStrip(photos: [for (final a in atts) if (a['item'] == '') a]),
         ],
         if (notes.any((n) => n['item'] == '')) ...[
           const SectionHeader('Notes'),
@@ -559,14 +559,14 @@ class _ItemCardState extends State<_ItemCard> {
           if (conflict)
             _ConflictChooser(item: it, values: values, locked: widget.locked, onChoose: (v) => widget.onAnswer(v))
           else if (kind == 'check')
-            _Choices(
+            ChoiceButtons(
               options: const [('pass', 'Pass', Tone.ok), ('fail', 'Fail', Tone.danger), ('na', 'N/A', Tone.neutral)],
               selected: single['result'] as String?,
               locked: widget.locked,
               onSelect: (v) => widget.onAnswer(v == single['result'] ? {} : {'result': v}),
             )
           else if (kind == 'choice')
-            _Choices(
+            ChoiceButtons(
               options: [for (final c in (it['choices']! as List).cast<String>()) (c, c, Tone.accent)],
               selected: single['choice'] as String?,
               locked: widget.locked,
@@ -631,7 +631,7 @@ class _ItemCardState extends State<_ItemCard> {
               child: Text('Note: ${n['text']} (${n['actor'] == '' ? 'unknown' : n['actor']})',
                   style: TextStyle(color: fx.text, fontSize: 14)),
             ),
-          if (widget.photos.isNotEmpty) ...[const SizedBox(height: 8), _PhotoStrip(photos: widget.photos)],
+          if (widget.photos.isNotEmpty) ...[const SizedBox(height: 8), PhotoStrip(photos: widget.photos)],
           if (it['photo'] == 'required' && widget.photos.isEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 8),
@@ -652,8 +652,9 @@ class _ItemCardState extends State<_ItemCard> {
   }
 }
 
-class _Choices extends StatelessWidget {
-  const _Choices({required this.options, required this.selected, required this.locked, required this.onSelect});
+class ChoiceButtons extends StatelessWidget {
+  const ChoiceButtons(
+      {super.key, required this.options, required this.selected, required this.locked, required this.onSelect});
   final List<(String, String, Tone)> options;
   final String? selected;
   final bool locked;
@@ -726,8 +727,8 @@ class _ConflictChooser extends StatelessWidget {
   }
 }
 
-class _PhotoStrip extends StatelessWidget {
-  const _PhotoStrip({required this.photos});
+class PhotoStrip extends StatelessWidget {
+  const PhotoStrip({super.key, required this.photos});
   final List<Map<String, Object?>> photos;
 
   @override

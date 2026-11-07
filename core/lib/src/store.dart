@@ -18,6 +18,7 @@ import 'dart:io';
 import 'archive.dart';
 import 'catalog.dart';
 import 'events.dart';
+import 'finding.dart';
 import 'fxjson.dart' as fx;
 import 'inspection.dart';
 import 'sha256.dart';
@@ -452,6 +453,21 @@ class FieldStore {
       'subject': subject ?? {'kind': '', 'id': '', 'label': ''},
       'package': t.package.id,
     });
+    return entity;
+  }
+
+  // --------------------------------------------------------------------------------------------- findings
+  /// Every finding this phone holds (docs/PROTOCOL.md section 11), each reduced.
+  List<Map<String, Object?>> findings() => [for (final e in findingEntities(log)) reduceFinding(log, e)];
+
+  Map<String, Object?> finding(String entity) => reduceFinding(log, entity);
+
+  /// Records a new finding: what was found or changed on a unit, for someone in the office to accept into RevisionWorx.
+  /// [body] is a `finding.record` body; it is checked first, so a phone never records one the office can't read.
+  Future<String> recordFinding(Map<String, Object?> body) async {
+    checkFindingRecord(body);
+    final entity = newId('fnd');
+    await record('finding.record', entity, body);
     return entity;
   }
 

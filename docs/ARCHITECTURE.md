@@ -86,6 +86,8 @@ on-device store. It has no Flutter and no plugins, so it runs in the app, in `da
 - `import` brings field logs into the hub; `status` and `report` show what the hub holds.
 - `verify` checks any package or field log without changing anything.
 - `labels` prints FieldWorx labels for what a package holds, as a PDF for sheets of labels or a label printer (ADR-013).
+- `findings` lists what phones found or changed on units, and where each stands in RevisionWorx; `accept` records one
+  in RevisionWorx's unit register (ADR-014). It is the bridge's one write to another program.
 
 It is the reference implementation of the protocol: `spec/make_vectors.py` writes the shared test vectors from it,
 and the Dart core must reproduce them byte for byte.
@@ -200,9 +202,17 @@ An inspection's state (per item: open, pass, fail, N/A, done, photo needed, conf
 incomplete, conflict; status: open, completed, voided, conflict) is reduced from its events. Completing records the
 result the phone computed; reopening and voiding need a reason, kept with the record.
 
-### 6.3 Photos
+### 6.3 Findings (ADR-014)
 
-Photos are stored by content (SHA-256) and referenced from `inspection.attach` records. A field log carries the
+A finding is what someone found or changed on a unit: a part replaced (what came out, what went in, where the old one
+went), what is actually fitted at a position, an engineering change carried out, or a note, with photos. It is its own
+entity (`fnd_…`): one `finding.record`, any photos, and a void if it was a mistake (PROTOCOL.md section 11). A phone
+never changes a unit's record: the finding goes to the office in a field log, and someone there accepts it into
+RevisionWorx's unit register, or doesn't.
+
+### 6.4 Photos
+
+Photos are stored by content (SHA-256) and referenced from `inspection.attach` and `finding.attach` records. A field log carries the
 photos not sent before (or all of them, on request); the hub keeps every one; packages carry the records but not
 the photos, so a phone shows *photo not on this phone* for photos taken elsewhere (KNOWN_LIMITATIONS.md).
 
@@ -359,3 +369,24 @@ which revision of each drawing applies to it, and a drawing can't know which mac
 print of rev B, the phone could only say "rev C is released: work to that", the wrong advice for a machine built to rev B.
 Both kinds were withdrawn before release and are never reused; scanned, they match nothing and say to scan the machine or
 search for the drawing. DraftWorx and OpenSchematix print the drawing and nothing else.
+
+### ADR-014: Findings are proposals; the office accepts them into RevisionWorx, through its command line
+
+**Decision.** What a phone records about a unit's configuration is a *finding* (PROTOCOL.md section 11), never a change
+to the unit. `fieldworx-bridge accept` records it in RevisionWorx's unit register through `revisionworx link`
+(`unit-fit`, `unit-change-install`, `unit-note`; RevisionWorx ADR-027), when someone in the office asks. That is the
+bridge's only write to another program.
+**Why.** RevisionWorx's unit register is the record of what each machine is built to; a phone writing to it, or the
+bridge writing its files, would let an unchecked field note change engineering's record. Going through `link` gives every
+accepted fact what any RevisionWorx entry gets: one journal entry or nothing, signed by the person logged in, checked by
+every computer in a team workspace. The family rule holds: other programs are reached through their documented command
+lines, never by importing their code or writing their files.
+**Shape.** Each fact is *reported* (or *verified*, if the person accepting saw it), with the evidence
+`fieldworx-event:<record event id>` labelled with who reported it and when, so RevisionWorx's history says where it came
+from and the bridge can see that a finding is already accepted. The txid comes from the record's event id, so a retry
+writes nothing twice and a finding is accepted at most once. The bridge compares the finding with what the register
+says first: a replacement whose removed part isn't what the register has, or a find of something other than what is
+recorded, is not recorded until a person decides (`--as fit` or `--as note`). The write carries the unit's event count
+as read (`--if-events`), so a fact recorded meanwhile is never overwritten by a decision made without it.
+**Not done.** A phone doesn't yet see that a finding was accepted: packages would need to carry the evidence, a new
+asset version. Photos stay in the hub; RevisionWorx holds the reference to the field record, not the photo.

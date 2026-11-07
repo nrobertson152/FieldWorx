@@ -3,7 +3,8 @@
 //
 //   dart run bin/fxtool.dart verify FILE                     check a package or field log, print a summary
 //   dart run bin/fxtool.dart simulate PACKAGE OUT_DIR        act as a phone: install, inspect the first asset
-//                                                            with the first template, export a field log
+//                                                            with the first template, record a finding about it,
+//                                                            export a field log
 
 import 'dart:convert';
 import 'dart:io';
@@ -74,8 +75,16 @@ Future<int> simulate(String package, String outDir) async {
     final state = s.inspection(ins);
     if (state['outcome'] != 'pass') throw StateError('expected a pass, got ${state['outcome']}');
     await s.record('inspection.complete', ins, {'result': 'pass', 'summary': 'simulated'});
+    // A finding about the same unit, for the office to accept into RevisionWorx (PROTOCOL section 11).
+    final finding = asset == null
+        ? null
+        : await s.recordFinding({
+            'asset': asset.id, 'what': 'note', 'position': '', 'removed': null, 'fitted': null, 'disposition': '', //
+            'change': '', 'on': '', 'text': 'Guard on P1 loose; tightened. (fxtool)', 'package': t.package.id,
+          });
     final out = await s.exportFieldLog(Directory(outDir), tool: 'fxtool');
-    stdout.writeln(jsonEncode({'ok': true, 'inspection': ins, 'fieldlog': out.path, 'events': s.log.length}));
+    stdout.writeln(jsonEncode(
+        {'ok': true, 'inspection': ins, 'finding': finding, 'fieldlog': out.path, 'events': s.log.length}));
     return 0;
   } finally {
     await root.delete(recursive: true);

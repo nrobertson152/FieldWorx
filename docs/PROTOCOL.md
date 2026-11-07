@@ -377,6 +377,60 @@ Removing a package removes its files unless a field record still refers to them;
 ## 10. Conformance
 
 An implementation conforms when it reproduces every vector in `spec/vectors/` (encodings, refusals, ids, reduced
-inspection states, archive digests) and refuses what the vectors refuse. `python spec/make_vectors.py --check`
+inspection and finding states, archive digests) and refuses what the vectors refuse. `python spec/make_vectors.py --check`
 regenerates them in memory and fails if the files differ; `dart test` in `core/` runs them against the Dart code;
 `tools/interop.sh` runs the bridge and the Dart core against each other through real files.
+
+## 11. Findings: what was found or changed on a unit
+
+A **finding** is something someone in the field saw or did to a unit: a part replaced, what is actually fitted at a
+position, an engineering change carried out, or a note. It is a proposal, never a change: the phone records it, it
+travels in a field log, and someone in the office accepts it into RevisionWorx's unit register, or doesn't. The phone
+never changes a unit's record.
+
+Each finding is its own entity, `fnd_` and 32 random hex digits. Its events:
+
+| `type` | `body` (exactly) |
+|---|---|
+| `finding.record` | `asset`, `what`, `position`, `removed`, `fitted`, `disposition`, `change`, `on`, `text`, `package` (below) |
+| `finding.attach` | `object` (SHA-256), `size`, `media_type` (≤ 100), `caption` (≤ 500) |
+| `finding.void` | `reason` (1–2000): the finding was a mistake |
+
+The record:
+
+| Key | Value |
+|---|---|
+| `asset` | the catalog asset it is about: `unt_…` or `ast_…` |
+| `what` | `replaced` (something was taken out and something fitted in its place), `found` (what is fitted at a position), `change` (an engineering change was carried out), or `note` |
+| `position` | where on the unit, 1–64 characters, for `replaced` and `found`; `""` otherwise |
+| `removed` | for `replaced`, `{number, serial, lot}` (each ≤ 100; all may be `""` when it isn't known what came out); `null` otherwise |
+| `fitted` | for `replaced` and `found`, `{number, serial, lot}` with a number or a serial; `null` otherwise |
+| `disposition` | for `replaced`, what happened to what came out: `scrapped`, `returned`, `repair`, `stock`, `reused` or `unknown`; `""` otherwise |
+| `change` | for `change`, the change order's number (1–64); `""` otherwise |
+| `on` | the day the work was done, `YYYY-MM-DD`, or `""` (the day it was recorded) |
+| `text` | ≤ 4000, newlines allowed: what was seen; required for `note` |
+| `package` | the package the phone had when it was recorded, or `""` |
+
+Text is at most the length given, in characters, without control characters except where newlines are allowed.
+
+**State.** Computed from the finding's events sorted by id. Exactly one `finding.record`, valid as above, or the finding
+is invalid and says why. Its status is `voided` if any `finding.void` is valid, else `recorded`: two phones voiding it
+agree, and nothing un-voids it (record a new finding instead). Photos and voids are listed by time, then event id.
+Records of a kind this version doesn't know, and malformed photos or voids, are kept, reported in `problems` and
+ignored. `reduceFinding` (Dart) and `findings.reduce` (Python) return the same FXJ-able object for the same events.
+Vectors: `findings.json`.
+
+**Accepting.** The office bridge accepts a finding into RevisionWorx through `revisionworx link` (its
+`docs/INTEGRATION.md`, feature `unit-records`), never by writing its files:
+
+- `replaced` and `found` become a component fitted at the position (`unit-fit`, replacing what the register has there
+  for `replaced`), `change` the change carried out (`unit-change-install`), and `note` a note (`unit-note`).
+- Every fact is recorded as *reported*, with the evidence `fieldworx-event:<the record event's id>` labelled with who
+  reported it and when. The txid is the first 32 hex digits of `SHA-256("fieldworx/accept/v1\0" + record event id)`,
+  so retrying writes nothing twice and a finding is accepted at most once.
+- What the register says isn't overwritten by a finding that contradicts it: when the register has something else at
+  the position than what the phone says came out (or found), nothing is recorded until a person decides, either
+  recording it as found or as a note. The write is made only if the unit hasn't changed since the bridge read it
+  (`--if-events`).
+- A finding RevisionWorx already holds (its history cites the record event) is reported as accepted, with the event
+  number, and nothing is written.
