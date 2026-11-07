@@ -268,7 +268,8 @@ warns after 30 days.
 
 **Decision.** The store is a folder of files written under their final names only when complete (`device.json`,
 `settings.json`, `objects/`, `packages/`, `events/`, `exported.json`). A random device id is made on first run and
-the folder is excluded from backups and device transfers.
+the folder is excluded from backups and device transfers on Android; on iOS it isn't yet (KNOWN_LIMITATIONS.md), which
+ADR-015 fixes.
 **Why.** No database to corrupt, nothing half-written after a crash or a flat battery, trivially inspectable. A
 device id restored onto a second phone would let two phones write different events under one chain, which every
 receiver would then refuse as a fork; so it is never backed up (Android: `allowBackup="false"` and
@@ -324,8 +325,8 @@ A PDF made by the owning program is exactly what it prints.
 **Decision.** The first release records the name typed on the phone (`actor`) and the device id. There are no accounts.
 **Why.** The directive rules out accounts and servers, and shop phones are often shared. Device ids and hash chains
 already make every record attributable to a device and tamper-evident.
-**Next.** Device keys (Ed25519) signing each event, with the public key registered at the hub when a phone is
-first imported, so a record can be proved to come from a given phone (ROADMAP.md).
+**Next.** Device keys, decided for 1.0.0 (ADR-015): each phone signs its records, and an administrator enrols the phone
+to the person's RevisionWorx account.
 
 ### ADR-011: Material as a package, the family's themes, and readable colours
 
@@ -391,3 +392,45 @@ recorded, is not recorded until a person decides (`--as fit` or `--as note`). Th
 as read (`--if-events`), so a fact recorded meanwhile is never overwritten by a decision made without it.
 **Not done.** A phone doesn't yet see that a finding was accepted: packages would need to carry the evidence, a new
 asset version. Photos stay in the hub; RevisionWorx holds the reference to the field record, not the photo.
+
+### ADR-015: Device keys, enrolled to workspace accounts (Director's decision, 2026-11-07) — being built
+
+**Decision.** Before 1.0.0, every phone signs the field records it makes with its own Ed25519 key (RFC 8032), and an
+administrator of a RevisionWorx team workspace enrols the phone to the person's account. A finding signed by an
+enrolled phone is accepted into RevisionWorx as *verified* in that person's name; anything else is accepted as
+*reported*, as before. The exact formats are PROTOCOL.md section 12.
+**Why.** The typed name on a phone proves nothing: the office's acceptance is accountable (it is signed in a team
+workspace by whoever is logged in), the field report isn't. A key proves which phone made a record; enrolment says whose
+phone it is, decided by an administrator who has compared the phone's fingerprint, and kept where every computer of the
+team already checks who may change what (RevisionWorx ADR-024).
+**Shape.**
+- *The key* is made on the phone the first time this version runs, from the platform's secure random generator, and is
+  kept in `device.json` beside the device id. It never leaves the phone: the store is excluded from backups on Android
+  (already) and on iOS (`NSURLIsExcludedFromBackupKey`, new), so a restored or second phone can't hold it. One key per
+  device id, for life; a phone that changes hands starts again as a new device.
+- *Signed records* are field events with envelope version 2: the v1 keys plus the device's public `key` and a `sig` over
+  the event's id, which is computed without `sig`. Ed25519 signatures are deterministic, so an event still has exactly one
+  stored form and the hub's fork check is unchanged. Readers refuse a bad signature, a device with two keys, or an
+  unsigned record after a signed one. Version 1 events stay valid: records made before keys are unsigned.
+- *Enrolment* is an administrator's act in RevisionWorx, recorded in the account (`devices`), which only administrators
+  may change under the rules every computer already applies, so no new rule and no format change. The phone shows its
+  device id and a 64-bit fingerprint; a field log carries its key; `fieldworx-bridge enrol` refuses unless the
+  fingerprint typed from the phone's screen matches, then asks RevisionWorx to record it, in the administrator's name.
+- *Acceptance* passes the finding's device, id and signature to `revisionworx link`. RevisionWorx itself checks that the
+  device is enrolled to exactly one active account, isn't revoked, and that the signature holds with the enrolled key,
+  before it records the fact as *verified* with evidence naming the account. A refusal writes nothing.
+**Failure modes.**
+| What happens | What follows |
+|---|---|
+| A phone is lost or stolen | An administrator revokes it; from then on its signatures are refused. Facts already accepted stay, and say which phone signed them |
+| Someone copies the phone's files (a rooted phone, a forensic copy) | They can sign as that phone until it is revoked. The key is protected by the phone's app sandbox and storage encryption, not a hardware keystore |
+| A field log names a real phone's device id with another key | Readers refuse a device whose records carry two keys; RevisionWorx trusts only the enrolled key |
+| Someone makes a key whose fingerprint matches a phone's | 64 bits: around 2^63 tries, impractical; the administrator compares all four groups |
+| The same phone is enrolled to two accounts | It counts as enrolled to neither until an administrator revokes one |
+| Records signed before the phone was enrolled | They are attributed to the account too: the key is the phone's from its first run. Enrol a phone before handing it over; a phone that changes hands starts again as a new device |
+| A phone's clock is wrong | Irrelevant: signatures don't involve times, which are for people |
+| A workspace without accounts (single computer) | Nothing to enrol to: findings are accepted as *reported*, as now |
+**Not done.** The phone doesn't show whether it is enrolled (packages would have to say). Inspections are signed like
+every record, but only findings are accepted into RevisionWorx, so only findings become *verified* there. The private key
+isn't in the platform keystore: Android's supports Ed25519 only on recent versions, and a pure-Dart signer works on every
+phone the app supports.

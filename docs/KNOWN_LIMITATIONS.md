@@ -35,7 +35,13 @@ What FieldWorx doesn't do yet, or hasn't been shown to do. Planned work is in [R
 
 - **Inspections only.** Nonconformances, redlines, work orders and inventory transactions are planned (0.2, 0.3).
 - **Names are as typed.** A record carries the name entered on the phone and the phone's device id; there are no
-  accounts and, so far, no signatures. Hash chains make records tamper-evident, not proof of who held the phone.
+  accounts on the phone and, so far, no signatures. Hash chains make records tamper-evident, not proof of who held the
+  phone. Signed records and phones enrolled to RevisionWorx accounts are decided for 1.0.0 and being built
+  (ARCHITECTURE.md ADR-015).
+- **On iOS the store is in backups.** Android keeps the device's folder out of backups and device transfers; on an
+  iPhone it is in `Application Support`, which iCloud and computer backups include, so a backup restored onto a second
+  iPhone would record under the first one's device id (refused as a fork at the hub). Excluding it is part of ADR-015,
+  since the folder will hold the phone's key.
 - **Clocks are the phones' own.** Times are for people; ordering never depends on them.
 - **An inspection keeps the template revision it started with**, even if a newer one arrives mid-inspection.
 - **Unsent records live only on the phone.** A lost or broken phone loses what wasn't sent. The Inspect tab counts
