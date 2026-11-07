@@ -18,6 +18,7 @@ import 'dart:io';
 import 'archive.dart';
 import 'catalog.dart';
 import 'events.dart';
+import 'finding.dart';
 import 'fxjson.dart' as fx;
 import 'inspection.dart';
 import 'sha256.dart';
