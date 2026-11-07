@@ -26,6 +26,8 @@ fieldworx-bridge import  [-w WORKSPACE | --hub DIR] FILE.fieldlog ...
 fieldworx-bridge status  [-w WORKSPACE | --hub DIR]
 fieldworx-bridge report  [-w WORKSPACE | --hub DIR] -o FOLDER
 fieldworx-bridge verify  FILE
+fieldworx-bridge labels  PACKAGE -o OUT.pdf [--assets] [--parts] [--documents] [--revisions] [--projects]
+                         [--only CODE ...] [--layout a4-24|letter-30|roll-50x25] [--skip N] [--copies N] [--overwrite]
 ```
 
 - **pack** builds a package: the chosen projects' documents (every revision's details; the released revision's
@@ -37,6 +39,8 @@ fieldworx-bridge verify  FILE
 - **status** summarises the hub and lists inspections that need attention (exit 1 if any).
 - **report** writes `inspections.csv` and one self-contained HTML record per inspection, photos included.
 - **verify** checks a package or field log completely, changing nothing.
+- **labels** lays out FieldWorx labels (QR code, number, description) for what a package holds, as a PDF for label
+  sheets or a label printer. A name given with `--only` that matches nothing stops it with nothing written.
 
 Exit codes: 0 done; 1 `verify` found the file unusable, or `status` found something needing attention; 2 refused
 (bad input, a damaged file, a forked history, a missing program), with the reason on standard error and nothing
@@ -48,12 +52,13 @@ changed.
 
 The formats are in [docs/PROTOCOL.md](../docs/PROTOCOL.md); the design in
 [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md). `fieldworx_bridge/rwx_client.py` is RevisionWorx's reference client
-(`contrib/rwx_client.py`), copied unchanged as RevisionWorx's integration guide asks.
+(`contrib/rwx_client.py`), copied unchanged as RevisionWorx's integration guide asks. `fieldworx_bridge/fwx_label.py`
+is the reference QR encoder for FieldWorx labels, for other programs to copy unchanged.
 
 ## Tests
 
 ```sh
-python -m pip install -e bridge pytest
+python -m pip install -e "bridge[dev]"     # test-only: pytest, python-qrcode, zxing-cpp, numpy, pypdfium2
 python -m pytest bridge -q
 ```
 

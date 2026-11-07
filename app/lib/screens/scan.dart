@@ -48,7 +48,7 @@ class _ScanTabState extends State<ScanTab> {
     setState(() => _away = true);
     if (r.isUnique) {
       final x = r.matches.single;
-      await openEntity(context, x.kind, x.id);
+      await openEntity(context, x.kind, x.id, revision: r.revision);
     } else {
       await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ScanResultScreen(result: r)));
     }
@@ -187,16 +187,27 @@ class ScanResultScreen extends StatelessWidget {
       body: PageList(children: [
         StatusBlock(
           icon: 'scan',
-          kind: r.typed == null ? 'Scanned' : 'FieldWorx label: ${kindName(r.typed!)}',
+          kind: r.revision.isNotEmpty
+              ? 'FieldWorx label: Revision'
+              : r.problem.isNotEmpty
+                  ? 'FieldWorx label'
+                  : r.typed == null
+                      ? 'Scanned'
+                      : 'FieldWorx label: ${kindName(r.typed!)}',
           title: r.code,
           subtitle: r.raw.trim() != r.code ? r.raw.trim() : '',
         ),
         if (r.matches.isEmpty) ...[
           const SizedBox(height: 12),
           NoticeBanner(
-            'Nothing in this phone’s packages has this ${r.typed == null ? 'code' : kindName(r.typed!).toLowerCase()} '
-            'as a tag, serial, part, project or document number, maker’s or supplier’s code, or reference designator. '
-            'It may be in a package that isn’t on this phone, or the label may be wrong.',
+            r.problem.isNotEmpty
+                ? r.problem
+                : r.revision.isNotEmpty
+                    ? 'No document with this number is in this phone’s packages. It may be in a package that isn’t on '
+                        'this phone, or the label may be wrong.'
+                    : 'Nothing in this phone’s packages has this ${r.typed == null ? 'code' : kindName(r.typed!).toLowerCase()} '
+                        'as a tag, serial, part, project or document number, maker’s or supplier’s code, or reference '
+                        'designator. It may be in a package that isn’t on this phone, or the label may be wrong.',
             tone: Tone.warn,
           ),
           const SizedBox(height: 12),
@@ -215,7 +226,7 @@ class ScanResultScreen extends StatelessWidget {
                 title: x.title,
                 subtitle: [kindName(x.kind), x.subtitle].where((s) => s.isNotEmpty).join(' · '),
                 chips: [StatusChip(x.why)],
-                onTap: () => openEntity(context, x.kind, x.id),
+                onTap: () => openEntity(context, x.kind, x.id, revision: r.revision),
               ),
           ]),
         ],

@@ -34,7 +34,7 @@ resolved; commit it when it changes (CI uploads it as the `pubspec-lock` artifac
 
 ```sh
 # Bridge (RevisionWorx and OpenMeridian installed, e.g. from their repositories)
-python -m pip install -e bridge pytest
+python -m pip install -e "bridge[dev]"     # pytest, and the test-only checks for labels (python-qrcode, zxing-cpp, pdfium)
 python -m pytest bridge -q
 
 # The vectors are what the reference produces

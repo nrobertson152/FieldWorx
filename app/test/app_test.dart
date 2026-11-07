@@ -108,6 +108,42 @@ void main() {
       await tapAndWait(tester, button('Search for “NOPE-1”'), find.text('No matches'));
     });
 
+    testWidgets('a revision label on a print says whether it is the released revision; an unknown kind matches nothing',
+        (tester) async {
+      phone(tester, height: 900);
+      final (m, s) = await openPhone(tester);
+      await showApp(tester, m);
+
+      s.scan('FWX:R:FRM-200@B');
+      await waitFor(tester, find.text('This label is for revision B, the released revision.'));
+      expect(button('Open rev B'), findsNothing, reason: 'the page’s own action already opens the released revision');
+      await back(tester);
+
+      s.scan('FWX:R:frm-200@a');
+      await waitFor(tester,
+          find.text('This label is for revision A, which is superseded. Revision B is released: work to that.'));
+      expect(button('Open drawing · rev B'), findsOneWidget, reason: 'the primary action is still the released revision');
+      await tapAndWait(tester, button('Open rev A'), find.text('Superseded. The current revision is B.'));
+      await back(tester);
+      await back(tester);
+
+      s.scan('FWX:R:FRM-200@C');
+      await waitFor(tester, find.textContaining('This label is for revision C, which isn’t in this phone’s packages'));
+      expect(find.textContaining('Revision B is the released one here.'), findsOneWidget);
+      await back(tester);
+
+      s.scan('FWX:R:FRM-200');
+      await waitFor(tester, find.text('Not found'));
+      expect(find.textContaining('like FWX:R:FRM-200@B. This one doesn’t.'), findsOneWidget);
+      await back(tester);
+
+      s.scan('FWX:L:FRM-200');
+      await waitFor(tester, find.text('Not found'));
+      expect(find.text('FIELDWORX LABEL'), findsOneWidget);
+      expect(find.textContaining('of a kind (L) this version of FieldWorx doesn’t read'), findsOneWidget,
+          reason: 'a kind this version doesn’t know matches nothing, though FRM-200 is a part and a document');
+    });
+
     testWidgets('a unit from the unit register: its permanent label, standard, differences, fitted units and record',
         (tester) async {
       phone(tester, height: 1600);

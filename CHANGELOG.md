@@ -45,6 +45,17 @@ The first field release: QR scanning, engineering document access, part lookup a
 - **PDFs engineering attached to native drawings** (RevisionWorx's `pdf-derivatives` feature): an Inventor, SolidWorks or
   other CAD revision opens on the phone through the PDF attached to exactly that revision (`revisionworx doc pdf`); a revision
   without one never shows another revision's.
+- **Labels:**
+  - `fieldworx-bridge labels` prints labels for a package's units and assets, parts, documents, released revisions or
+    projects, as a PDF for A4 or US Letter label sheets or a label printer. Each label has a QR code (level Q), what
+    it is, its number, a description and the code to type. `--only`, `--skip` and `--copies` pick what and where.
+  - Revision labels, `FWX:R:<document>@<revision>`, for prints: the phone opens the document and says whether that
+    revision is the released one, which one to work to if it is superseded, and that a revision it doesn't have may
+    be newer than its packages.
+  - `fwx_label.py`, the standard-library QR encoder other programs copy to print FieldWorx codes, checked bit for bit
+    against python-qrcode and read back with zxing-cpp.
+  - A label of a kind the phone doesn't read (`FWX:L:…`) now matches nothing and says so, as the protocol says. It
+    used to be matched by its code alone.
 - **Demo**: Northline Hydraulics' HPU-75, built from scratch through RevisionWorx, with two units and their
   acceptance tests.
 - **Documentation**: architecture and decisions, protocol, roadmap, user guide, known limitations, development

@@ -315,9 +315,21 @@ A FieldWorx label is a QR code (or any barcode) holding `FWX:<kind>:<code>`:
 | `P` | part | part number |
 | `D` | document | document number |
 | `J` | project | project number |
+| `R` | one revision of a document: `FWX:R:<number>@<revision>`, the revision being what follows the last `@` | the document number; the result is the document, saying whether the labelled revision is the released one |
 
-`R` (one revision of a document, `FWX:R:<number>@<revision>`), `L` (a storage location) and `W` (a work order) are reserved
-for later versions; a reader that doesn't know a kind says so and matches nothing.
+A revision label goes on a print of that revision. Scanned, it finds the document by number and says one of three things:
+the labelled revision is the released one; it is another revision the device has (superseded, or not released), and which
+one is released; or the device doesn't have it, which says nothing about whether it is current, since it may be newer than
+the packages. A revision label without a number or a revision matches nothing and says it is malformed.
+
+`L` (a storage location) and `W` (a work order) are reserved for later versions. A reader that doesn't know a kind says so
+and matches nothing, even when the code alone would match something.
+
+**Printing.** FieldWorx labels are QR Code model 2 (ISO/IEC 18004), the text in UTF-8 in byte mode without an ECI header,
+at error correction level Q, with a quiet zone of at least 4 modules. The reference encoder is one standard-library file,
+`bridge/fieldworx_bridge/fwx_label.py`, which other programs copy unchanged to print FieldWorx codes. The words printed
+beside a code are what it is, its number and a description, and the code itself for typing; never anything that changes
+(a revision's state, a unit's status, owner or site).
 
 A unit's permanent label holds its id, so it never changes when its serial, tag, owner or drawings do, and a reprint is
 identical. Ids are random, so labels from different companies never collide. Labels never contain a URL, a customer or a site.

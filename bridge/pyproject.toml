@@ -20,7 +20,9 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest"]
+# Tests only. The label tests check fwx_label.py against an encoder (python-qrcode) and a decoder (zxing-cpp, as in the
+# app) that share no code with it, and render label sheets with pdfium; the bridge itself uses the standard library.
+dev = ["pytest", "qrcode>=7.4", "zxing-cpp>=2.2", "numpy", "pypdfium2>=4.20"]
 
 [project.scripts]
 fieldworx-bridge = "fieldworx_bridge.cli:main"

@@ -26,7 +26,6 @@ What FieldWorx doesn't do yet, or hasn't been shown to do. Planned work is in [R
 - **Records about a unit don't reach its unit register yet.** Inspections are kept in the hub and shown on the
   unit's page; turning a field finding (a serial read off a pump, a part replaced) into an entry in RevisionWorx's
   unit register, marked as reported, is planned.
-- **A unit's label is printed from its id** (`revisionworx unit show`); the bridge doesn't print label sheets yet.
 
 ## What the phone records
 
@@ -53,7 +52,15 @@ What FieldWorx doesn't do yet, or hasn't been shown to do. Planned work is in [R
 
 - **Hardware scanners** (rugged phones' scan keys) work when they type into the code field on the Scan tab, which
   has to have focus. Intent-based scanners (Zebra DataWedge) aren't supported yet.
-- **Labels must be printed** with any QR or barcode software for now; the bridge doesn't make label sheets yet.
+- **Label sheets come in three layouts** (A4 70 x 37 mm, US Letter 2-5/8 x 1 in, a 50 x 25 mm label printer), proposed
+  for the Director to confirm. Other stock needs a new layout in `labels.py`.
+- **Label text uses the fonts every PDF reader has**, which cover Western European letters. Other letters print as "?"
+  beside the code; the QR code always holds the exact text.
+- **Codes print up to QR version 10** (151 bytes at level Q). A longer number is refused with a message, not shrunk.
+- **Sheets that run to the edge of the paper** (the A4 layout does) need a printer that prints close to the edge. Print
+  a test sheet on plain paper first.
+- **Labels have been checked by rendering and decoding**, with the decoder the app uses, not by printing on real label
+  stock and scanning with phones.
 
 ## What has and hasn't been verified
 
