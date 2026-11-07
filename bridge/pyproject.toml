@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fieldworx-bridge"
+dynamic = ["version"]
+description = "Desktop side of FieldWorx: packages for the phones from RevisionWorx, field records back"
+readme = "README.md"
+license = { text = "GPL-3.0-or-later" }
+requires-python = ">=3.10"
+dependencies = []          # standard library only, like the rest of the family's cores
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Intended Audience :: Manufacturing",
+    "Topic :: Scientific/Engineering",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.scripts]
+fieldworx-bridge = "fieldworx_bridge.cli:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "fieldworx_bridge.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["fieldworx_bridge*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-markers"
+markers = [
+    "revisionworx: needs RevisionWorx installed; skipped without it",
+]

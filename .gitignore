@@ -1,0 +1,38 @@
+# Dart / Flutter
+.dart_tool/
+.packages
+build/
+pubspec_overrides.yaml
+*.iml
+.idea/
+.flutter-plugins
+.flutter-plugins-dependencies
+app/android/.gradle/
+app/android/local.properties
+app/android/app/debug/
+app/android/app/release/
+app/android/key.properties
+app/android/.kotlin/
+app/android/app/.cxx/
+app/ios/Flutter/ephemeral/
+app/coverage/
+app/ios/Pods/
+app/ios/.symlinks/
+app/ios/Flutter/Generated.xcconfig
+app/ios/Flutter/flutter_export_environment.sh
+app/ios/Runner/GeneratedPluginRegistrant.*
+*.keystore
+*.jks
+
+.DS_Store
+
+# Python
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.venv/
+
+# Outputs
+*.fieldlog.tmp
+/out/
+core/pubspec.lock

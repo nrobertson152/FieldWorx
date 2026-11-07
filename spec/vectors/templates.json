@@ -1,0 +1,853 @@
+{
+ "bad": [
+  {
+   "name": "wrong format",
+   "template": {
+    "description": "",
+    "format": "other",
+    "id": "ITP-TEST",
+    "revision": "B",
+    "sections": [
+     {
+      "items": [
+       {
+        "help": "",
+        "id": "1",
+        "kind": "check",
+        "photo": "none",
+        "prompt": "Guards fitted",
+        "required": true
+       },
+       {
+        "help": "",
+        "id": "2",
+        "kind": "measure",
+        "max": "0.05",
+        "min": "-0.05",
+        "nominal": "0",
+        "photo": "none",
+        "prompt": "Offset",
+        "required": true,
+        "unit": "mm"
+       },
+       {
+        "help": "",
+        "id": "3",
+        "kind": "measure",
+        "max": "",
+        "min": "100",
+        "nominal": "",
+        "photo": "none",
+        "prompt": "Insulation",
+        "required": true,
+        "unit": "MΩ"
+       }
+      ],
+      "title": "Checks"
+     },
+     {
+      "items": [
+       {
+        "help": "",
+        "id": "4",
+        "kind": "text",
+        "photo": "optional",
+        "prompt": "Remarks",
+        "required": false
+       },
+       {
+        "choices": [
+         "A",
+         "B"
+        ],
+        "help": "",
+        "id": "5",
+        "kind": "choice",
+        "photo": "none",
+        "prompt": "Frame revision",
+        "required": true
+       },
+       {
+        "help": "",
+        "id": "6",
+        "kind": "check",
+        "photo": "required",
+        "prompt": "Nameplate",
+        "required": true
+       }
+      ],
+      "title": "Records"
+     }
+    ],
+    "title": "Vector template",
+    "version": 1
+   }
+  },
+  {
+   "name": "no sections",
+   "template": {
+    "description": "",
+    "format": "fieldworx.template",
+    "id": "ITP-TEST",
+    "revision": "B",
+    "sections": [],
+    "title": "Vector template",
+    "version": 1
+   }
+  },
+  {
+   "name": "duplicate item id (case)",
+   "template": {
+    "description": "",
+    "format": "fieldworx.template",
+    "id": "ITP-TEST",
+    "revision": "B",
+    "sections": [
+     {
+      "items": [
+       {
+        "help": "",
+        "id": "1",
+        "kind": "check",
+        "photo": "none",
+        "prompt": "Guards fitted",
+        "required": true
+       },
+       {
+        "help": "",
+        "id": "2",
+        "kind": "measure",
+        "max": "0.05",
+        "min": "-0.05",
+        "nominal": "0",
+        "photo": "none",
+        "prompt": "Offset",
+        "required": true,
+        "unit": "mm"
+       },
+       {
+        "help": "",
+        "id": "3",
+        "kind": "measure",
+        "max": "",
+        "min": "100",
+        "nominal": "",
+        "photo": "none",
+        "prompt": "Insulation",
+        "required": true,
+        "unit": "MΩ"
+       }
+      ],
+      "title": "Checks"
+     },
+     {
+      "items": [
+       {
+        "help": "",
+        "id": "4",
+        "kind": "text",
+        "photo": "optional",
+        "prompt": "Remarks",
+        "required": false
+       },
+       {
+        "choices": [
+         "A",
+         "B"
+        ],
+        "help": "",
+        "id": "5",
+        "kind": "choice",
+        "photo": "none",
+        "prompt": "Frame revision",
+        "required": true
+       },
+       {
+        "help": "",
+        "id": "6",
+        "kind": "check",
+        "photo": "required",
+        "prompt": "Nameplate",
+        "required": true
+       },
+       {
+        "help": "",
+        "id": "1",
+        "kind": "check",
+        "photo": "none",
+        "prompt": "Guards fitted",
+        "required": true
+       }
+      ],
+      "title": "Records"
+     }
+    ],
+    "title": "Vector template",
+    "version": 1
+   }
+  },
+  {
+   "name": "measure min above max",
+   "template": {
+    "description": "",
+    "format": "fieldworx.template",
+    "id": "ITP-TEST",
+    "revision": "B",
+    "sections": [
+     {
+      "items": [
+       {
+        "help": "",
+        "id": "1",
+        "kind": "check",
+        "photo": "none",
+        "prompt": "Guards fitted",
+        "required": true
+       },
+       {
+        "help": "",
+        "id": "2",
+        "kind": "measure",
+        "max": "0",
+        "min": "1",
+        "nominal": "0",
+        "photo": "none",
+        "prompt": "Offset",
+        "required": true,
+        "unit": "mm"
+       },
+       {
+        "help": "",
+        "id": "3",
+        "kind": "measure",
+        "max": "",
+        "min": "100",
+        "nominal": "",
+        "photo": "none",
+        "prompt": "Insulation",
+        "required": true,
+        "unit": "MΩ"
+       }
+      ],
+      "title": "Checks"
+     },
+     {
+      "items": [
+       {
+        "help": "",
+        "id": "4",
+        "kind": "text",
+        "photo": "optional",
+        "prompt": "Remarks",
+        "required": false
+       },
+       {
+        "choices": [
+         "A",
+         "B"
+        ],
+        "help": "",
+        "id": "5",
+        "kind": "choice",
+        "photo": "none",
+        "prompt": "Frame revision",
+        "required": true
+       },
+       {
+        "help": "",
+        "id": "6",
+        "kind": "check",
+        "photo": "required",
+        "prompt": "Nameplate",
+        "required": true
+       }
+      ],
+      "title": "Records"
+     }
+    ],
+    "title": "Vector template",
+    "version": 1
+   }
+  },
+  {
+   "name": "measure decimal with exponent",
+   "template": {
+    "description": "",
+    "format": "fieldworx.template",
+    "id": "ITP-TEST",
+    "revision": "B",
+    "sections": [
+     {
+      "items": [
+       {
+        "help": "",
+        "id": "1",
+        "kind": "check",
+        "photo": "none",
+        "prompt": "Guards fitted",
+        "required": true
+       },
+       {
+        "help": "",
+        "id": "2",
+        "kind": "measure",
+        "max": "0.05",
+        "min": "1e2",
+        "nominal": "0",
+        "photo": "none",
+        "prompt": "Offset",
+        "required": true,
+        "unit": "mm"
+       },
+       {
+        "help": "",
+        "id": "3",
+        "kind": "measure",
+        "max": "",
+        "min": "100",
+        "nominal": "",
+        "photo": "none",
+        "prompt": "Insulation",
+        "required": true,
+        "unit": "MΩ"
+       }
+      ],
+      "title": "Checks"
+     },
+     {
+      "items": [
+       {
+        "help": "",
+        "id": "4",
+        "kind": "text",
+        "photo": "optional",
+        "prompt": "Remarks",
+        "required": false
+       },
+       {
+        "choices": [
+         "A",
+         "B"
+        ],
+        "help": "",
+        "id": "5",
+        "kind": "choice",
+        "photo": "none",
+        "prompt": "Frame revision",
+        "required": true
+       },
+       {
+        "help": "",
+        "id": "6",
+        "kind": "check",
+        "photo": "required",
+        "prompt": "Nameplate",
+        "required": true
+       }
+      ],
+      "title": "Records"
+     }
+    ],
+    "title": "Vector template",
+    "version": 1
+   }
+  },
+  {
+   "name": "choice with one choice",
+   "template": {
+    "description": "",
+    "format": "fieldworx.template",
+    "id": "ITP-TEST",
+    "revision": "B",
+    "sections": [
+     {
+      "items": [
+       {
+        "help": "",
+        "id": "1",
+        "kind": "check",
+        "photo": "none",
+        "prompt": "Guards fitted",
+        "required": true
+       },
+       {
+        "help": "",
+        "id": "2",
+        "kind": "measure",
+        "max": "0.05",
+        "min": "-0.05",
+        "nominal": "0",
+        "photo": "none",
+        "prompt": "Offset",
+        "required": true,
+        "unit": "mm"
+       },
+       {
+        "help": "",
+        "id": "3",
+        "kind": "measure",
+        "max": "",
+        "min": "100",
+        "nominal": "",
+        "photo": "none",
+        "prompt": "Insulation",
+        "required": true,
+        "unit": "MΩ"
+       }
+      ],
+      "title": "Checks"
+     },
+     {
+      "items": [
+       {
+        "help": "",
+        "id": "4",
+        "kind": "text",
+        "photo": "optional",
+        "prompt": "Remarks",
+        "required": false
+       },
+       {
+        "choices": [
+         "A"
+        ],
+        "help": "",
+        "id": "5",
+        "kind": "choice",
+        "photo": "none",
+        "prompt": "Frame revision",
+        "required": true
+       },
+       {
+        "help": "",
+        "id": "6",
+        "kind": "check",
+        "photo": "required",
+        "prompt": "Nameplate",
+        "required": true
+       }
+      ],
+      "title": "Records"
+     }
+    ],
+    "title": "Vector template",
+    "version": 1
+   }
+  },
+  {
+   "name": "unknown kind",
+   "template": {
+    "description": "",
+    "format": "fieldworx.template",
+    "id": "ITP-TEST",
+    "revision": "B",
+    "sections": [
+     {
+      "items": [
+       {
+        "help": "",
+        "id": "1",
+        "kind": "slider",
+        "photo": "none",
+        "prompt": "Guards fitted",
+        "required": true
+       },
+       {
+        "help": "",
+        "id": "2",
+        "kind": "measure",
+        "max": "0.05",
+        "min": "-0.05",
+        "nominal": "0",
+        "photo": "none",
+        "prompt": "Offset",
+        "required": true,
+        "unit": "mm"
+       },
+       {
+        "help": "",
+        "id": "3",
+        "kind": "measure",
+        "max": "",
+        "min": "100",
+        "nominal": "",
+        "photo": "none",
+        "prompt": "Insulation",
+        "required": true,
+        "unit": "MΩ"
+       }
+      ],
+      "title": "Checks"
+     },
+     {
+      "items": [
+       {
+        "help": "",
+        "id": "4",
+        "kind": "text",
+        "photo": "optional",
+        "prompt": "Remarks",
+        "required": false
+       },
+       {
+        "choices": [
+         "A",
+         "B"
+        ],
+        "help": "",
+        "id": "5",
+        "kind": "choice",
+        "photo": "none",
+        "prompt": "Frame revision",
+        "required": true
+       },
+       {
+        "help": "",
+        "id": "6",
+        "kind": "check",
+        "photo": "required",
+        "prompt": "Nameplate",
+        "required": true
+       }
+      ],
+      "title": "Records"
+     }
+    ],
+    "title": "Vector template",
+    "version": 1
+   }
+  },
+  {
+   "name": "check with unit",
+   "template": {
+    "description": "",
+    "format": "fieldworx.template",
+    "id": "ITP-TEST",
+    "revision": "B",
+    "sections": [
+     {
+      "items": [
+       {
+        "help": "",
+        "id": "1",
+        "kind": "check",
+        "photo": "none",
+        "prompt": "Guards fitted",
+        "required": true,
+        "unit": "mm"
+       },
+       {
+        "help": "",
+        "id": "2",
+        "kind": "measure",
+        "max": "0.05",
+        "min": "-0.05",
+        "nominal": "0",
+        "photo": "none",
+        "prompt": "Offset",
+        "required": true,
+        "unit": "mm"
+       },
+       {
+        "help": "",
+        "id": "3",
+        "kind": "measure",
+        "max": "",
+        "min": "100",
+        "nominal": "",
+        "photo": "none",
+        "prompt": "Insulation",
+        "required": true,
+        "unit": "MΩ"
+       }
+      ],
+      "title": "Checks"
+     },
+     {
+      "items": [
+       {
+        "help": "",
+        "id": "4",
+        "kind": "text",
+        "photo": "optional",
+        "prompt": "Remarks",
+        "required": false
+       },
+       {
+        "choices": [
+         "A",
+         "B"
+        ],
+        "help": "",
+        "id": "5",
+        "kind": "choice",
+        "photo": "none",
+        "prompt": "Frame revision",
+        "required": true
+       },
+       {
+        "help": "",
+        "id": "6",
+        "kind": "check",
+        "photo": "required",
+        "prompt": "Nameplate",
+        "required": true
+       }
+      ],
+      "title": "Records"
+     }
+    ],
+    "title": "Vector template",
+    "version": 1
+   }
+  },
+  {
+   "name": "photo value",
+   "template": {
+    "description": "",
+    "format": "fieldworx.template",
+    "id": "ITP-TEST",
+    "revision": "B",
+    "sections": [
+     {
+      "items": [
+       {
+        "help": "",
+        "id": "1",
+        "kind": "check",
+        "photo": "maybe",
+        "prompt": "Guards fitted",
+        "required": true
+       },
+       {
+        "help": "",
+        "id": "2",
+        "kind": "measure",
+        "max": "0.05",
+        "min": "-0.05",
+        "nominal": "0",
+        "photo": "none",
+        "prompt": "Offset",
+        "required": true,
+        "unit": "mm"
+       },
+       {
+        "help": "",
+        "id": "3",
+        "kind": "measure",
+        "max": "",
+        "min": "100",
+        "nominal": "",
+        "photo": "none",
+        "prompt": "Insulation",
+        "required": true,
+        "unit": "MΩ"
+       }
+      ],
+      "title": "Checks"
+     },
+     {
+      "items": [
+       {
+        "help": "",
+        "id": "4",
+        "kind": "text",
+        "photo": "optional",
+        "prompt": "Remarks",
+        "required": false
+       },
+       {
+        "choices": [
+         "A",
+         "B"
+        ],
+        "help": "",
+        "id": "5",
+        "kind": "choice",
+        "photo": "none",
+        "prompt": "Frame revision",
+        "required": true
+       },
+       {
+        "help": "",
+        "id": "6",
+        "kind": "check",
+        "photo": "required",
+        "prompt": "Nameplate",
+        "required": true
+       }
+      ],
+      "title": "Records"
+     }
+    ],
+    "title": "Vector template",
+    "version": 1
+   }
+  },
+  {
+   "name": "empty prompt",
+   "template": {
+    "description": "",
+    "format": "fieldworx.template",
+    "id": "ITP-TEST",
+    "revision": "B",
+    "sections": [
+     {
+      "items": [
+       {
+        "help": "",
+        "id": "1",
+        "kind": "check",
+        "photo": "none",
+        "prompt": "  ",
+        "required": true
+       },
+       {
+        "help": "",
+        "id": "2",
+        "kind": "measure",
+        "max": "0.05",
+        "min": "-0.05",
+        "nominal": "0",
+        "photo": "none",
+        "prompt": "Offset",
+        "required": true,
+        "unit": "mm"
+       },
+       {
+        "help": "",
+        "id": "3",
+        "kind": "measure",
+        "max": "",
+        "min": "100",
+        "nominal": "",
+        "photo": "none",
+        "prompt": "Insulation",
+        "required": true,
+        "unit": "MΩ"
+       }
+      ],
+      "title": "Checks"
+     },
+     {
+      "items": [
+       {
+        "help": "",
+        "id": "4",
+        "kind": "text",
+        "photo": "optional",
+        "prompt": "Remarks",
+        "required": false
+       },
+       {
+        "choices": [
+         "A",
+         "B"
+        ],
+        "help": "",
+        "id": "5",
+        "kind": "choice",
+        "photo": "none",
+        "prompt": "Frame revision",
+        "required": true
+       },
+       {
+        "help": "",
+        "id": "6",
+        "kind": "check",
+        "photo": "required",
+        "prompt": "Nameplate",
+        "required": true
+       }
+      ],
+      "title": "Records"
+     }
+    ],
+    "title": "Vector template",
+    "version": 1
+   }
+  }
+ ],
+ "good": [
+  {
+   "description": "",
+   "format": "fieldworx.template",
+   "id": "ITP-TEST",
+   "revision": "B",
+   "sections": [
+    {
+     "items": [
+      {
+       "help": "",
+       "id": "1",
+       "kind": "check",
+       "photo": "none",
+       "prompt": "Guards fitted",
+       "required": true
+      },
+      {
+       "help": "",
+       "id": "2",
+       "kind": "measure",
+       "max": "0.05",
+       "min": "-0.05",
+       "nominal": "0",
+       "photo": "none",
+       "prompt": "Offset",
+       "required": true,
+       "unit": "mm"
+      },
+      {
+       "help": "",
+       "id": "3",
+       "kind": "measure",
+       "max": "",
+       "min": "100",
+       "nominal": "",
+       "photo": "none",
+       "prompt": "Insulation",
+       "required": true,
+       "unit": "MΩ"
+      }
+     ],
+     "title": "Checks"
+    },
+    {
+     "items": [
+      {
+       "help": "",
+       "id": "4",
+       "kind": "text",
+       "photo": "optional",
+       "prompt": "Remarks",
+       "required": false
+      },
+      {
+       "choices": [
+        "A",
+        "B"
+       ],
+       "help": "",
+       "id": "5",
+       "kind": "choice",
+       "photo": "none",
+       "prompt": "Frame revision",
+       "required": true
+      },
+      {
+       "help": "",
+       "id": "6",
+       "kind": "check",
+       "photo": "required",
+       "prompt": "Nameplate",
+       "required": true
+      }
+     ],
+     "title": "Records"
+    }
+   ],
+   "title": "Vector template",
+   "version": 1
+  }
+ ]
+}

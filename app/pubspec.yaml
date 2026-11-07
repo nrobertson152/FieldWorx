@@ -1,0 +1,36 @@
+name: fieldworx
+description: >-
+  FieldWorx: the field companion to RevisionWorx. Scan a label, open the released drawing, look up a part,
+  run an inspection, all offline.
+publish_to: none
+version: 0.1.0+1
+repository: https://github.com/nrobertson152/FieldWorx
+
+environment:
+  sdk: ^3.11.0
+  flutter: ">=3.47.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # The Material library as a package (Flutter 3.47 moved it out of the framework).
+  material_ui: ^1.10.0
+  # The protocol, catalog and on-device store: pure Dart, tested on its own (../core).
+  fieldworx_core:
+    path: ../core
+  # Each plugin below is open source and works offline; none needs Google Play services or an account.
+  path_provider: ^2.1.6        # where the app keeps its files
+  pdfrx: ^2.12.0               # drawings (PDFium, BSD-3-Clause)
+  flutter_zxing: ^3.1.0        # QR and barcode scanning and label QR codes (zxing-cpp, Apache-2.0)
+  image_picker: ^1.2.4         # inspection photos with the system camera
+  file_selector: ^1.1.0        # choosing package and field log files
+  share_plus: ^13.3.1          # sending field logs (USB, e-mail, shared folders: whatever the shop uses)
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/demo/
