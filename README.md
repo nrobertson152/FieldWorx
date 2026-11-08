@@ -38,8 +38,9 @@ The design is in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and the formats in
 
 ## Try it
 
-Install the app (an APK from the latest CI run's artifacts, or build it: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)),
-enter your name and tap **Try the demo (HPU-75)**: a hydraulic power unit with two units built, a revised frame
+Install the app (the APK from a release once there is one, a test build from a CI run's artifacts, or build it:
+[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md); a test build doesn't update to a release, so send its field log and
+uninstall it first), enter your name and tap **Try the demo (HPU-75)**: a hydraulic power unit with two units built, a revised frame
 drawing, a schematic, a BOM, stock and a 16-item inspection plan. Then type `HPU-0001`, `K1` or `FRM-200` on the
 Scan tab. The [user guide](docs/USER_GUIDE.md) walks through the rest, for the phone and for the office.
 

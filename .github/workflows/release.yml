@@ -1,0 +1,141 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Started by hand to build a release (docs/DEVELOPMENT.md, "Signing and releases"): the Android APK signed with the
+# release key from the repository's secrets, and the office bridge. It never falls back to the debug key: a missing
+# secret, an APK signed with the debug key or any other certificate than the release one, or an APK asking for more
+# than the camera fails it (tools/release_checks.py, tested in CI). Its token can only read, so it tags and publishes
+# nothing; the run's artifacts are what goes into the GitHub release, which AGENTS.md says who makes.
+name: Release build
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "The tag (v1.0.0) or commit to build"
+        required: true
+
+permissions:
+  contents: read
+
+env:
+  FLUTTER_VERSION: "3.47.9"
+
+jobs:
+  android:
+    name: Android APK, signed with the release key
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+      - name: One version, and the one the tag names
+        id: version
+        working-directory: .
+        env:
+          REF: ${{ inputs.ref }}
+        run: |
+          version="$(python3 tools/release_checks.py version "$REF")"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: The release key, from the repository's secrets
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          missing=""
+          for v in KEYSTORE STORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do [ -n "${!v}" ] || missing="$missing $v"; done
+          if [ -n "$missing" ]; then
+            echo "::error::the release key's secrets aren't all set (missing:$missing; docs/DEVELOPMENT.md). A release is never signed with the debug key."
+            exit 1
+          fi
+          umask 077
+          printf '%s' "$KEYSTORE" | base64 -d > "$RUNNER_TEMP/fieldworx-release.jks"
+          printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
+            "$RUNNER_TEMP/fieldworx-release.jks" "$STORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" > android/key.properties
+      - run: flutter pub get
+      - name: Android build
+        run: flutter build apk --release
+      - name: The key leaves nothing behind
+        if: always()
+        run: rm -f android/key.properties "$RUNNER_TEMP/fieldworx-release.jks"
+      - name: Signed with the release certificate, never the debug key
+        env:
+          RELEASE_CERT: ${{ vars.ANDROID_CERT_SHA256 }}
+        run: |
+          tools="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)"
+          "${tools}apksigner" verify --verbose --print-certs build/app/outputs/flutter-apk/app-release.apk 2>&1 | tee certs.txt
+          python3 ../tools/release_checks.py signer certs.txt --release-cert "$RELEASE_CERT"
+      - name: Asks for the camera and nothing else (no network, no storage, no microphone)
+        run: |
+          tools="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)"
+          "${tools}aapt" dump permissions build/app/outputs/flutter-apk/app-release.apk | tee perms.txt
+          python3 ../tools/release_checks.py permissions perms.txt
+      - name: The APK and its SHA-256
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          mkdir -p ../release
+          cp build/app/outputs/flutter-apk/app-release.apk "../release/fieldworx-$VERSION.apk"
+          cd ../release && sha256sum "fieldworx-$VERSION.apk" | tee "fieldworx-$VERSION.apk.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fieldworx-${{ steps.version.outputs.version }}-android
+          path: release/
+          if-no-files-found: error
+          retention-days: 90
+
+  bridge:
+    name: Office bridge, wheel and source
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: One version, and the one the tag names
+        id: version
+        env:
+          REF: ${{ inputs.ref }}
+        run: |
+          version="$(python3 tools/release_checks.py version "$REF")"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Build
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build --outdir release bridge
+      - name: The wheel installs on its own and reports this version
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          python -m venv "$RUNNER_TEMP/check"
+          "$RUNNER_TEMP/check/bin/python" -m pip install release/*.whl
+          test "$("$RUNNER_TEMP/check/bin/fieldworx-bridge" --version)" = "fieldworx-bridge $VERSION"
+          cd release
+          sums="$(sha256sum -- *)"
+          printf '%s\n' "$sums" | tee "fieldworx-bridge-$VERSION.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fieldworx-bridge-${{ steps.version.outputs.version }}
+          path: release/
+          if-no-files-found: error
+          retention-days: 90

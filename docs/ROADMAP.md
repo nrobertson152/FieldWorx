@@ -1,10 +1,10 @@
 # FieldWorx roadmap
 
-What is built, what comes next, and in what order. Versions are proposals: releases, version numbers and tags are
-the Director's to decide. Each step keeps the rules of [ARCHITECTURE.md](ARCHITECTURE.md): engineering stays
+What is built, what comes next, and in what order. What comes after 1.0.0 is proposed, not promised: AGENTS.md
+says who decides releases, version numbers and tags. Each step keeps the rules of [ARCHITECTURE.md](ARCHITECTURE.md): engineering stays
 read-only on phones, field records are append-only, nothing is resolved silently, nothing needs the cloud.
 
-## 1.0: the first field release (this work)
+## 1.0.0: the first field release (prepared 2026-11-08; released once the Director's artwork and key are in)
 
 The directive's first scope: **QR scanning, engineering document access, part lookup and basic inspections.**
 
@@ -13,7 +13,8 @@ The directive's first scope: **QR scanning, engineering document access, part lo
 - Units (assets) with their as-built revisions, what has been revised since, and their inspection history.
 - Units from RevisionWorx's unit register (catalog version 2): permanent `FWX:A:unt_…` labels, every identifier
   (former ones too), build standard and this unit's own revisions, fitted components and where it is fitted, the
-  unit's history. Asset registers, and the records made against their units, carry over.
+  unit's history. Asset registers, and the records made against their units, carry over. A unit transferred in from
+  another workspace brings the PDFs of its revisions; the lots a completion used show in the unit's history.
 - Documents with every revision's state; released PDFs pinch-zoomable and searchable; superseded and unreleased
   revisions flagged in red and amber.
 - Parts: makers' and suppliers' codes, BOM *made from* and *used in* with reference designators, stock on hand
@@ -35,6 +36,8 @@ The directive's first scope: **QR scanning, engineering document access, part lo
 - Six family themes, AA contrast, large targets; release builds ask for the camera and nothing else.
 - Tests: protocol vectors shared by Python and Dart, the bridge against real RevisionWorx and OpenMeridian,
   widget tests of every workflow, an end-to-end run, Android and iOS builds in CI.
+- A release build that signs the APK with the release key from the repository's secrets and refuses the debug key.
+  Released for Android; iOS needs an Apple developer team.
 
 ## Next: closing the loop
 

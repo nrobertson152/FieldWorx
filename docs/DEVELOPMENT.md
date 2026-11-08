@@ -37,6 +37,9 @@ resolved; commit it when it changes (CI uploads it as the `pubspec-lock` artifac
 python -m pip install -e "bridge[dev]"     # pytest, and the test-only checks for labels (python-qrcode, zxing-cpp, pdfium)
 python -m pytest bridge -q
 
+# The release build's checks (standard library; pytest only)
+python -m pytest tools -q
+
 # The vectors are what the reference produces
 python spec/make_vectors.py --check
 
@@ -100,9 +103,40 @@ on), then changed as follows:
 
 ## Signing and releases
 
-Releases, version tags and licensing are the Director's (AGENTS.md). CI builds a release-mode APK signed with the
-debug key, for testing only. To sign a release, the Director creates `app/android/key.properties` (never committed;
-it's in `.gitignore`):
+AGENTS.md says who makes a release. CI builds a release-mode APK signed with the debug key, for testing only; it is
+never released. Android won't update an app signed with one key to one signed with another, so a phone moves from a test
+build to a release by sending its field log, uninstalling the test build (which deletes what wasn't sent) and installing
+the release; it then has a new key and is enrolled again.
+
+**The release build** is the *Release build* workflow (`.github/workflows/release.yml`): Actions → *Release build* →
+*Run workflow*, given the tag (`v1.0.0`) or a commit. It
+
+1. checks that the app, the core and the bridge carry one version, and that the tag names it;
+2. builds the APK signed with the release key from the repository's secrets, and fails if any is missing: it never falls
+   back to the debug key;
+3. refuses the APK if it is signed with the debug key, or with any other certificate than the release one, or asks for
+   more than the camera;
+4. builds the bridge's wheel and source, and checks the wheel installs and reports the version.
+
+The APK, the bridge and their SHA-256 sums are the run's artifacts, for the GitHub release. The workflow's token can only
+read: it tags and publishes nothing. The checks are `tools/release_checks.py`, tested in CI (`python -m pytest tools`),
+where the Android build also checks that its own debug-signed APK is refused.
+
+The release key is the Director's. Set once, in the repository's *Settings → Secrets and variables → Actions*:
+
+| Name | Kind | What it is |
+|---|---|---|
+| `ANDROID_KEYSTORE_BASE64` | secret | the release keystore, base64-encoded (`base64 -w0 fieldworx-release.jks`) |
+| `ANDROID_KEYSTORE_PASSWORD` | secret | the keystore's password |
+| `ANDROID_KEY_ALIAS` | secret | the key's alias in it |
+| `ANDROID_KEY_PASSWORD` | secret | the key's password |
+| `ANDROID_CERT_SHA256` | variable | the release certificate's SHA-256 digest, as `keytool -list -v -keystore fieldworx-release.jks` prints it; the APK must be signed with exactly this certificate |
+
+**Keep the keystore and its passwords safe, and backed up outside GitHub.** Every later version must be signed with the
+same key. Without it, phones can only install a new version by uninstalling FieldWorx first, which deletes every record
+they haven't sent.
+
+To sign on a computer instead, create `app/android/key.properties` (never committed; it's in `.gitignore`):
 
 ```properties
 storeFile=/path/to/fieldworx-release.jks
@@ -111,7 +145,12 @@ keyAlias=fieldworx
 keyPassword=…
 ```
 
-and runs `flutter build apk --release` (or `appbundle`). iOS signing needs the Director's Apple team in Xcode.
+run `flutter build apk --release`, and make the same checks: `python3 tools/release_checks.py signer CERTS
+--release-cert SHA256` on the output of `apksigner verify --verbose --print-certs`, and `permissions` on the output of
+`aapt dump permissions`.
+
+iOS signing needs the Director's Apple developer team in Xcode. Until there is one, FieldWorx is released for Android
+only; CI builds iOS for the simulator so that it keeps building.
 
 ## Checking on a real phone
 

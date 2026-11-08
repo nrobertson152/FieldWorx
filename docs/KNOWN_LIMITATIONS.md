@@ -38,7 +38,7 @@ What FieldWorx doesn't do yet, or hasn't been shown to do. Planned work is in [R
 
 ## What the phone records
 
-- **Inspections only.** Nonconformances, redlines, work orders and inventory transactions are planned (0.2, 0.3).
+- **Inspections only.** Nonconformances, redlines, work orders and inventory transactions are planned (ROADMAP.md).
 - **Names are as typed; phones are enrolled.** A record carries the name entered on the phone, the phone's device id
   and its signature with the phone's own key: that proves which phone made it, not who held the phone. A phone enrolled
   to a RevisionWorx account (`fieldworx-bridge enrol`) is taken to be that person's, so its findings are accepted as
@@ -66,7 +66,7 @@ What FieldWorx doesn't do yet, or hasn't been shown to do. Planned work is in [R
 ## Moving files
 
 - **Files, not a network, so far.** Packages and field logs travel through the share sheet, USB, e-mail or a shared
-  drive. LAN sync is planned (0.2).
+  drive. LAN sync is planned (ROADMAP.md, *Next*).
 - **A field log always carries every record the phone holds**, so it grows over time. That is what makes resending
   harmless; it is small (a few kilobytes per inspection) until there are many thousands of records.
 - **Opening a `.fieldworx` file from e-mail or a file manager** doesn't launch FieldWorx yet: save it, then
@@ -88,12 +88,22 @@ What FieldWorx doesn't do yet, or hasn't been shown to do. Planned work is in [R
 - **Labels have been checked by rendering and decoding**, with the decoder the app uses, not by printing on real label
   stock and scanning with phones.
 
+## Installing
+
+- **Android only.** The iOS app builds in CI, but releasing it needs an Apple developer team to sign it.
+- **A test build doesn't update to a release.** A test build (an APK from CI) is signed with the debug key, and Android
+  won't replace an app signed with another key. Send its field log, then uninstall it (which deletes what wasn't sent)
+  and install the release; the phone then has a new key, so enrol it again.
+- **Every release must be signed with the same key** (docs/DEVELOPMENT.md). If the release key were lost, phones could
+  install a new version only by uninstalling FieldWorx first.
+
 ## What has and hasn't been verified
 
 - **Automated:** the protocol (shared vectors in Python and Dart), the bridge against real RevisionWorx and
   OpenMeridian, every workflow as widget tests against the real store and demo package (with a fake camera,
-  PDF engine, file picker and share sheet), the bridge and the Dart core end to end through real files, and Android
-  and iOS builds.
+  PDF engine, file picker and share sheet), the bridge and the Dart core end to end through real files, Android
+  and iOS builds, and the release build's checks (the Android build checks that its own debug-signed APK would be
+  refused). The release build itself runs only with the release key, so it is first run for a release.
 - **Not automated:** the camera scanner, the PDF engine, the file picker, photo capture and the share sheet on real
   devices. Each is a maintained open-source plugin, but they need a manual check on a phone before a release (see
   the acceptance list in [DEVELOPMENT.md](DEVELOPMENT.md)).

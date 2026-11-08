@@ -6,8 +6,9 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// Release signing is the Director's: put the keystore's details in android/key.properties (never committed; see
-// docs/DEVELOPMENT.md). Without that file, release builds are signed with the debug key so they still install.
+// The release key is the Director's. The release build (.github/workflows/release.yml) writes android/key.properties
+// from the repository's secrets; on a computer, write it by hand (docs/DEVELOPMENT.md) and never commit it. Without it, a
+// release-mode build is signed with the debug key so that it still installs, for testing; the release build refuses it.
 val keyProperties = Properties().apply {
     val f = rootProject.file("key.properties")
     if (f.exists()) f.inputStream().use { load(it) }

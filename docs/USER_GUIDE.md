@@ -10,6 +10,13 @@ record. It works offline, has no accounts and sends nothing anywhere by itself.
 
 ## On the phone
 
+### Installing
+
+Install the APK from a FieldWorx release (Android 7.0 or later). A phone with a test build (an APK from CI) can't be
+updated to a release, because the two are signed with different keys: **Send field log** first, then uninstall the test
+build and install the release. Uninstalling deletes what the phone hadn't sent. The phone gets a new fingerprint, so ask
+the office to enrol it again.
+
 ### First run
 
 Enter your name. It goes into every record you make so the office knows who did what; it isn't an account and

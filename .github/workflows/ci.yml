@@ -1,7 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Every push and pull request: the bridge against real RevisionWorx and OpenMeridian, the Dart core against the
 # shared protocol vectors, the two end to end (tools/interop.sh), and the app (analysis, widget tests, an Android
-# build and an iOS build). Nothing here signs, tags or publishes anything: releases are the Director's.
+# build and an iOS build). Nothing here signs with a release key, tags or publishes anything: a release is built by
+# release.yml, and AGENTS.md says who makes one.
 name: CI
 
 on:
@@ -42,6 +43,8 @@ jobs:
           python -m pip install "$REVISIONWORX" "$OPENMERIDIAN" -e "bridge[dev]"
       - name: Tests (including packs built through RevisionWorx's command line)
         run: python -m pytest bridge -q -ra
+      - name: The release build's checks (tools/release_checks.py)
+        run: python -m pytest tools -q -ra
       - name: Protocol vectors are up to date
         run: python spec/make_vectors.py --check
 
@@ -137,12 +140,23 @@ jobs:
           path: app/build/app/outputs/flutter-apk/app-release.apk
           retention-days: 14
       - name: The release APK asks only for the camera (no network, no storage, no microphone)
+        shell: bash
         run: |
-          aapt="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)aapt"
-          "$aapt" dump permissions build/app/outputs/flutter-apk/app-release.apk | tee perms.txt
-          unexpected="$(grep "^uses-permission" perms.txt | grep -v "android.permission.CAMERA'" \
-            | grep -v "DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'" || true)"
-          if [ -n "$unexpected" ]; then echo "::error::the release APK asks for more than the camera:"; echo "$unexpected"; exit 1; fi
+          tools="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)"
+          "${tools}aapt" dump permissions build/app/outputs/flutter-apk/app-release.apk | tee perms.txt
+          python3 ../tools/release_checks.py permissions perms.txt
+      - name: The release build would refuse this APK, signed with the debug key
+        shell: bash
+        run: |
+          tools="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)"
+          "${tools}apksigner" verify --verbose --print-certs build/app/outputs/flutter-apk/app-release.apk 2>&1 | tee certs.txt
+          # Refused even when told to expect the very certificate it is signed with.
+          own="$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' certs.txt)"
+          if python3 ../tools/release_checks.py signer certs.txt --release-cert "$own" 2> refusal.txt; then
+            echo "::error::the release check passed an APK signed with the debug key"; exit 1
+          fi
+          cat refusal.txt
+          grep -q "signed with the debug key" refusal.txt
 
   ios:
     name: App (iOS build, no signing)
