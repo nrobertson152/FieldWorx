@@ -269,7 +269,7 @@ places, and the phone shows exactly what that record says.
 | Key | Value |
 |---|---|
 | `id` | `unt_…` or `ast_…` |
-| `aliases` | `[ast_…]`: earlier ids field records may name; sorted, unique, ≤ 100 |
+| `aliases` | `[ast_… or unt_…]`: earlier ids field records and labels may name, sorted, unique, ≤ 100: the asset register id of a row since imported into RevisionWorx (`ast_`), or the id of a unit RevisionWorx merged into this one (`unt_`, RevisionWorx `docs/UNITS.md` section 15) |
 | `label` | what to call it, ≤ 200: RevisionWorx's label (its first current serial, else tag, else other code); a register row's tag, else serial |
 | `class` | `product`, `component`, `instrument` or `tool` |
 | `name`, `customer`, `site`, `location` | text ≤ 200 |
@@ -289,7 +289,13 @@ places, and the phone shows exactly what that record says.
 | `notes` | ≤ 4000 |
 | `source` | ≤ 200: `revisionworx`, or the register it came from (`AST-HPU-75 rev A`, `units.fwassets.csv (uncontrolled)`) |
 
-Ids and aliases are unique across the catalog's assets, and no asset is fitted in itself through `parent`.
+Ids and aliases are unique across the catalog's assets, and no asset is fitted in itself through `parent`. A `unt_` alias was
+added on 2026-11-08; a reader from before then refuses a catalog that has one, as it refuses anything it can't read.
+
+**Merged units.** RevisionWorx lists only the unit that stays: a unit merged into it isn't an asset, and its id is one of the
+asset's `aliases`. On a phone holding an older package where that id was an asset of its own, installing the newer package
+replaces it, as it replaces a register row the asset carries as an alias. A field record made against the earlier id is
+accepted on the unit that stays, citing the id it named.
 
 A change is **outstanding** on a unit when it is `required` and its state is neither `verified` nor `not-applicable`. The phone
 shows outstanding changes first and counts them; it never changes them (they are settled in RevisionWorx).

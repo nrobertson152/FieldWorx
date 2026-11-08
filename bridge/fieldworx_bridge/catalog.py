@@ -18,7 +18,7 @@ VERSION = 2                     # what this writes; READS is what it reads (docs
 READS = (1, 2)
 RE_SHA = re.compile(r"[0-9a-f]{64}\Z")
 RE_ASSET_ID = re.compile(r"(unt|ast)_[0-9a-f]{32}\Z")
-RE_ALIAS = re.compile(r"ast_[0-9a-f]{32}\Z")
+RE_ALIAS = re.compile(r"(ast|unt)_[0-9a-f]{32}\Z")   # a register row since imported, or a unit merged into this one
 ASSET_V1 = {"id", "tag", "serial", "name", "part", "project", "location", "built", "notes", "as_built"}
 ASSET_V2 = {"id", "aliases", "label", "class", "name", "model", "part", "project", "customer", "site", "location", "status",
             "identifiers", "parent", "standard", "documents", "components", "milestones", "history", "changes", "deviations",
@@ -219,7 +219,7 @@ def _check_assets_v2(assets: list, unique, projects: set, docs: set, parts: set,
         ids.add(a["id"])
         aliases = _list(a["aliases"], f"{what} aliases", 100)
         if any(not isinstance(x, str) or not RE_ALIAS.match(x) for x in aliases) or aliases != sorted(set(aliases)):
-            raise CatalogError(f"{what}: aliases must be ast_ ids, sorted and unique")
+            raise CatalogError(f"{what}: aliases must be ast_ or unt_ ids, sorted and unique")
         for x in aliases:
             unique(x, "asset")
         for k in ("label", "name", "customer", "site", "location", "source"):

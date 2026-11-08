@@ -216,3 +216,48 @@ def test_the_deviations_that_cover_a_unit_travel_with_it(deviated, tmp_path):
             ("DEV-0001", "in-effect", True), ("CON-0001", "in-effect", False)]
         assert cat_mod.deviation_overdue(second[0], "2026-11-07") and not cat_mod.deviation_overdue(second[1], "2099-01-01")
         assert second[1]["until"] == "" and second[1]["documents"] == []
+
+
+@pytest.fixture(scope="module")
+def merged(tmp_path_factory):
+    """The demo's asset register imported into the unit register; then a work order registers NH-26-0002 again, as
+    NH-26-0009. The office retires the serial issued by mistake, and RevisionWorx merges the two records (its docs/UNITS.md
+    section 15)."""
+    if not have_unit_register("unit-merges"):
+        pytest.skip("this RevisionWorx doesn't merge units (link version doesn't list 'unit-merges')")
+    import build_demo
+    out = tmp_path_factory.mktemp("merged") / "demo"
+    assert build_demo.main([str(out)]) == 0
+    ws = out / "workspace"
+    local = out / ".local"
+    env = dict(os.environ, XDG_CACHE_HOME=str(local / "cache"), XDG_STATE_HOME=str(local / "state"),
+               XDG_CONFIG_HOME=str(local / "config"), LOCALAPPDATA=str(local / "appdata"))
+
+    def rwx(*args):
+        proc = subprocess.run(find_command() + ["-w", str(ws), *args], capture_output=True, text=True, env=env)
+        assert proc.returncode == 0, proc.stderr
+        return proc.stdout
+
+    rwx("unit", "import", str(out / "source" / "AST-HPU-75 Units built.fwassets.csv"))
+    rwx("unit", "new", "--serial", "NH-26-0009", "--model", "HPU-75", "--project", "J-2001", "--status", "in-service",
+        "--name", "Hydraulic power unit")
+    import json
+    dup = json.loads(rwx("link", "unit", "NH-26-0009"))["unit"]["id"]
+    rwx("unit", "id", "retire", "NH-26-0009", "serial", "NH-26-0009", "--reason", "issued by mistake: this is NH-26-0002")
+    rwx("unit", "merge", "NH-26-0009", "--into", "HPU-0002", "--reason", "the same machine: NH-26-0002 is on its frame")
+    return {"out": out, "dup": dup, "rwx": rwx}
+
+
+def test_a_merged_unit_is_an_alias_of_the_one_that_stays_never_an_asset(merged, tmp_path):
+    with _pack(merged["out"], tmp_path) as arc:
+        assets = {a["label"]: a for a in arc.catalog["assets"]}
+        assert merged["dup"] not in {a["id"] for a in arc.catalog["assets"]}
+        stays = assets["NH-26-0002"]
+        register_id = asset_id(arc.manifest["source"]["workspace"], "HPU-0002")
+        assert stays["aliases"] == sorted([register_id, merged["dup"]])
+        assert ("serial", "NH-26-0009", False) in {(i["scheme"], i["value"], i["active"]) for i in stays["identifiers"]}
+    import json
+    answer = json.loads(merged["rwx"]("link", "unit", merged["dup"]))      # a label printed with the earlier id
+    assert answer["unit"]["id"] == stays["id"] and answer["named"]["unit"] == merged["dup"]
+    from fieldworx_bridge.findings import is_about
+    assert is_about({"asset": merged["dup"]}, answer["unit"]) and is_about({"asset": register_id}, answer["unit"])

@@ -250,6 +250,9 @@ void main() {
     expect(s.catalog.assets.keys.toList()..sort(), equals(['ast_${'05' * 16}', hpu, 'unt_${'0d' * 16}']));
     expect(resolve(s.catalog, labelFor(ResultKind.asset, hpu)).matches.single.id, equals(hpu));
     expect(s.catalog.asset('ast_${'0e' * 16}')?.id, equals(hpu));
+    // a unit RevisionWorx merged into this one: its id, and a label printed with it, find this unit
+    expect(s.catalog.asset('unt_${'0f' * 16}')?.id, equals(hpu));
+    expect(resolve(s.catalog, labelFor(ResultKind.asset, 'unt_${'0f' * 16}')).matches.single.id, equals(hpu));
     expect(s.catalog.asset(hpu)!.asBuilt, equals(['rev_${'03' * 16}', 'rev_${'09' * 16}']));
   });
 
