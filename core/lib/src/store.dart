@@ -214,7 +214,7 @@ class FieldStore {
   /// Up to this many new signatures are checked here; more, in another isolate. A phone checks a few milliseconds' worth
   /// per signature: a package bringing thousands of other phones' records would otherwise stop the app answering (and
   /// Android would offer to close it).
-  static const int inlineSignatureChecks = 8;
+  static const int inlineSignatureChecks = 1 << 30; // CI CHECK ONLY: the old behaviour, checked inline
 
   static Future<int> _checkElsewhere(List<String> flat) => Isolate.run(() => firstBadSignature(flat));
 
