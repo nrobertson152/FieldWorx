@@ -5,6 +5,7 @@
 //   dart run bin/fxtool.dart simulate PACKAGE OUT_DIR        act as a phone: install, inspect the first asset
 //                                                            with the first template, record a finding about it,
 //                                                            export a field log
+//   dart run bin/fxtool.dart bench                           how long signing and checking a record take here
 
 import 'dart:convert';
 import 'dart:io';
@@ -93,13 +94,30 @@ Future<int> simulate(String package, String outDir) async {
   }
 }
 
+/// Milliseconds to sign a record, and to check one in a batch from one phone (as a package brings them).
+int bench() {
+  final key = SigningKey(List<int>.generate(32, (i) => i));
+  const n = 40;
+  final ids = [for (var i = 0; i < n; i++) sha256Hex(utf8.encode('record $i'))];
+  final sw = Stopwatch()..start();
+  final sigs = [for (final id in ids) toHex(key.sign(signatureMessage(id)))];
+  final signMs = sw.elapsedMicroseconds / n / 1000;
+  sw.reset();
+  final bad = firstBadSignature([for (var i = 0; i < n; i++) ...[ids[i], key.publicHex, sigs[i]]]);
+  final checkMs = sw.elapsedMicroseconds / n / 1000;
+  stdout.writeln(jsonEncode({'ok': bad < 0, 'sign_ms': signMs.toStringAsFixed(2), 'check_ms': checkMs.toStringAsFixed(2)}));
+  return bad < 0 ? 0 : 1;
+}
+
 Future<void> main(List<String> args) async {
-  if (args.length == 2 && args[0] == 'verify') {
+  if (args.length == 1 && args[0] == 'bench') {
+    exitCode = bench();
+  } else if (args.length == 2 && args[0] == 'verify') {
     exitCode = await verify(args[1]);
   } else if (args.length == 3 && args[0] == 'simulate') {
     exitCode = await simulate(args[1], args[2]);
   } else {
-    stderr.writeln('usage: fxtool verify FILE | fxtool simulate PACKAGE OUT_DIR');
+    stderr.writeln('usage: fxtool verify FILE | fxtool simulate PACKAGE OUT_DIR | fxtool bench');
     exitCode = 2;
   }
 }

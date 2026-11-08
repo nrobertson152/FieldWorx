@@ -3,6 +3,7 @@
 // spec/vectors/signatures.json; a phone's store has one key for life, signs every record with it, and takes in only
 // records whose signatures hold, checking each new one once.
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -171,6 +172,50 @@ void main() {
       f.writeAsBytesSync(fx.encode({...m, 'key': k}));
       await expectLater(FieldStore.open(Directory('${tmp.path}/phone')), throwsA(isA<StoreError>()));
       expect(s.deviceId, isNotEmpty);
+    });
+
+    test('checking many new records keeps the phone answering', () async {
+      // A package can bring thousands of other phones' records. Checking their signatures takes milliseconds each, so it
+      // happens in another isolate: the importing isolate never goes long without a turn. Measured against how long the
+      // checks take here, so it means the same on a fast machine and a slow one.
+      final b = await FieldStore.open(Directory('${tmp.path}/b'));
+      final key = SigningKey(List<int>.generate(32, (i) => 99 - i));
+      const dev = 'dev_7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a';
+      final evs = <Event>[];
+      var prev = '';
+      for (var i = 1; i <= 400; i++) {
+        final ev = note(key, dev, i, prev, {'x': i});
+        evs.add(ev);
+        prev = ev.id;
+      }
+      final watch = Stopwatch()..start();
+      expect(firstBadSignature([for (final e in evs) ...[e.id, e.key, e.sig]]), equals(-1));
+      final checking = watch.elapsedMilliseconds;
+      expect(checking, greaterThan(60), reason: 'too few records to tell: checking them took $checking ms');
+      final f = File('${tmp.path}/many.fieldlog');
+      await writeArchive(f,
+          kind: 'fieldlog', archiveId: newId('flg'), title: 't', created: utcNow(), createdBy: {'device': dev}, events: evs);
+      final clock = Stopwatch()..start();
+      var last = 0, gap = 0;
+      final ticks = Timer.periodic(const Duration(milliseconds: 2), (_) {
+        final now = clock.elapsedMilliseconds;
+        if (now - last > gap) gap = now - last;
+        last = now;
+      });
+      final r = await b.importFieldLog(f);
+      ticks.cancel();
+      expect(r.newEvents, equals(400));
+      expect(gap, lessThan(checking ~/ 3),
+          reason: 'checking the signatures takes $checking ms; the importing isolate went $gap ms without a turn');
+      // A bad signature among them is still found, and nothing is taken in.
+      final c = await FieldStore.open(Directory('${tmp.path}/c'));
+      final broken = [...evs]..[320] = Event.fromBytes(tampered(evs[320], {'sig': '00' * 64}), checkSignature: false);
+      final g = File('${tmp.path}/broken.fieldlog');
+      await writeArchive(g,
+          kind: 'fieldlog', archiveId: newId('flg'), title: 't', created: utcNow(), createdBy: {'device': dev}, events: broken);
+      await expectLater(c.importFieldLog(g),
+          throwsA(isA<StoreError>().having((e) => e.message, 'message', contains(evs[320].id.substring(0, 12)))));
+      expect(c.log.length, equals(0));
     });
 
     test("a field log is taken in only if each new record's signature holds", () async {

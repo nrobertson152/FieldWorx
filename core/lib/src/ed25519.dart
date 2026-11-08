@@ -2,9 +2,12 @@
 // Ed25519 signatures (RFC 8032) in pure Dart, because the core has no dependencies (docs/PROTOCOL.md section 12).
 //
 // The arithmetic is TweetNaCl's (public domain: Bernstein, van Gastel, Janssen, Lange, Schwabe, Smetsers): a field
-// element is 16 limbs of 16 bits in 64-bit ints. Decoding a key, and verifying, make the checks RFC 8032 asks for and the
-// Python reference (bridge/fieldworx_bridge/ed25519.py) makes: a canonical y, a point of the curve, not x = 0 with the
-// sign bit set, and S below the group order. So the two agree on every vector in spec/vectors/signatures.json.
+// element is 16 limbs of 16 bits in 64-bit ints. Scalar multiplication uses 4-bit windows, and verifying computes
+// s·B − k·A in one pass that shares its doublings (Straus), which is about 2.5 times fewer point additions than
+// TweetNaCl's ladder. Nothing secret is timed by anyone here (the phone signs its own records), so it needn't run in
+// constant time. Decoding a key, and verifying, make the checks RFC 8032 asks for and the Python reference
+// (bridge/fieldworx_bridge/ed25519.py) makes: a canonical y, a point of the curve, not x = 0 with the sign bit set, and
+// S below the group order. So the two agree on every vector in spec/vectors/signatures.json.
 
 import 'dart:typed_data';
 
@@ -196,12 +199,6 @@ void _addPoint(List<Int64List> p, List<Int64List> q) {
   p[3] = _mul(e, h);
 }
 
-void _cswap(List<Int64List> p, List<Int64List> q, int b) {
-  for (var i = 0; i < 4; i++) {
-    _sel(p[i], q[i], b);
-  }
-}
-
 Uint8List _packPoint(List<Int64List> p) {
   final zi = _inv(p[2]);
   final tx = _mul(p[0], zi), ty = _mul(p[1], zi);
@@ -210,20 +207,48 @@ Uint8List _packPoint(List<Int64List> p) {
   return r;
 }
 
-List<Int64List> _scalarmult(List<Int64List> q0, List<int> s) {
-  final p = [_gf(), _gf([1]), _gf([1]), _gf()];
-  final q = [for (final x in q0) Int64List.fromList(x)];
-  for (var i = 255; i >= 0; i--) {
-    final b = (s[i >> 3] >> (i & 7)) & 1;
-    _cswap(p, q, b);
+List<Int64List> _identity() => [_gf(), _gf([1]), _gf([1]), _gf()];
+
+/// [0·p, 1·p, … 15·p]: what a 4-bit window adds. The points in it are never changed (`_addPoint` writes only its first).
+List<List<Int64List>> _windowTable(List<Int64List> p) {
+  final t = [_identity(), [for (final x in p) Int64List.fromList(x)]];
+  for (var j = 2; j < 16; j++) {
+    final q = [for (final x in t[j - 1]) Int64List.fromList(x)];
     _addPoint(q, p);
-    _addPoint(p, p);
-    _cswap(p, q, b);
+    t.add(q);
+  }
+  return t;
+}
+
+/// The [i]th 4-bit digit of a 32-byte little-endian scalar.
+int _nibble(List<int> s, int i) => (s[i >> 1] >> (4 * (i & 1))) & 15;
+
+final List<List<Int64List>> _baseTable = _windowTable([_bx, _by, _gf([1]), _mul(_bx, _by)]);
+
+/// s·B, for B the base point.
+List<Int64List> _scalarbase(List<int> s) {
+  final p = _identity();
+  for (var i = 63; i >= 0; i--) {
+    for (var k = 0; k < 4; k++) {
+      _addPoint(p, p);
+    }
+    _addPoint(p, _baseTable[_nibble(s, i)]);
   }
   return p;
 }
 
-List<Int64List> _scalarbase(List<int> s) => _scalarmult([_bx, _by, _gf([1]), _mul(_bx, _by)], s);
+/// a·A + b·B, for A given by its window table and B the base point, in one pass sharing the doublings (Straus).
+List<Int64List> _doubleScalarmult(List<int> a, List<List<Int64List>> aTable, List<int> b) {
+  final p = _identity();
+  for (var i = 63; i >= 0; i--) {
+    for (var k = 0; k < 4; k++) {
+      _addPoint(p, p);
+    }
+    _addPoint(p, aTable[_nibble(a, i)]);
+    _addPoint(p, _baseTable[_nibble(b, i)]);
+  }
+  return p;
+}
 
 Uint8List _modL(Int64List x) {
   for (var i = 63; i >= 32; i--) {
@@ -325,24 +350,32 @@ Uint8List sign(List<int> seed, List<int> message, [List<int>? public]) {
 }
 
 /// True only for a valid signature: a damaged key or signature is false, never an exception.
-bool verify(List<int> key, List<int> message, List<int> signature) {
-  if (key.length != 32 || signature.length != 64) return false;
-  final a = _decode(key);
-  if (a == null) return false;
-  final s = signature.sublist(32);
-  var below = false; // S < L, compared from the most significant byte (RFC 8032, 5.1.7)
-  for (var i = 31; i >= 0; i--) {
-    if (s[i] != _l[i]) {
-      below = s[i] < _l[i];
-      break;
+bool verify(List<int> key, List<int> message, List<int> signature) => SignatureChecker().verify(key, message, signature);
+
+/// Checks signatures, keeping each key's decoded point and window table: many signatures by a few phones cost less.
+class SignatureChecker {
+  final Map<String, List<List<Int64List>>?> _tables = {};
+
+  /// True only for a valid signature: a damaged key or signature is false, never an exception.
+  bool verify(List<int> key, List<int> message, List<int> signature) {
+    if (key.length != 32 || signature.length != 64) return false;
+    final table = _tables.putIfAbsent(String.fromCharCodes(key), () {
+      final a = _decode(key);
+      return a == null ? null : _windowTable([_sub(_gf(), a[0]), a[1], a[2], _sub(_gf(), a[3])]); // −A
+    });
+    if (table == null) return false;
+    final s = signature.sublist(32);
+    var below = false; // S < L, compared from the most significant byte (RFC 8032, 5.1.7)
+    for (var i = 31; i >= 0; i--) {
+      if (s[i] != _l[i]) {
+        below = s[i] < _l[i];
+        break;
+      }
     }
+    if (!below) return false;
+    final h = _reduce(sha512([...signature.sublist(0, 32), ...key, ...message]));
+    return _same(_packPoint(_doubleScalarmult(h, table, s)), signature.sublist(0, 32)); // R = s·B − k·A
   }
-  if (!below) return false;
-  final negA = [_sub(_gf(), a[0]), a[1], a[2], _sub(_gf(), a[3])];
-  final h = _reduce(sha512([...signature.sublist(0, 32), ...key, ...message]));
-  final p = _scalarmult(negA, h);
-  _addPoint(p, _scalarbase(s));
-  return _same(_packPoint(p), signature.sublist(0, 32));
 }
 
 /// Bytes from lowercase or uppercase hex; a FormatException for anything else.

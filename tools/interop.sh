@@ -13,6 +13,7 @@ trap 'rm -rf "$work"' EXIT
 export XDG_CACHE_HOME="$work/xdg/cache" XDG_STATE_HOME="$work/xdg/state" XDG_CONFIG_HOME="$work/xdg/config"
 export PYTHONPATH="$PWD/bridge${PYTHONPATH:+:$PYTHONPATH}"
 
+(cd core && dart run bin/fxtool.dart bench)            # how long the Dart core takes to sign and check a record
 python examples/demo/build_demo.py "$work/demo"
 revisionworx -w "$work/demo/workspace" unit import "$work/demo/source/AST-HPU-75 Units built.fwassets.csv"
 meridian="$(python -c "import json,sys; print(json.load(open(sys.argv[1]))['meridian'])" "$work/demo/demo.json")"

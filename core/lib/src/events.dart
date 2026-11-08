@@ -70,6 +70,17 @@ String keyFingerprint(String publicHex) {
 /// What a version 2 event's signature is over.
 List<int> signatureMessage(String eventId) => utf8.encode(signatureDomain + eventId);
 
+/// Which of a batch of version 2 events has a signature that doesn't hold: the index of the first, or -1. [flat] holds
+/// each event's id, key and sig in turn. Each key is decoded once. It takes and returns plain values, so a copy can run
+/// it in another isolate and stay responsive while thousands are checked.
+int firstBadSignature(List<String> flat) {
+  final checker = ed.SignatureChecker();
+  for (var i = 0; i + 2 < flat.length; i += 3) {
+    if (!checker.verify(ed.hexBytes(flat[i + 1]), signatureMessage(flat[i]), ed.hexBytes(flat[i + 2]))) return i ~/ 3;
+  }
+  return -1;
+}
+
 /// A device's Ed25519 key: the seed stays on the device; [public] goes in every record it signs.
 class SigningKey {
   SigningKey(List<int> seed, [List<int>? public])
