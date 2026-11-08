@@ -61,6 +61,9 @@ The directive's "serial/lot tracking" has nowhere to live: items have quantities
 **Recommendation (OpenMeridian):** lot and serial records on receipts and issues (format version 2, with a
 migration). Until then FieldWorx records serials in inspections (as the demo's nameplate item does) and in asset
 registers.
+**Status:** built in OpenMeridian: serial numbers for units made, registered in RevisionWorx's unit register (format 2),
+and lots received, used on work orders, made, shipped and traced (format 3). The bridge reads formats 1 to 3; stock on
+hand is unchanged by them. Which serial a shipment took isn't recorded yet.
 
 ### W5. There is no register of units built (RevisionWorx, OpenMeridian)
 
