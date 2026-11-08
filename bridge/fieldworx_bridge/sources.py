@@ -231,10 +231,12 @@ def parse_assets_csv(text: str) -> list[dict]:
 
 # ------------------------------------------------------------------------------------------------------ OpenMeridian
 MERIDIAN_APP_ID = 0x4F4D4552
-# The company file formats read here (OpenMeridian's docs/COMPANY_FILE.md). Format 2 added serial numbers for units made
-# (a column on items and on stock_moves, and a table of units built); nothing read here changed, and on hand is still
-# the sum of the stock ledger. A format not listed is refused, not guessed at.
-MERIDIAN_FORMATS = (1, 2)
+# The company file formats read here (OpenMeridian's docs/COMPANY_FILE.md). Format 2 added serial numbers for units
+# made (a column on items and on stock_moves, and a table of units built), and format 3 lots (every move of an item
+# tracked by lot names it, and stock_moves says which completion of a work order a move was part of). Nothing read here
+# changed: on hand is still the sum of the stock ledger, whatever lots it is in. A format not listed is refused, not
+# guessed at.
+MERIDIAN_FORMATS = (1, 2, 3)
 
 
 def read_meridian(path: Path) -> tuple[dict[str, dict], str]:
@@ -253,8 +255,9 @@ def read_meridian(path: Path) -> tuple[dict[str, dict], str]:
         if app_id != MERIDIAN_APP_ID:
             raise SourceError(f"{path} is not an OpenMeridian company file")
         if version not in MERIDIAN_FORMATS:
-            raise SourceError(f"{path} is OpenMeridian format {version}; this bridge reads formats "
-                              f"{' and '.join(map(str, MERIDIAN_FORMATS))}. Update FieldWorx's bridge.")
+            known = ", ".join(map(str, MERIDIAN_FORMATS[:-1])) + f" and {MERIDIAN_FORMATS[-1]}"
+            raise SourceError(f"{path} is OpenMeridian format {version}; this bridge reads formats {known}. "
+                              "Update FieldWorx's bridge.")
         name_row = conn.execute("SELECT value FROM settings WHERE key = 'company_name'").fetchone()
         rows = conn.execute(
             "SELECT i.number, i.description, i.unit, i.bin, i.active, COALESCE(SUM(m.qty), 0) "
