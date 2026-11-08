@@ -416,10 +416,12 @@ team already checks who may change what (RevisionWorx ADR-024).
 - *Checking once.* A copy checks the signature of each event new to it when it takes it in (a phone importing a field
   log or a package, the hub importing a field log), and every event when asked to check an archive; its own store isn't
   checked again on every read. A phone's field log carries its whole history and the hub keeps everything, so checking
-  every signature on every read would grow without end: about 1.5 ms each in the bridge's pure Python, a few ms in Dart.
-  The checks are in `bridge/fieldworx_bridge/events.py` and `ed25519.py` (copied from RevisionWorx) and
-  `core/lib/src/events.dart`, `ed25519.dart` (TweetNaCl's arithmetic with RFC 8032's checks) and `sha512.dart`, held to
-  the same vectors.
+  every signature on every read would grow without end: about 1.5 ms each in the bridge's pure Python, a few ms in Dart
+  (`fxtool bench` says how many on a given machine). A package brings every phone's records, so a phone's first package
+  after a while can bring thousands: more than a few are checked in another isolate (`Isolate.run`), so the app keeps
+  answering, and says it is checking. The checks are in `bridge/fieldworx_bridge/events.py` and `ed25519.py` (copied
+  from RevisionWorx) and `core/lib/src/events.dart`, `ed25519.dart` (TweetNaCl's arithmetic, 4-bit windows and one pass
+  for the two multiplications a check needs, with RFC 8032's checks) and `sha512.dart`, held to the same vectors.
 - *Enrolment* is an administrator's act in RevisionWorx, recorded in the account (`devices`), which only administrators
   may change under the rules every computer already applies, so no new rule and no format change. The phone shows its
   device id and a 64-bit fingerprint; a field log carries its key; `fieldworx-bridge enrol` refuses unless the

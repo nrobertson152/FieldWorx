@@ -399,6 +399,14 @@ void showMessageOn(ScaffoldMessengerState messenger, String text, {bool error = 
     ));
 }
 
+/// Says that something is under way, until the next message replaces it (checking a package of thousands of records
+/// takes a while).
+void showWorkingOn(ScaffoldMessengerState messenger, String text) {
+  messenger
+    ..hideCurrentSnackBar()
+    ..showSnackBar(SnackBar(content: Text(text), duration: const Duration(minutes: 10)));
+}
+
 /// Asks for a line (or a few lines) of text. Returns null if cancelled. With [required], an empty answer isn't
 /// accepted. The dialog owns its text controller, so nothing uses it after the dialog has gone (its closing animation
 /// still draws the field after the answer is returned).

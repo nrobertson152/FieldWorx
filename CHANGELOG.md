@@ -34,7 +34,8 @@ The first field release: QR scanning, engineering document access, part lookup a
 - **Signed field records** (PROTOCOL.md section 12, ARCHITECTURE.md ADR-015): every phone has its own Ed25519 key, made the
   first time this version starts (a phone from before keys keeps its device id), and signs every record it makes with
   it. The phone, the bridge's `import` and `verify`, and `fxtool verify` refuse a record changed after it was signed, a
-  device with two keys, or an unsigned record after a signed one; each new record is checked once, when it arrives.
+  device with two keys, or an unsigned record after a signed one; each new record is checked once, when it arrives (on
+  the phone, a large batch in the background, while the app says it is checking).
   Field logs name the phone's key. Records made before keys stay readable, unsigned. Ed25519 and SHA-512 in pure Dart and
   pure Python, held to RFC 8032's vectors and the family's (`signatures.json`).
 - **Phones enrolled to RevisionWorx accounts:** `fieldworx-bridge enrol FIELDLOG -w WORKSPACE --account NAME

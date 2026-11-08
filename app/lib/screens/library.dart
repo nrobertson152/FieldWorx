@@ -19,6 +19,7 @@ Future<void> addPackageFlow(BuildContext context, {bool demo = false}) async {
         ? await m.services.demoPackage()
         : await m.services.pickFile(title: 'Add package', extensions: const ['fieldworx']);
     if (f == null) return;
+    showWorkingOn(messenger, 'Checking the package…');
     final r = await m.installPackage(f);
     showMessageOn(
         messenger,
@@ -36,6 +37,7 @@ Future<void> importFieldLogFlow(BuildContext context) async {
   try {
     final f = await m.services.pickFile(title: 'Import field log', extensions: const ['fieldlog']);
     if (f == null) return;
+    showWorkingOn(messenger, 'Checking the field log…');
     final r = await m.importFieldLog(f);
     showMessageOn(messenger,
         '${r.newEvents} new record${r.newEvents == 1 ? '' : 's'}, ${r.knownEvents} already here, ${r.newObjects} photo${r.newObjects == 1 ? '' : 's'}.');

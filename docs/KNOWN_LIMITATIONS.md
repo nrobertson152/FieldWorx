@@ -40,6 +40,9 @@ What FieldWorx doesn't do yet, or hasn't been shown to do. Planned work is in [R
   verified in their name; lend it to someone and what they record is still in the owner's name. Only findings become
   verified: inspections are signed too, but aren't accepted into RevisionWorx. Records made before keys are unsigned.
 - **The phone doesn't know whether it is enrolled.** Enrolment is recorded in RevisionWorx; packages don't carry it.
+- **A package bringing thousands of new records takes a while to check.** Each record's signature is checked once,
+  when it first arrives, in a few milliseconds; a phone's first package after a long time away can bring other phones'
+  records by the thousand. The app says it is checking, and stays usable meanwhile.
 - **The phone's key is in its app storage,** protected by the app sandbox and the phone's storage encryption, not a
   hardware keystore. Someone who copies the app's files from a rooted or forensically copied phone can sign as it until
   an administrator revokes it.

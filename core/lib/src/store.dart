@@ -14,6 +14,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'archive.dart';
 import 'catalog.dart';
@@ -197,17 +198,25 @@ class FieldStore {
 
   /// The events of [incoming] that are new here, in an order they can be added, once they are shown to fit with this
   /// device's and each new one's signature holds. Changes nothing; throws EventError otherwise.
-  List<Event> _checkIncoming(List<Event> incoming) {
+  Future<List<Event>> _checkIncoming(List<Event> incoming) async {
     final scratch = FieldLog()
       ..events.addAll(log.events)
       ..streams.addAll({for (final e in log.streams.entries) e.key: List.of(e.value)})
       ..byEntity.addAll({for (final e in log.byEntity.entries) e.key: List.of(e.value)});
     final added = scratch.importEvents(incoming);
-    for (final ev in added) {
-      ev.checkSignature();
-    }
+    final signed = [for (final e in added) if (e.version == 2) e];
+    final flat = [for (final e in signed) ...[e.id, e.key, e.sig]];
+    final bad = signed.length < inlineSignatureChecks ? firstBadSignature(flat) : await _checkElsewhere(flat);
+    if (bad >= 0) signed[bad].checkSignature(); // throws, saying which record
     return added;
   }
+
+  /// Up to this many new signatures are checked here; more, in another isolate. A phone checks a few milliseconds' worth
+  /// per signature: a package bringing thousands of other phones' records would otherwise stop the app answering (and
+  /// Android would offer to close it).
+  static const int inlineSignatureChecks = 8;
+
+  static Future<int> _checkElsewhere(List<String> flat) => Isolate.run(() => firstBadSignature(flat));
 
   Future<List<Event>> _importEvents(List<Event> events) async {
     if (fieldError != null && events.isNotEmpty) throw StoreError(fieldError!);
@@ -329,7 +338,7 @@ class FieldStore {
       // Field records first, all-or-nothing, so a package whose records don't fit changes nothing.
       final List<Event> fresh;
       try {
-        fresh = _checkIncoming(a.events);
+        fresh = await _checkIncoming(a.events);
       } on EventError catch (e) {
         throw StoreError("This package's field records can't be used: ${e.message}");
       }
@@ -460,7 +469,7 @@ class FieldStore {
       final known = a.events.where((e) => log.contains(e.id)).length;
       final List<Event> fresh;
       try {
-        fresh = _checkIncoming(a.events);
+        fresh = await _checkIncoming(a.events);
       } on EventError catch (e) {
         throw StoreError("These field records can't be used: ${e.message}");
       }
