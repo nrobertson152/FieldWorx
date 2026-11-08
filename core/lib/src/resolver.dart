@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // What a scanned label means (docs/PROTOCOL.md section 7). FieldWorx labels say what they are:
 //
-//   FWX:A:unt_9f2c...  a unit, by its permanent id (or an earlier ast_ id): the label RevisionWorx's units carry
+//   FWX:A:unt_9f2c...  a unit, by its permanent id (or an earlier one: an ast_ id, or a unit merged into it): the label RevisionWorx's units carry
 //   FWX:A:HPU-0001     an asset, by tag (or serial, or another code)
 //   FWX:P:FRM-200      a part, by part number
 //   FWX:J:J-2001       a project, by project number

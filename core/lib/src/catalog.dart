@@ -15,7 +15,7 @@ const List<int> catalogVersions = [1, 2];
 final RegExp _reSha = RegExp(r'^[0-9a-f]{64}$');
 final RegExp _reQty = RegExp(r'^(0|[1-9]\d{0,14})(\.\d{1,9})?$');
 final RegExp _reAssetId = RegExp(r'^(unt|ast)_[0-9a-f]{32}$');
-final RegExp _reAlias = RegExp(r'^ast_[0-9a-f]{32}$');
+final RegExp _reAlias = RegExp(r'^(ast|unt)_[0-9a-f]{32}$'); // a register row since imported, or a unit merged into this one
 const Set<String> _assetV1 = {'id', 'tag', 'serial', 'name', 'part', 'project', 'location', 'built', 'notes', 'as_built'};
 const Set<String> _assetV2 = {
   'id', 'aliases', 'label', 'class', 'name', 'model', 'part', 'project', 'customer', 'site', 'location', 'status', //
@@ -241,7 +241,7 @@ void _checkAssetsV2(List<Object?> assets, void Function(String, String) unique, 
     ids.add(id);
     String? previous;
     for (final x in _list(am['aliases'], 'asset aliases', 100)) {
-      if (x is! String || !_reAlias.hasMatch(x)) throw CatalogError('asset aliases must be ast_ ids');
+      if (x is! String || !_reAlias.hasMatch(x)) throw CatalogError('asset aliases must be ast_ or unt_ ids');
       if (previous != null && x.compareTo(previous) <= 0) throw CatalogError('asset aliases must be sorted and unique');
       previous = x;
       unique(x, 'asset');

@@ -604,7 +604,7 @@ def sample_catalog_v2() -> dict:
     c["documents"] += [gad, man]
     hpu, pump, row = "unt_" + "0c" * 16, "unt_" + "0d" * 16, "ast_" + "05" * 16
     c["assets"] = [
-        {"id": hpu, "aliases": ["ast_" + "0e" * 16], "label": "NH-26-0001", "class": "product",
+        {"id": hpu, "aliases": ["ast_" + "0e" * 16, "unt_" + "0f" * 16], "label": "NH-26-0001", "class": "product",
          "name": "Hydraulic power unit", "model": "HPU-75", "part": "pn:hpu-75", "project": "prj_" + "01" * 16,
          "customer": "Acme Manufacturing", "site": "Milltown", "location": "Pump house", "status": "in-service",
          "identifiers": [{"scheme": "serial", "issuer": "", "value": "NH-26-0001", "active": True},
@@ -678,7 +678,9 @@ def catalog_vectors() -> dict:
     refuse = [
         bad("a newer version", lambda c: c.update(version=3)),
         bad("an id that isn't a unit or asset id", lambda c: a(c, 0).update(id="dev_" + "0c" * 16)),
-        bad("an alias that isn't an asset register id", lambda c: a(c, 0).update(aliases=["unt_" + "0f" * 16])),
+        bad("an alias that isn't an asset or unit id", lambda c: a(c, 0).update(aliases=["prj_" + "0f" * 16])),
+        bad("an alias that is another asset's unit id", lambda c: a(c, 0).update(aliases=["unt_" + "0d" * 16])),
+        bad("an alias that is the asset's own id", lambda c: a(c, 0).update(aliases=["unt_" + "0c" * 16])),
         bad("aliases out of order", lambda c: a(c, 0).update(aliases=["ast_" + "ff" * 16, "ast_" + "0e" * 16])),
         bad("an alias that is another asset's id", lambda c: a(c, 0).update(aliases=["ast_" + "05" * 16])),
         bad("a revision of another document", lambda c: a(c, 0)["documents"][1].update(revision="rev_" + "03" * 16)),

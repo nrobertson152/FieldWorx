@@ -50,8 +50,8 @@
   "objects": []
  },
  "units.fieldworx": {
-  "catalog_digest": "af7f5fa708f48b5ca2653d90df2b289190757cfe30837b426d4d50fa1ac1c15c",
-  "digest": "1f9a745d7467cd252bbd95794e0a524790f15d70ffb41776513fbc05eaa5da42",
+  "catalog_digest": "b91711103de1a76fa51ed5afcb45db718f3718a0176591be7dc20b31aeb144d0",
+  "digest": "a13f90746dc45deb12033cfdbecbc0b3c0e8fd7405108963498aca5ce274fd64",
   "events": [],
   "id": "pkg_0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
   "kind": "package",
