@@ -58,6 +58,9 @@ The first field release: QR scanning, engineering document access, part lookup a
   - Labels: `FWX:A:unt_…` opens a unit by its permanent id (an earlier `ast_` id too, and never a tag that looks the
     same); a unit's *Show label* gives its permanent label. Former codes still find a unit, marked *former*.
   - Shared vectors for catalogs (`catalogs.json`) and a sample package of units (`units.fieldworx`).
+  - A unit transferred into the workspace from another (RevisionWorx's `unit-transfers` feature): its drawings stay the other
+    workspace's, so the package carries the PDF kept with each revision it uses, under no project, and says so. The lots a
+    completion used (RevisionWorx's `unit-lots`, recorded by OpenMeridian) show in the unit's history.
 - **PDFs engineering attached to native drawings** (RevisionWorx's `pdf-derivatives` feature): an Inventor, SolidWorks or
   other CAD revision opens on the phone through the PDF attached to exactly that revision (`revisionworx doc pdf`); a revision
   without one never shows another revision's.

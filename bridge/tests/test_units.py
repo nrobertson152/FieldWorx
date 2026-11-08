@@ -261,3 +261,61 @@ def test_a_merged_unit_is_an_alias_of_the_one_that_stays_never_an_asset(merged, 
     assert answer["unit"]["id"] == stays["id"] and answer["named"]["unit"] == merged["dup"]
     from fieldworx_bridge.findings import is_about
     assert is_about({"asset": merged["dup"]}, answer["unit"]) and is_about({"asset": register_id}, answer["unit"])
+
+
+# ------------------------------------------------------------------------- a unit transferred in from another workspace
+@pytest.fixture(scope="module")
+def received(tmp_path_factory):
+    """HPU-0001 transferred from the demo's workspace to Bayside's (RevisionWorx docs/UNITS.md section 16): there, its
+    drawings are kept as references to the demo's revisions, with their PDFs."""
+    if not have_unit_register("unit-transfers"):
+        pytest.skip("this RevisionWorx can't transfer units (link version doesn't list 'unit-transfers')")
+    import build_demo
+    out = tmp_path_factory.mktemp("transfer") / "demo"
+    assert build_demo.main([str(out)]) == 0
+    ws, bay, folder = out / "workspace", out / "bayside", out / "HPU-0001 transfer"
+    local = out / ".local"
+    env = dict(os.environ, XDG_CACHE_HOME=str(local / "cache"), XDG_STATE_HOME=str(local / "state"),
+               XDG_CONFIG_HOME=str(local / "config"), LOCALAPPDATA=str(local / "appdata"))
+
+    def rwx(*args):
+        proc = subprocess.run(find_command() + [*map(str, args)], capture_output=True, text=True, env=env)
+        assert proc.returncode == 0, proc.stdout + proc.stderr
+        return proc.stdout
+
+    rwx("-w", ws, "unit", "import", out / "source" / "AST-HPU-75 Units built.fwassets.csv")
+    rwx("init", bay, "--name", "Bayside Marine")
+    rwx("-w", ws, "unit", "transfer", "HPU-0001", folder, "--to", "Bayside Marine")
+    rwx("-w", bay, "unit", "receive", folder)
+    if have_unit_register("unit-lots"):                 # a unit Bayside built itself, with the lots its completion used
+        rwx("-w", bay, "link", "unit-register", "--txid=" + "a" * 32, "--serial=BM-1", "--model=HPU-75", "--status=built",
+            '--lots=[{"number": "HSE-10", "lot": "H-2611", "quantity": "4 m"}]')
+    return bay
+
+
+def test_a_received_unit_is_packed_with_the_pdfs_it_came_with(received, tmp_path):
+    out = tmp_path / "bayside.fieldworx"
+    assert cli.main(["pack", "-w", str(received), "-o", str(out)]) == 0
+    with archive.read(out) as arc:
+        c = arc.catalog
+        cat_mod.check_catalog(c)
+        asset = next(a for a in c["assets"] if a["label"] == "NH-26-0001")
+        docs = {d["id"]: d for d in c["documents"]}
+        assert asset["documents"], "its drawings came with it"
+        for row in asset["documents"]:
+            d = docs[row["document"]]
+            assert d["project"] == "" and d["released"] == ""              # another workspace's: no project here
+            rev = next(r for r in d["revisions"] if r["id"] == row["revision"])
+            assert rev["rendition"] is not None and rev["rendition"]["via"].startswith("pdf kept from ")
+            assert rev["rendition"]["object"] in arc.objects, "the PDF itself is in the package"
+        assert any("only the PDF of the revision it uses is included" in n for n in arc.manifest["notices"])
+
+
+def test_a_units_factory_lots_are_in_its_history(received, tmp_path):
+    if not have_unit_register("unit-lots"):
+        pytest.skip("this RevisionWorx doesn't record factory lots (link version doesn't list 'unit-lots')")
+    out = tmp_path / "bayside.fieldworx"
+    assert cli.main(["pack", "-w", str(received), "-o", str(out)]) == 0
+    with archive.read(out) as arc:
+        asset = next(a for a in arc.catalog["assets"] if a["label"] == "BM-1")
+        assert any(h["type"] == "lots.used" and h["summary"] == "built from HSE-10 lot H-2611 (4 m)" for h in asset["history"])
