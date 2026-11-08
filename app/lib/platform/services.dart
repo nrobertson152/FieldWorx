@@ -39,8 +39,13 @@ class ViewerHandle extends ChangeNotifier {
 }
 
 abstract class FieldServices {
-  /// Where the store lives (kept out of backups: see android/app/src/main/res/xml).
+  /// Where the store lives, kept out of backups: by android/app/src/main/res/xml on Android, and on iOS by marking the
+  /// folder when it is opened (ios/Runner/AppDelegate.swift). It holds the phone's signing key.
   Future<Directory> dataDirectory();
+
+  /// What the phone couldn't do that the person should know about, such as keeping the store out of backups. Shown in
+  /// the Library.
+  List<String> get platformWarnings;
 
   /// A scratch folder for field logs being shared.
   Future<Directory> exportDirectory();

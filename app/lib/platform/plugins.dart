@@ -6,7 +6,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_selector/file_selector.dart' as fs;
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart' show MethodChannel, MissingPluginException, PlatformException, rootBundle;
 import 'package:flutter_zxing/flutter_zxing.dart'
     show Code, EccLevel, EncodeParams, Format, ReaderWidget, ResolutionPreset, zx;
 import 'package:image_picker/image_picker.dart' as ip;
@@ -19,8 +19,32 @@ import '../theme/theme.dart';
 import 'services.dart';
 
 class PluginServices implements FieldServices {
+  static const _store = MethodChannel('fieldworx/store');
+
   @override
-  Future<Directory> dataDirectory() async => Directory('${(await pp.getApplicationSupportDirectory()).path}/fieldworx');
+  final List<String> platformWarnings = [];
+
+  @override
+  Future<Directory> dataDirectory() async {
+    final d = Directory('${(await pp.getApplicationSupportDirectory()).path}/fieldworx');
+    if (Platform.isIOS) {
+      // Application Support is in iCloud and computer backups unless excluded; the store holds the phone's key.
+      await d.create(recursive: true);
+      String? why;
+      try {
+        if (await _store.invokeMethod<bool>('excludeFromBackup', d.path) != true) why = 'iOS didn\'t keep the setting';
+      } on PlatformException catch (e) {
+        why = e.message ?? e.code;
+      } on MissingPluginException {
+        why = 'this build of the app can\'t ask iOS to';
+      }
+      if (why != null) {
+        platformWarnings.add('This phone couldn\'t keep FieldWorx\'s records out of its backups ($why). A backup '
+            'restored onto another iPhone would carry this phone\'s key: if one is, tell the office.');
+      }
+    }
+    return d;
+  }
 
   @override
   Future<Directory> exportDirectory() async {

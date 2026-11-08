@@ -361,6 +361,17 @@ void main() {
   });
 
   group('library', () {
+    testWidgets("what the phone couldn't do, such as keep its records out of backups, is said in the Library",
+        (tester) async {
+      phone(tester);
+      const why = "This phone couldn't keep FieldWorx's records out of its backups (test).";
+      final (m, _) = await openPhone(tester, platformWarnings: [why]);
+      await showApp(tester, m);
+      await tester.tap(navTab('Library'));
+      await tester.pumpAndSettle();
+      expect(find.text(why), findsOneWidget);
+    });
+
     testWidgets('a damaged package is refused and changes nothing', (tester) async {
       phone(tester);
       final (m, s) = await openPhone(tester);

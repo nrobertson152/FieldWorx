@@ -23,7 +23,7 @@ The first field release: QR scanning, engineering document access, part lookup a
   - Packages added from files or the built-in demo, verified completely first; field logs sent through the share
     sheet and imported from other phones.
   - The family's six themes with text held to 4.5:1 contrast; release builds ask for the camera and nothing else; the store
-    excluded from backups.
+    excluded from backups (on iOS too, where the folder is marked each time the app opens it).
 - **Core** (`fieldworx_core`, pure Dart): canonical JSON, SHA-256, streaming ZIP/ZIP64, archives, field events,
   inspection templates and reduction, catalog and search, label resolution, the on-device store, and `fxtool`.
 - **Bridge** (`fieldworx-bridge`, Python standard library): `pack` from RevisionWorx through `revisionworx link`

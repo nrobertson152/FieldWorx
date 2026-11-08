@@ -448,8 +448,7 @@ Vectors: `findings.json`.
 Every phone signs the records it makes with its own Ed25519 key; an administrator of a RevisionWorx team workspace
 enrols the phone to a person's account; a signed finding from an enrolled phone is accepted as *verified* in that
 person's name (ARCHITECTURE.md ADR-015). Sections 12.1 to 12.3 are built in the Python reference and the Dart core,
-12.4 and 12.5 in the bridge (`fieldworx-bridge enrol`, `accept`) and the app (Library, *This phone*); the iOS backup
-exclusion is being built.
+12.4 and 12.5 in the bridge (`fieldworx-bridge enrol`, `accept`) and the app (Library, *This phone*).
 
 ### 12.1 The key
 
@@ -458,8 +457,8 @@ exclusion is being built.
 - `device.json` (section 9) becomes `{"device", "created", "key": {"seed", "public", "created"}}`. A store without `key`
   gets one the next time the app starts, and keeps its device id; records it made before stay unsigned.
 - The store is never backed up: on Android `allowBackup="false"` and the data extraction rules (as now), on iOS
-  `NSURLIsExcludedFromBackupKey` on the store folder (being built). One key per device id, for life: a damaged key is
-  refused, never replaced.
+  `NSURLIsExcludedFromBackupKey` on the store folder, set each time the app opens it. One key per device id, for life:
+  a damaged key is refused, never replaced.
 - **Fingerprint**, what people compare: the first 8 bytes of `SHA-256("fieldworx/key-fingerprint/v1\0" + the public
   key's 32 bytes)` as 16 uppercase hex digits in four groups joined by `-`, for example `3F2A-91C0-77B1-04DE`.
 
