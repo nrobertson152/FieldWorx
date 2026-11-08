@@ -115,8 +115,9 @@ and runs `flutter build apk --release` (or `appbundle`). iOS signing needs the D
 
 ## Checking on a real phone
 
-The widget tests fake the camera, PDF engine, file picker, photo capture and share sheet. Before a release, check
-on at least one Android phone (and an iPhone if iOS is released):
+The widget tests fake the camera, PDF engine, file picker, photo capture and share sheet, and CI runs on computers,
+not phones. Before a release, check on at least one Android phone (and an iPhone if iOS is released). The office
+steps need RevisionWorx 1.0.0 with a workspace set up for a team, and the bridge.
 
 1. First run asks for a name; **Try the demo** installs it.
 2. The camera opens on the Scan tab (permission asked once) and decodes a printed `FWX:A:HPU-0001` QR code and a
@@ -127,6 +128,18 @@ on at least one Android phone (and an iPhone if iOS is released):
 6. **Add a package** picks a `.fieldworx` file from Downloads.
 7. Turn airplane mode on: everything above still works.
 8. High Contrast theme is readable outdoors.
+9. **Labels:** `fieldworx-bridge labels` sheets printed on each stock in use (A4 70 x 37 mm, US Letter 2-5/8 x 1 in,
+   50 x 25 mm, 25 x 12 mm) scan from the phone at arm's length: a unit, a part and a project from each.
+10. **Findings:** on a unit's page, **Report a finding** for a part replaced, with a photo; sent in a field log,
+    `fieldworx-bridge findings` lists it and `accept` records it in RevisionWorx.
+11. **Signing and enrolment:** **Library → This phone** shows the fingerprint; `fieldworx-bridge enrol` with that
+    fingerprint and a field log from the phone enrols it; a finding from it is then accepted as *verified* in the
+    account's name. `revisionworx user device revoke` (or the Accounts window) makes its next findings *reported*.
+12. **Many records at once** (with a hub that holds a few thousand records): a package made from it says it is
+    checking them, and the app stays usable meanwhile.
+13. **Kept out of backups:** Android: a device-to-device transfer or `adb backup` doesn't carry FieldWorx's records.
+    iPhone: after the app has opened once, an encrypted Finder or iTunes backup doesn't hold FieldWorx's store, and the
+    Library doesn't say it couldn't keep it out (KNOWN_LIMITATIONS.md).
 
 ## Continuous integration
 
