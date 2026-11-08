@@ -216,7 +216,8 @@ def test_accepting_findings_into_revisionworx(site, capsys):
 
     before = json.loads(rwx("-w", ws, "link", "unit", "NH-26-0001"))["unit"]["events"]["count"]
     assert main(["accept", made["replaced"], "-w", str(ws), "--dry-run"]) == 0
-    assert "would record on NH-26-0001: replaces PMP-10 serial 111 (nothing was written)" in capsys.readouterr().out
+    assert "would record on NH-26-0001: replaces PMP-10 serial 111, reported (nothing was written)" in \
+        capsys.readouterr().out, "an unsigned finding is reported"
     assert json.loads(rwx("-w", ws, "link", "unit", "NH-26-0001"))["unit"]["events"]["count"] == before
 
     assert main(["accept", made["replaced"][:16], "-w", str(ws)]) == 0, "the start of an id is enough"

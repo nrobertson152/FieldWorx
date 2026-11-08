@@ -34,10 +34,12 @@ What FieldWorx doesn't do yet, or hasn't been shown to do. Planned work is in [R
 ## What the phone records
 
 - **Inspections only.** Nonconformances, redlines, work orders and inventory transactions are planned (0.2, 0.3).
-- **Names are as typed.** A record carries the name entered on the phone, the phone's device id and, from this version,
-  its signature with the phone's own key: that proves which phone made it, not who held the phone. Enrolling phones to
-  RevisionWorx accounts, so that a signed finding is accepted as verified in its owner's name, is being built
-  (ARCHITECTURE.md ADR-015). Records made before keys are unsigned.
+- **Names are as typed; phones are enrolled.** A record carries the name entered on the phone, the phone's device id
+  and its signature with the phone's own key: that proves which phone made it, not who held the phone. A phone enrolled
+  to a RevisionWorx account (`fieldworx-bridge enrol`) is taken to be that person's, so its findings are accepted as
+  verified in their name; lend it to someone and what they record is still in the owner's name. Only findings become
+  verified: inspections are signed too, but aren't accepted into RevisionWorx. Records made before keys are unsigned.
+- **The phone doesn't know whether it is enrolled.** Enrolment is recorded in RevisionWorx; packages don't carry it.
 - **The phone's key is in its app storage,** protected by the app sandbox and the phone's storage encryption, not a
   hardware keystore. Someone who copies the app's files from a rooted or forensically copied phone can sign as it until
   an administrator revokes it.
