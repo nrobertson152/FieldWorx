@@ -258,25 +258,30 @@ void main() {
     await tapAndWait(tester, row(['ITP-HPU-75 rev 1']), find.text('INSPECTION'));
     expect(find.text('13 required items to go'), findsOneWidget);
 
+    // While a record is being saved the inspection is locked: every card hides its Photo and Note buttons and its
+    // choices can't be pressed. The save runs in real time, and what it saved can show before it has finished, so
+    // each step waits for the card to be unlocked again, not only for its answer to show.
+    bool unlocked(String id) => inItem(id, find.text('Note')).evaluate().isNotEmpty;
+
     Future<void> check(String id, String choice) async {
       await tapOn(tester, inItem(id, find.widgetWithText(OutlinedButton, choice)));
-      await waitFor(tester, answeredBy(id, 'Riley Field'), what: 'item $id answered');
+      await waitFor(tester, answeredBy(id, 'Riley Field'), until: () => unlocked(id), what: 'item $id answered');
     }
 
     Future<void> measure(String id, String value, String outcome) async {
       await reveal(tester, inItem(id, find.byType(TextField)));
       await tester.enterText(inItem(id, find.byType(TextField)), value);
       await tester.testTextInput.receiveAction(TextInputAction.done);
-      await waitFor(tester, inItem(id, find.text(outcome)), what: 'item $id: $outcome');
+      await waitFor(tester, inItem(id, find.text(outcome)), until: () => unlocked(id), what: 'item $id: $outcome');
     }
 
     // 1.1: the serial, and the nameplate photo it requires.
     await reveal(tester, inItem('1.1', find.byType(TextField)));
     await tester.enterText(inItem('1.1', find.byType(TextField)), 'NH-26-0002');
     FocusManager.instance.primaryFocus?.unfocus();
-    await waitFor(tester, inItem('1.1', find.text('Photo needed')));
+    await waitFor(tester, inItem('1.1', find.text('Photo needed')), until: () => unlocked('1.1'), what: 'item 1.1 saved');
     await tapOn(tester, inItem('1.1', find.text('Photo')));
-    await waitFor(tester, inItem('1.1', find.text('Done')), what: 'photo attached');
+    await waitFor(tester, inItem('1.1', find.text('Done')), until: () => unlocked('1.1'), what: 'photo attached');
     expect(s.photosTaken, 1);
 
     await check('1.2', 'B');
