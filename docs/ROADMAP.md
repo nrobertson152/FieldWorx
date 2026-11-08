@@ -28,9 +28,10 @@ The directive's first scope: **QR scanning, engineering document access, part lo
   (`fieldworx-bridge accept`), and a finding the register contradicts waits for a person.
 - Files as the transport: packages in, field logs out, phone to phone; `fieldworx-bridge` packs, imports,
   reports and verifies.
-- Signed records (being built; Director's decision, 2026-11-07): each phone signs its records with its own key, an
-  administrator enrols it to the person's RevisionWorx account, and a signed finding from an enrolled phone is accepted
-  as *verified* in that person's name (ARCHITECTURE.md ADR-015).
+- Signed records (Director's decision, 2026-11-07): each phone signs its records with its own key, kept out of backups;
+  an administrator enrols it to the person's RevisionWorx account (`fieldworx-bridge enrol`, by the fingerprint the
+  phone shows), and a signed finding from an enrolled phone is accepted as *verified* in that person's name, with
+  RevisionWorx checking the signature itself (ARCHITECTURE.md ADR-015).
 - Six family themes, AA contrast, large targets; release builds ask for the camera and nothing else.
 - Tests: protocol vectors shared by Python and Dart, the bridge against real RevisionWorx and OpenMeridian,
   widget tests of every workflow, an end-to-end run, Android and iOS builds in CI.

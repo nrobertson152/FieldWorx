@@ -268,8 +268,8 @@ warns after 30 days.
 
 **Decision.** The store is a folder of files written under their final names only when complete (`device.json`,
 `settings.json`, `objects/`, `packages/`, `events/`, `exported.json`). A random device id is made on first run and
-the folder is excluded from backups and device transfers on Android; on iOS it isn't yet (KNOWN_LIMITATIONS.md), which
-ADR-015 fixes.
+the folder is excluded from backups: on Android by the manifest's rules (backups and device transfers), on iOS by
+marking it `isExcludedFromBackup` each time the app opens it (ADR-015).
 **Why.** No database to corrupt, nothing half-written after a crash or a flat battery, trivially inspectable. A
 device id restored onto a second phone would let two phones write different events under one chain, which every
 receiver would then refuse as a fork; so it is never backed up (Android: `allowBackup="false"` and
@@ -393,7 +393,7 @@ as read (`--if-events`), so a fact recorded meanwhile is never overwritten by a 
 **Not done.** A phone doesn't yet see that a finding was accepted: packages would need to carry the evidence, a new
 asset version. Photos stay in the hub; RevisionWorx holds the reference to the field record, not the photo.
 
-### ADR-015: Device keys, enrolled to workspace accounts (Director's decision, 2026-11-07) — built; the iOS backup exclusion being built
+### ADR-015: Device keys, enrolled to workspace accounts (Director's decision, 2026-11-07) — built
 
 **Decision.** Before 1.0.0, every phone signs the field records it makes with its own Ed25519 key (RFC 8032), and an
 administrator of a RevisionWorx team workspace enrols the phone to the person's account. A finding signed by an
@@ -406,8 +406,9 @@ team already checks who may change what (RevisionWorx ADR-024).
 **Shape.**
 - *The key* is made on the phone the first time this version runs, from the platform's secure random generator, and is
   kept in `device.json` beside the device id. It never leaves the phone: the store is excluded from backups on Android
-  (already) and on iOS (`NSURLIsExcludedFromBackupKey`, new), so a restored or second phone can't hold it. One key per
-  device id, for life; a phone that changes hands starts again as a new device.
+  (the manifest) and on iOS (`isExcludedFromBackup` on the folder, set through a method channel in `AppDelegate.swift`
+  each time the app opens it, and said in the Library if it fails), so a restored or second phone can't hold it. One
+  key per device id, for life; a phone that changes hands starts again as a new device.
 - *Signed records* are field events with envelope version 2: the v1 keys plus the device's public `key` and a `sig` over
   the event's id, which is computed without `sig`. Ed25519 signatures are deterministic, so an event still has exactly one
   stored form and the hub's fork check is unchanged. Readers refuse a bad signature, a device with two keys, or an

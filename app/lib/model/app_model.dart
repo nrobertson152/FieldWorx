@@ -31,6 +31,7 @@ class AppModel extends ChangeNotifier {
 
   static Future<AppModel> open(FieldServices services) async {
     final store = await FieldStore.open(await services.dataDirectory());
+    store.warnings.addAll(services.platformWarnings);
     final m = AppModel(store, services);
     await m._refreshUnsent();
     return m;

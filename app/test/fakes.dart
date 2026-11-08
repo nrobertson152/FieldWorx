@@ -49,6 +49,10 @@ class FakeServices implements FieldServices {
   @override
   Future<Directory> dataDirectory() async => Directory('${root.path}/data')..createSync(recursive: true);
 
+  /// What the phone couldn't do: a test adds to it before the app opens.
+  @override
+  final List<String> platformWarnings = [];
+
   @override
   Future<Directory> exportDirectory() async => Directory('${root.path}/export')..createSync(recursive: true);
 
@@ -173,9 +177,10 @@ void phone(WidgetTester tester, {double width = 360, double height = 780}) {
 
 /// Opens a phone's store (in real time: file work doesn't run inside the widget test's fake clock), named and,
 /// unless [demo] is false, with the demo package added.
-Future<(AppModel, FakeServices)> openPhone(WidgetTester tester, {String user = 'Riley Field', bool demo = true}) async {
+Future<(AppModel, FakeServices)> openPhone(WidgetTester tester,
+    {String user = 'Riley Field', bool demo = true, List<String> platformWarnings = const []}) async {
   final r = await tester.runAsync(() async {
-    final services = FakeServices.temp();
+    final services = FakeServices.temp()..platformWarnings.addAll(platformWarnings);
     final m = await AppModel.open(services);
     if (user.isNotEmpty) await m.setUserName(user);
     if (demo) await m.installPackage(demoFile);

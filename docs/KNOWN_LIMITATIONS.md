@@ -43,10 +43,11 @@ What FieldWorx doesn't do yet, or hasn't been shown to do. Planned work is in [R
 - **The phone's key is in its app storage,** protected by the app sandbox and the phone's storage encryption, not a
   hardware keystore. Someone who copies the app's files from a rooted or forensically copied phone can sign as it until
   an administrator revokes it.
-- **On iOS the store is in backups.** Android keeps the device's folder out of backups and device transfers; on an
-  iPhone it is in `Application Support`, which iCloud and computer backups include, so a backup restored onto a second
-  iPhone would record under the first one's device id (refused as a fork at the hub). Excluding it is part of ADR-015,
-  since the folder will hold the phone's key.
+- **Backups made before this version.** The store, which holds the phone's key, is kept out of backups: on Android by
+  the manifest, on an iPhone by marking its folder when the app opens it (the Library says so if that fails). An iPhone
+  backup made before this version may still hold the store, with the phone's device id (and, from a build with keys,
+  its key): restored onto a second iPhone it would record under the first one's id, refused as a fork at the hub, so
+  revoke that phone. Not verified on a real iPhone, or for iPhone-to-iPhone transfer (Quick Start).
 - **Clocks are the phones' own.** Times are for people; ordering never depends on them.
 - **An inspection keeps the template revision it started with**, even if a newer one arrives mid-inspection.
 - **Unsent records live only on the phone.** A lost or broken phone loses what wasn't sent. The Inspect tab counts
