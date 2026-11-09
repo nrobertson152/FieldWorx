@@ -151,7 +151,8 @@ jobs:
           tools="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)"
           "${tools}apksigner" verify --verbose --print-certs build/app/outputs/flutter-apk/app-release.apk 2>&1 | tee certs.txt
           # Refused even when told to expect the very certificate it is signed with.
-          own="$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' certs.txt)"
+          own="$(sed -n -E 's/^(Signer #1|V[0-9.]+ Signer[^:]*:) certificate SHA-256 digest: //p' certs.txt | head -1)"
+          if [ -z "$own" ]; then echo "::error::apksigner's output gives no certificate digest"; exit 1; fi
           if python3 ../tools/release_checks.py signer certs.txt --release-cert "$own" 2> refusal.txt; then
             echo "::error::the release check passed an APK signed with the debug key"; exit 1
           fi

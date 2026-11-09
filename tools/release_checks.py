@@ -41,8 +41,12 @@ ASKS = re.compile(r"uses-(?:implied-)?permission(?:-sdk-23|-sdk-m)?: (?:name=')?
 
 #: The subject of Android's debug keystore, always C=US, O=Android, CN=Android Debug.
 DEBUG_CN = "cn=android debug"
-SIGNER_DN = re.compile(r"(Signer\b[^:]*?) certificate DN: (.+)")
-SIGNER_SHA256 = re.compile(r"(Signer\b[^:]*?) certificate SHA-256 digest: ([0-9A-Fa-f: ]+)")
+#: A signer's lines, as apksigner names them: "V2 Signer: certificate DN: …" (one signer per scheme verified, as the
+#: build tools CI uses print it; "V3.1 Signer (minSdkVersion=33, …): …" with key rotation), or "Signer #1 certificate
+#: DN: …" (older build tools). A source stamp's signer ("Source Stamp Signer …") isn't the app's and is left out.
+_SIGNER = r"((?:V\d+(?:\.\d+)? )?Signer\b[^:]*?):?"
+SIGNER_DN = re.compile(_SIGNER + r" certificate DN: (.+)")
+SIGNER_SHA256 = re.compile(_SIGNER + r" certificate SHA-256 digest: ([0-9A-Fa-f: ]+)")
 
 
 def versions(root: Path = ROOT) -> tuple[dict[str, str], list[str]]:
