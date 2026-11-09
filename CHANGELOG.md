@@ -101,5 +101,7 @@ to be released. It needs RevisionWorx 1.0.0 or later in the office.
   repository's secrets, and the bridge's wheel and source. It fails without the secrets and never falls back to the debug
   key; it refuses an APK signed with the debug key or any other certificate than the release one, or asking for more than
   the camera, and a tag that names another version than the app, the core and the bridge carry (`tools/release_checks.py`,
-  tested in CI, where the Android build checks that its own debug-signed APK is refused). It tags and publishes nothing.
+  tested in CI, where the Android build checks that its own debug-signed APK is refused). Given a version tag, it drafts
+  that tag's GitHub Release with those files, each checked against its SHA-256; a person publishes it. It never makes a
+  tag.
   CI's permission check now also fails when it can't read the APK, where it used to pass an empty dump.

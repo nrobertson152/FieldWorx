@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """The checks a release build has to pass (.github/workflows/release.yml), kept here so they're tested without a key.
 
-    release_checks.py version REF
+    release_checks.py version REF [--tag]
         The app, the core and the bridge carry one version, and a version tag (v1.0.0) names that version. Prints it.
+        With --tag, REF must be a version tag: what the release is drafted for.
     release_checks.py permissions DUMP
         DUMP is the output of `aapt dump permissions APK`: the APK asks for the camera and nothing else.
     release_checks.py signer CERTS --release-cert SHA256
@@ -67,8 +68,11 @@ def versions(root: Path = ROOT) -> tuple[dict[str, str], list[str]]:
     return found, problems
 
 
-def version_problems(ref: str, root: Path = ROOT) -> tuple[str | None, list[str]]:
-    """The one version the files carry, and what is wrong: files that disagree, or a tag naming another version."""
+def version_problems(ref: str, root: Path = ROOT, *, tag_only: bool = False) -> tuple[str | None, list[str]]:
+    """The one version the files carry, and what is wrong: files that disagree, a tag naming another version, or (with
+    tag_only) a ref that isn't a version tag."""
+    if tag_only and not TAG.fullmatch(ref.strip()):
+        return None, [f"{ref.strip() or 'an empty ref'} isn't a version tag (v1.0.0): a release is drafted for a tag only"]
     found, problems = versions(root)
     distinct = sorted(set(found.values()))
     if len(distinct) > 1:
@@ -158,7 +162,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="release_checks.py", description=__doc__.split("\n\n")[0],
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="check", required=True)
-    sub.add_parser("version", help="the one version, and the one the tag names").add_argument("ref")
+    version = sub.add_parser("version", help="the one version, and the one the tag names")
+    version.add_argument("ref")
+    version.add_argument("--tag", action="store_true", help="the ref must be a version tag")
     sub.add_parser("permissions", help="the camera and nothing else").add_argument("dump", type=Path)
     signer = sub.add_parser("signer", help="signed with the release certificate, never the debug key")
     signer.add_argument("certs", type=Path)
@@ -166,7 +172,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.check == "version":
-        version, problems = version_problems(args.ref)
+        version, problems = version_problems(args.ref, tag_only=args.tag)
         if problems:
             return _say(problems)
         print(version)
