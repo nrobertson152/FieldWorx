@@ -116,11 +116,13 @@ the release; it then has a new key and is enrolled again.
    back to the debug key;
 3. refuses the APK if it is signed with the debug key, or with any other certificate than the release one, or asks for
    more than the camera;
-4. builds the bridge's wheel and source, and checks the wheel installs and reports the version.
+4. builds the bridge's wheel and source, and checks the wheel installs and reports the version;
+5. given a version tag, drafts that tag's GitHub Release with the APK, the bridge and their SHA-256 sums, each file
+   checked against its sum first. Given a commit, it drafts nothing: that is how to try the signed build before tagging.
 
-The APK, the bridge and their SHA-256 sums are the run's artifacts, for the GitHub release. The workflow's token can only
-read: it tags and publishes nothing. The checks are `tools/release_checks.py`, tested in CI (`python -m pytest tools`),
-where the Android build also checks that its own debug-signed APK is refused.
+Only the drafting job can write, and it never publishes or makes a tag: a person writes the notes on the draft and
+publishes it (AGENTS.md says who). The files are also the run's artifacts. The checks are `tools/release_checks.py`,
+tested in CI (`python -m pytest tools`), where the Android build also checks that its own debug-signed APK is refused.
 
 The release key is the Director's. Set once, in the repository's *Settings → Secrets and variables → Actions*:
 

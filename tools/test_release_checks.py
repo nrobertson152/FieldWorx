@@ -265,6 +265,17 @@ def test_a_file_without_its_version_is_refused(tmp_path):
 
 # --- the command line -------------------------------------------------------------------------------------------------
 
+def test_a_release_is_drafted_for_a_version_tag_only(tmp_path):
+    root = tree(tmp_path)
+    assert rc.version_problems("v1.0.0", root, tag_only=True) == ("1.0.0", [])
+    assert rc.version_problems("refs/tags/v1.0.0", root, tag_only=True) == ("1.0.0", [])
+    for ref in ("main", "0123abc", "v1.0", "release/1.0.0", ""):
+        version, problems = rc.version_problems(ref, root, tag_only=True)
+        assert version is None and problems[0].endswith("isn't a version tag (v1.0.0): a release is drafted for a tag only")
+    assert rc.version_problems("v1.0.1", root, tag_only=True)[1] == [
+        "v1.0.1 names version 1.0.1, but the files carry 1.0.0"]
+
+
 def test_the_command_line(tmp_path, capsys):
     (tmp_path / "perms.txt").write_text(CI_DUMP)
     (tmp_path / "debug.txt").write_text(certs((DEBUG_DN, OTHER)))
@@ -280,6 +291,8 @@ def test_the_command_line(tmp_path, capsys):
     version, _ = rc.version_problems("main")
     assert rc.main(["version", f"v{version}"]) == 0 and capsys.readouterr().out == f"{version}\n"
     assert rc.main(["version", "v0.0.1"]) == 1 and "names version 0.0.1" in capsys.readouterr().err
+    assert rc.main(["version", "main", "--tag"]) == 1 and "isn't a version tag" in capsys.readouterr().err
+    assert rc.main(["version", f"v{version}", "--tag"]) == 0 and capsys.readouterr().out == f"{version}\n"
 
 
 # --- the workflows run them -------------------------------------------------------------------------------------------
@@ -288,19 +301,42 @@ def workflow(name: str) -> str:
     return (ROOT / ".github/workflows" / name).read_text(encoding="utf-8")
 
 
-def test_the_release_build_runs_every_check_and_cant_publish():
+def jobs(text: str) -> dict[str, str]:
+    """Each job's text, by its id (the two-space-indented keys under `jobs:`)."""
+    parts = re.split(r"^  ([A-Za-z0-9_-]+):\n", text.split("\njobs:\n", 1)[1], flags=re.M)
+    return dict(zip(parts[1::2], parts[2::2]))
+
+
+def test_the_release_build_runs_every_check_and_only_drafts():
     text = workflow("release.yml")
     trigger = text.split("\non:", 1)[1].split("\npermissions:", 1)[0]
     assert "workflow_dispatch:" in trigger and not re.search(r"^\s+(push|pull_request|release|schedule):", trigger, re.M)
-    assert re.search(r"^permissions:\n  contents: read\n\n", text, re.M), "the token can only read"
+    assert re.search(r"^permissions:\n  contents: read\n\n", text, re.M), "the workflow's token can only read"
+    found = jobs(text)
+    assert set(found) == {"android", "bridge", "draft-release"}
     for check in ("release_checks.py version", "release_checks.py permissions",
                   'release_checks.py signer certs.txt --release-cert "$RELEASE_CERT"'):
-        assert check in text, check
-    assert "apksigner\" verify --verbose --print-certs" in text
-    assert text.count("shell: bash") >= 2, "pipefail: a failing aapt or apksigner fails the step"
-    for publishing in ("gh release", "git tag", "git push", "contents: write", "softprops/", "upload-release-asset"):
-        assert publishing not in text, publishing
+        assert check in found["android"], check
+    assert "apksigner\" verify --verbose --print-certs" in found["android"]
+    assert text.count("shell: bash") >= 3, "pipefail: a failing aapt, apksigner or sha256sum fails the step"
     assert "key.properties" in text and 'rm -f android/key.properties "$RUNNER_TEMP/fieldworx-release.jks"' in text
+    # Only the draft job can write, only for a version tag, after both builds, and it checks before it drafts.
+    assert [name for name, body in found.items() if "contents: write" in body] == ["draft-release"]
+    draft = found["draft-release"]
+    assert "    if: startsWith(inputs.ref, 'v') || startsWith(inputs.ref, 'refs/tags/v')\n" in draft
+    assert "    needs: [android, bridge]\n" in draft
+    order = [draft.index(step) for step in ('release_checks.py version "$REF" --tag', 'sha256sum -c "fieldworx-$VERSION.apk.sha256"',
+                                            'sha256sum -c "fieldworx-bridge-$VERSION.sha256"', "gh release create")]
+    assert order == sorted(order), "every check comes before the draft"
+    create = draft[draft.index("gh release create"):]
+    assert "--draft" in create and "--verify-tag" in create
+    for never in ("--draft=false", "gh release edit", "gh release upload", "git tag", "git push", "gh api", "softprops/",
+                  "upload-release-asset"):
+        assert never not in text, never
+    # What the draft attaches is what the builds named and summed.
+    assert 'cp build/app/outputs/flutter-apk/app-release.apk "../release/fieldworx-$VERSION.apk"' in found["android"]
+    assert 'tee "fieldworx-$VERSION.apk.sha256"' in found["android"]
+    assert 'tee "fieldworx-bridge-$VERSION.sha256"' in found["bridge"]
 
 
 def test_ci_refuses_its_own_apk_for_the_debug_key():

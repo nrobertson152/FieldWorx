@@ -2,8 +2,9 @@
 # Started by hand to build a release (docs/DEVELOPMENT.md, "Signing and releases"): the Android APK signed with the
 # release key from the repository's secrets, and the office bridge. It never falls back to the debug key: a missing
 # secret, an APK signed with the debug key or any other certificate than the release one, or an APK asking for more
-# than the camera fails it (tools/release_checks.py, tested in CI). Its token can only read, so it tags and publishes
-# nothing; the run's artifacts are what goes into the GitHub release, which AGENTS.md says who makes.
+# than the camera fails it (tools/release_checks.py, tested in CI). Run on a version tag, its last job drafts that tag's
+# GitHub Release with these files, each checked against its SHA-256; only that job can write, and a person writes the
+# notes and publishes (AGENTS.md says who). It never creates or moves a tag. Run on a commit, it drafts nothing.
 name: Release build
 
 on:
@@ -139,3 +140,49 @@ jobs:
           path: release/
           if-no-files-found: error
           retention-days: 90
+
+  draft-release:
+    name: Draft the GitHub Release (a version tag only)
+    if: startsWith(inputs.ref, 'v') || startsWith(inputs.ref, 'refs/tags/v')
+    needs: [android, bridge]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+      - name: A version tag, naming the version the files carry
+        env:
+          REF: ${{ inputs.ref }}
+        run: |
+          version="$(python3 tools/release_checks.py version "$REF" --tag)"
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          echo "TAG=v$version" >> "$GITHUB_ENV"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: fieldworx-*
+          path: release
+          merge-multiple: true
+      - name: Every file was built and matches its SHA-256
+        run: |
+          cd release
+          ls -l
+          for f in "fieldworx-$VERSION.apk" "fieldworx-$VERSION.apk.sha256" "fieldworx-bridge-$VERSION.sha256" \
+                   "fieldworx_bridge-$VERSION-py3-none-any.whl" "fieldworx_bridge-$VERSION.tar.gz"; do
+            test -s "$f" || { echo "::error::$f wasn't built"; exit 1; }
+          done
+          sha256sum -c "fieldworx-$VERSION.apk.sha256"
+          sha256sum -c "fieldworx-bridge-$VERSION.sha256"
+      - name: Draft the release with the files (a person publishes it)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          printf 'Drafted by the release build from %s (%s), run %s. Notes are written before it is published.\n' \
+            "$TAG" "$(git rev-parse HEAD)" "$GITHUB_RUN_ID" > notes.md
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --draft --verify-tag \
+            --title "FieldWorx $VERSION" --notes-file notes.md release/*
