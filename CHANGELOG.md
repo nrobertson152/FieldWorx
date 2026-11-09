@@ -1,10 +1,20 @@
 # Changelog
 
-All notable changes to FieldWorx. Versions and release dates are set by the Director when a release is made.
+All notable changes to FieldWorx. A version's date is set when it is released (AGENTS.md says who releases it).
 
-## Unreleased (proposed 1.0.0)
+## 1.0.0 (prepared: released once the Director's artwork and release key are in)
 
-The first field release: QR scanning, engineering document access, part lookup and basic inspections.
+The first field release: QR scanning, engineering document access, part lookup and basic inspections. It is released for
+Android, as an APK signed with the release key, with the office bridge; iOS builds in CI but needs an Apple developer team
+to be released. It needs RevisionWorx 1.0.0 or later in the office.
+
+### Before installing
+
+- **A phone with a test build** (an APK from CI, signed with the debug key) can't be updated to this release: Android
+  won't replace an app signed with another key. Send its field log, uninstall it, then install the release. Uninstalling
+  deletes what wasn't sent. The phone then has a new key, so enrol it again (`fieldworx-bridge enrol`).
+- **Not yet checked on a real phone** (docs/DEVELOPMENT.md, *Checking on a real phone*), unless the release notes say it
+  was: CI fakes the camera, the PDF viewer and the share sheet, and runs on computers.
 
 ### Added
 
@@ -87,3 +97,9 @@ The first field release: QR scanning, engineering document access, part lookup a
   guide, and a review of the family from the shop floor.
 - **CI**: the bridge against real RevisionWorx and OpenMeridian, the Dart core, both end to end, widget tests,
   Android and iOS builds.
+- **Release build** (`.github/workflows/release.yml`, started by hand): the APK signed with the release key from the
+  repository's secrets, and the bridge's wheel and source. It fails without the secrets and never falls back to the debug
+  key; it refuses an APK signed with the debug key or any other certificate than the release one, or asking for more than
+  the camera, and a tag that names another version than the app, the core and the bridge carry (`tools/release_checks.py`,
+  tested in CI, where the Android build checks that its own debug-signed APK is refused). It tags and publishes nothing.
+  CI's permission check now also fails when it can't read the APK, where it used to pass an empty dump.

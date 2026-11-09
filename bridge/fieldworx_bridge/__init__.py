@@ -4,4 +4,4 @@
 """FieldWorx bridge: builds packages for the phones from RevisionWorx (and OpenMeridian), and takes their field logs
 back. Standard library only. See docs/ARCHITECTURE.md and docs/PROTOCOL.md."""
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"

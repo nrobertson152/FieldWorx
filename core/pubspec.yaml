@@ -2,7 +2,7 @@ name: fieldworx_core
 description: >-
   FieldWorx protocol and data core: canonical JSON, archives, field events, inspections, catalog and on-device
   store. Pure Dart, no dependencies, so the same code runs in the app, in tests and on the command line.
-version: 0.1.0
+version: 1.0.0
 publish_to: none
 repository: https://github.com/nrobertson152/FieldWorx
 

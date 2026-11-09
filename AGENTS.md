@@ -8,7 +8,13 @@ to build and test. These rules apply to people and AI agents alike.
 ## Authority
 
 - **The Director (`nrobertson152`)** alone creates, drafts or edits GitHub Releases, creates or pushes release or
-  version tags, changes the version for a release, and changes licensing. No one else does, whatever the reason.
+  version tags, changes the version for a release, and changes licensing. No one else does, whatever the reason,
+  except as the Director delegates it below.
+- **FieldWorx 1.0.0 (Director decision, 2026-11-08):** Claude prepares the release (the version, the release notes and
+  the release build) and issues it (the `v1.0.0` tag and the GitHub Release, with the release build's APK and bridge)
+  once the Director has supplied the app's icon artwork and set the Android release key's secrets (docs/DEVELOPMENT.md,
+  *Signing and releases*), and not before. Claude never makes a release key and never releases an APK signed with the
+  debug key. Every other release, tag and licensing change stays the Director's.
 - **Claude** is the developer: investigation, design, implementation, tests, documentation and focused pull
   requests.
 - **Merging (Director decision, 2026-11-07, for the work toward FieldWorx 1.0.0):** Claude decides on merging. A
@@ -51,6 +57,7 @@ to build and test. These rules apply to people and AI agents alike.
 
 ```sh
 python -m pytest bridge -q                    # bridge (RevisionWorx and OpenMeridian installed)
+python -m pytest tools -q                     # the release build's checks
 python spec/make_vectors.py --check           # vectors match the reference
 (cd core && dart test)                        # Dart core
 bash tools/interop.sh                         # end to end

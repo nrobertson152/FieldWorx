@@ -3,7 +3,7 @@ description: >-
   FieldWorx: the field companion to RevisionWorx. Scan a label, open the released drawing, look up a part,
   run an inspection, all offline.
 publish_to: none
-version: 0.1.0+1
+version: 1.0.0+1
 repository: https://github.com/nrobertson152/FieldWorx
 
 environment:
