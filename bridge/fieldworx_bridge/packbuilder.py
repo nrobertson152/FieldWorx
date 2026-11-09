@@ -71,6 +71,7 @@ class PackBuilder:
         self.notices: list[str] = []
         self.objects: dict[str, archive.ObjectSource] = {}
         self.pdfs: dict[str, dict] = {}                # revision id -> the PDF attached to it in RevisionWorx (ADR-026)
+        self.foreign_pdfs: dict[str, str] = {}         # revision id -> SHA-256 of the PDF kept from another workspace
         self.work = Path(tempfile.mkdtemp(prefix="fieldworx-pack-"))
 
     def note(self, text: str) -> None:
@@ -105,6 +106,9 @@ class PackBuilder:
                 extra_projects.setdefault(u["project"]["id"], by_project.get(u["project"]["id"], u["project"]))
             for row in u["documents"]:
                 did = row["document"]["id"]
+                if "foreign" in row["flags"]:            # kept from another workspace with a unit transferred here
+                    self._foreign_document(row, meta, histories)
+                    continue
                 if did in meta or "missing" in row["flags"]:
                     continue
                 full = rwx.document(did)
@@ -184,7 +188,7 @@ class PackBuilder:
                               "released": released if any(r["id"] == released for r in revs) else "",
                               "latest": latest if any(r["id"] == latest for r in revs) else "",
                               "revisions": revs})
-            if not released:
+            if not released and not d.get("foreign"):
                 self.note(f"{d.get('number') or d.get('title')} has no released revision"
                           + ("; its latest is included and marked as not released." if self.o.unreleased
                              else "; only its details are included."))
@@ -361,6 +365,21 @@ class PackBuilder:
                 "history": history, "changes": self._unit_changes(u), "deviations": self._unit_deviations(u),
                 "notes": u["notes"][:4000], "source": "revisionworx"}
 
+    def _foreign_document(self, row: dict, meta: dict, histories: dict) -> None:
+        """A document a received unit uses that stays another workspace's (RevisionWorx docs/UNITS.md section 16): it has no
+        project here, and only the PDF of the revision the unit uses was kept with it, which is all the phone shows."""
+        did, f, rev = row["document"]["id"], row["foreign"], row["revision"]
+        d = meta.setdefault(did, {"id": did, "number": row["document"]["number"], "title": row["document"]["title"],
+                                  "type": "", "project_id": "", "path": "", "released": None, "latest": None, "foreign": f})
+        if rev and not any(r["id"] == rev["id"] for r in histories.setdefault(did, [])):
+            histories[did].append({"id": rev["id"], "label": rev["label"], "state": rev["state"],
+                                   "state_name": rev["state_name"], "sha256": rev["sha256"], "size": int(f.get("size", 0)),
+                                   "created": "", "author": "", "description": ""})
+            self.foreign_pdfs[rev["id"]] = f.get("pdf") or ""
+        histories.setdefault(did, [])
+        self.note(f"{d['number'] or did} is kept from {f.get('name') or 'another workspace'}, which keeps the document; the "
+                  "unit was transferred here, so only the PDF of the revision it uses is included.")
+
     def _attached_pdfs(self, full: dict) -> None:
         for r in full.get("history", []):
             pdf = r.get("pdf")
@@ -380,6 +399,15 @@ class PackBuilder:
         return src.sha256
 
     def _content(self, rwx, dwx, doc_id, d, r, ext):
+        if d.get("foreign"):                             # the PDF kept with it is all there is here (section 16)
+            sha = self.foreign_pdfs.get(r["id"], "")
+            if not sha:
+                self.note(f"{d.get('number') or doc_id} rev {r['label']} came without a PDF; the phone can't show it.")
+                return None, None
+            pdf = rwx.fetch_pdf(doc_id, r["label"], sha, self.work)
+            via = f"pdf kept from {d['foreign'].get('name') or 'another workspace'} when the unit was transferred"
+            return {"object": self._add_object(pdf, "application/pdf"), "media_type": "application/pdf",
+                    "via": via[:200]}, None
         path = rwx.fetch(doc_id, r["label"], r["sha256"], self.work)
         if ext == ".pdf":
             return {"object": self._add_object(path, "application/pdf"), "media_type": "application/pdf",

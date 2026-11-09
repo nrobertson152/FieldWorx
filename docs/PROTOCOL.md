@@ -234,6 +234,12 @@ asset as the version 2 asset section 6.4 derives from it, so an old package keep
 
 All revisions' metadata is included; content only for those the package needs (ARCHITECTURE.md 5.1).
 
+A document **kept from another workspace** (a unit transferred into this RevisionWorx workspace, RevisionWorx docs/UNITS.md
+section 16) stays that workspace's: it has `project`, `path`, `released` and `latest` `""`, and only the revisions units here use,
+each with the PDF kept with it as its rendition (`via` `pdf kept from <workspace> when the unit was transferred`), or `null` when
+none came. Nothing else about it is known here, so no newer revision is ever shown beside it. This needs no new shape: readers of
+version 2 read it as they are.
+
 ### 6.2 Parts and the BOM
 
 - **part**: `id, number, description, unit, kind, revision, status, manufacturers [{name, mpn}], vendors

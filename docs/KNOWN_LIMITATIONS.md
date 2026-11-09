@@ -28,6 +28,11 @@ What FieldWorx doesn't do yet, or hasn't been shown to do. Planned work is in [R
   the deviation in RevisionWorx.
 - **A phone doesn't see that a finding was accepted.** The unit's page shows the new configuration from the next package,
   but not which finding it came from; packages would need to carry the evidence (a new asset version).
+- **A unit transferred in from another workspace** (RevisionWorx docs/UNITS.md section 16) shows only the PDF of each
+  revision it uses: that's all the receiving workspace keeps of another's documents. A revision that came without one has no
+  phone view, and no newer revision is ever shown beside it.
+- **Factory lots are in the history.** The lots the work that built a unit used appear as one line of its history (the first
+  ten, then how many more), not in a list of their own.
 - **A finding's photos stay in the hub.** RevisionWorx records the field record as evidence, not the photo; the bridge's
   hub has it.
 
